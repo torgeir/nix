@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "7c2739318a9c658d06cd16e2774b197f02418ef2";
+    rev = "becb9f8473e69ec3b935c78f7ddb2c591fc4d50f";
   };
   dotemacs = builtins.fetchGit {
     url = "https://github.com/torgeir/.emacs.d";
@@ -135,6 +135,7 @@ in
     imagemagick
 
     # notifications
+    paper-icon-theme
     mako
     libnotify
     # https://discourse.nixos.org/t/cant-get-gnupg-to-work-no-pinentry/15373/28?page=2
