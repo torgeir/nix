@@ -31,8 +31,8 @@
             # globally installed packages should be user available
             home-manager.useGlobalPkgs = true;
 
-            # users can install packages without admin privileges
-            home-manager.useUserPackages = false;
+            # user packages can be installed without admin privileges
+            home-manager.useUserPackages = true;
 
             # pass inputs to imported modules for users
             home-manager.extraSpecialArgs = { inherit inputs; };
