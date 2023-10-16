@@ -145,6 +145,7 @@ in
     mpv
     signal-desktop
     spotify
+    playerctl
 
     # sound
     pavucontrol
