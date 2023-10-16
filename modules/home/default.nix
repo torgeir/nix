@@ -110,7 +110,12 @@ in
   };
 
 
-  # TODO inspiration for morehttps://github.com/hlissner/dotfiles/
+  # TODO inspiration for more
+  # - https://github.com/hlissner/dotfiles/
+  # - https://github.com/colemickens/nixcfg/
+  # - https://github.com/nix-community/home-manager/
+  # - https://github.com/nix-community/nixpkgs-wayland
+  # - https://github.com/NixOS/nixpkgs/
 
   home.packages = with pkgs; [
     # terminal
@@ -132,6 +137,7 @@ in
     # notifications
     mako
     libnotify
+    # https://discourse.nixos.org/t/cant-get-gnupg-to-work-no-pinentry/15373/28?page=2
     inputs.nixpkgs-wayland.packages.${system}.wayprompt
 
     # sensors

@@ -107,7 +107,6 @@ in
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
-      #pinentryFlavor = "curses"
     };
 
     # here, and not home-manager, as my own config is in dotfiles/
