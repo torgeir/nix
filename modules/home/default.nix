@@ -221,7 +221,7 @@ in
 
     ".p10k.zsh".source = dotfiles + "/p10k.zsh";
     ".gitconfig".source = dotfiles + "/gitconfig";
-    # ".gnupg/gpg-agent.conf".source = dotfiles + "/gpg-agent.conf";
+
     ".zsh".source = dotfiles + "/zsh/";
     ".zshrc".source = dotfiles + "/zshrc";
     ".zprofile".source = dotfiles + "/profile";
