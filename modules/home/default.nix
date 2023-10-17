@@ -17,6 +17,10 @@ in
 
     home-manager.enable = true;
 
+    autojump = {
+      enable = true;
+    };
+
     # https://github.com/stefanDeveloper/nixos-lenovo-config/blob/master/modules/apps/editor/vim.nix
     neovim = {
       enable = true;
