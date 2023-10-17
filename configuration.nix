@@ -83,6 +83,7 @@ in
     wget
     unzip
     gnumake
+    coreutils
     lm_sensors
   ];
 
