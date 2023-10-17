@@ -133,6 +133,10 @@ in
 
       ''}";
     };
+
+    "foot/foot.ini".text = ''
+      font=JetBrainsMono Nerd Font:style=Regular:size=12
+    '';
   };
 
 
