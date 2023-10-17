@@ -29,12 +29,6 @@ in
     };
   };
 
-  services = {
-    dropbox = {
-      enable = true;
-    };
-  };
-
   #https://github.com/tejing1/nixos-config/blob/master/homeConfigurations/tejing/encryption.nix
   programs.gpg.enable = true;
   services.gpg-agent = {
@@ -169,6 +163,7 @@ in
     signal-desktop
     spotify
     playerctl
+    dropbox
 
     # sound
     pavucontrol

@@ -24,10 +24,9 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
 
   boot.kernelParams = [
-    # dual monitors, not working?
-    "video=DP-1:2560x1440@59.951Hz"
-    "video=DP-2:2560x1440@143.998Hz"
-    # "video=DP-1:1920x1080@60Hz"
+    # resolution during boot
+    "video=DP-1:1920x1080@60Hz"
+    "video=DP-2:1920x1080@60Hz"
   ];
 
   # https://github.com/jakeisnt/nixcfg/blob/main/modules/security.nix#L4
