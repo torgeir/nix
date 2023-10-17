@@ -175,6 +175,7 @@ in
     inputs.nixpkgs-wayland.packages.${system}.wayprompt
 
     # sensors
+    inxi
     btop
     psensor
     i3status-rust
