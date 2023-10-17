@@ -31,7 +31,7 @@ in
     };
   };
 
-  https://github.com/tejing1/nixos-config/blob/master/homeConfigurations/tejing/encryption.nix
+  #https://github.com/tejing1/nixos-config/blob/master/homeConfigurations/tejing/encryption.nix
   programs.gpg.enable = true;
   services.gpg-agent = {
     enable = true;

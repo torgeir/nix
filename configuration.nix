@@ -30,6 +30,8 @@ in
     # "video=DP-1:1920x1080@60Hz"
   ];
 
+  # https://github.com/jakeisnt/nixcfg/blob/main/modules/security.nix#L4
+
   # amd gpu
   boot.initrd.kernelModules = [ "amdgpu" ];
   hardware.opengl.enable = true;
