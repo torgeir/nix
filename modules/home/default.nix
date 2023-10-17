@@ -31,6 +31,18 @@ in
     };
   };
 
+  https://github.com/tejing1/nixos-config/blob/master/homeConfigurations/tejing/encryption.nix
+  programs.gpg.enable = true;
+  services.gpg-agent = {
+    enable = true;
+    enableSshSupport = true;
+    maxCacheTtl = 14400;
+    defaultCacheTtl = 14400;
+    extraConfig = ''
+      allow-preset-passphrase
+    '';
+  };
+
   # doom emacs
   # inspiration https://discourse.nixos.org/t/advice-needed-installing-doom-emacs/8806/7
   #
@@ -194,7 +206,7 @@ in
 
     ".p10k.zsh".source = dotfiles + "/p10k.zsh";
     ".gitconfig".source = dotfiles + "/gitconfig";
-    ".gnupg/gpg-agent.conf".source = dotfiles + "/gpg-agent.conf";
+    # ".gnupg/gpg-agent.conf".source = dotfiles + "/gpg-agent.conf";
     ".zsh".source = dotfiles + "/zsh/";
     ".zshrc".source = dotfiles + "/zshrc";
     ".zprofile".source = dotfiles + "/profile";

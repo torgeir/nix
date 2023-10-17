@@ -103,12 +103,6 @@ in
       };
     };
 
-    # gpg to sign commits and cache ssh keys
-    gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-    };
-
     # here, and not home-manager, as my own config is in dotfiles/
     sway.enable = true;
 
