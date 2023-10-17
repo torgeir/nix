@@ -146,6 +146,9 @@ in
   # - https://github.com/nix-community/home-manager/
   # - https://github.com/nix-community/nixpkgs-wayland
   # - https://github.com/NixOS/nixpkgs/
+  #
+  # - https://github.com/Horus645/swww
+  # - https://github.com/redyf/nixdots
 
   home.packages = with pkgs; [
     # terminal
