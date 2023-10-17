@@ -176,6 +176,7 @@ in
 
     # apps
     mpv
+    ncdu
     signal-desktop
     spotify
     playerctl
