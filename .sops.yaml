@@ -1,7 +1,7 @@
 keys:
-  - &torgeir 922E681804CA8D82F1FAFCB177836712DAEA8B95
+  - &torgeir age1lfy3trmzed9z0ca77k9rjf8cq0zn87jyxh277dtyek4h2acpdfns6t8rgh
 creation_rules:
   - path_regex: .*
     key_groups:
-    - pgp:
+    - age:
         - *torgeir

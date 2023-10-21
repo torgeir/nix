@@ -25,20 +25,7 @@
           ./configuration.nix
 
           #https://github.com/Mic92/sops-nix
-          #
-          # cat <<EOF > .sops.yml
-          # keys:
-          #   - &torgeir 922E681804CA8D82F1FAFCB177836712DAEA8B95
-          # creation_rules:
-          #   - path_regex: .*
-          #     key_groups:
-          #     - pgp:
-          #         - *torgeir
-          # EOF
-          #
-          # nix-shell -p sops --run "sops secrets.yaml"
-          #
-          # sops-nix.nixosModules.sops
+          sops-nix.nixosModules.sops
 
           home-manager.nixosModules.home-manager
           {

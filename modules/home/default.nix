@@ -11,19 +11,12 @@ let
   };
 in {
 
-  imports = [ inputs.sops-nix.homeManagerModules.sops ];
-
   fonts.fontconfig.enable = true;
 
-  # if you don't feel like committing secrets.yaml
-  # do this to make nix discover it
-  #   git add --intent-to-add secrets.yaml
-  #   git update-index --assume-unchanged secrets.yaml
-  # https://konradmalik.com/posts/2023/02/sops-nix-simple-secrets-management-for-nix/
-  # https://williamvds.me/blog/journey-into-nix/
-  sops.defaultSopsFile = ../../secrets.yaml;
-  sops.gnupg.home = "/home/torgeir/.gnupg";
-  sops.secrets."smb".path = "/run/secrets/smb";
+  # sops with home manager is a little different, see configuration.nix
+  #   imports = [ inputs.sops-nix.homeManagerModules.sops ];
+  #   sops.age.keyFile = "/home/torgeir/nixos-config/smb.key";
+  #   sops.secrets."smb".owner = "torgeir";
 
   programs = {
 
