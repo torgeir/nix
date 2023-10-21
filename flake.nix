@@ -9,14 +9,12 @@
 
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
     nixpkgs-wayland.inputs.nixpkgs.follows = "nixpkgs";
+
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{
-    self,
-    nixpkgs,
-    home-manager,
-    nixpkgs-wayland
-  }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, nixpkgs-wayland, sops-nix }: {
     nixosConfigurations = {
 
       torgnix = nixpkgs.lib.nixosSystem {
@@ -26,7 +24,24 @@
           # os config
           ./configuration.nix
 
-          home-manager.nixosModules.home-manager {
+          #https://github.com/Mic92/sops-nix
+          #
+          # cat <<EOF > .sops.yml
+          # keys:
+          #   - &torgeir 922E681804CA8D82F1FAFCB177836712DAEA8B95
+          # creation_rules:
+          #   - path_regex: .*
+          #     key_groups:
+          #     - pgp:
+          #         - *torgeir
+          # EOF
+          #
+          # nix-shell -p sops --run "sops secrets.yaml"
+          #
+          # sops-nix.nixosModules.sops
+
+          home-manager.nixosModules.home-manager
+          {
 
             # globally installed packages should be user available
             home-manager.useGlobalPkgs = true;
