@@ -53,7 +53,7 @@ in {
   #   nix-shell -p sops --run "sops secrets.yaml"
   #
   # if you don't feel like committing  and want them to work with nix
-  #   for f in smb.key secrets.yaml; do git add --intent-to-add $f && git update-index --assume-unchanged $f; done
+  #   for f in smb.key secrets.yaml; do git add -f --intent-to-add $f && git update-index --assume-unchanged $f; done
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets."smb".owner = "torgeir";
 
@@ -74,6 +74,24 @@ in {
     where = "/run/mount/${mount}";
     wantedBy = [ "multi-user.target" ];
   }) automounts;
+
+  # https://nixos.wiki/wiki/MPD
+  services.mpd = {
+    enable = true;
+    user = "torgeir";
+    musicDirectory = "/run/mount/music";
+    extraConfig = ''
+      audio_output {
+        type "pipewire"
+        name "My PipeWire Output"
+      }
+    '';
+  };
+  systemd.services.mpd.environment = {
+    # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
+    # MPD will look inside this directory for the PipeWire socket.
+    XDG_RUNTIME_DIR = "/run/user/1000";
+  };
 
   # https://github.com/jakeisnt/nixcfg/blob/main/modules/security.nix#L4
 
