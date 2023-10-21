@@ -9,17 +9,14 @@ let
     url = "https://github.com/torgeir/.emacs.d";
     rev = "5bfeecdd89d256ae1ce1e2885bf136a29d65e19f";
   };
-in
-{
+in {
   fonts.fontconfig.enable = true;
 
   programs = {
 
     home-manager.enable = true;
 
-    autojump = {
-      enable = true;
-    };
+    autojump = { enable = true; };
 
     # https://github.com/stefanDeveloper/nixos-lenovo-config/blob/master/modules/apps/editor/vim.nix
     neovim = {
@@ -78,7 +75,8 @@ in
       # where doom writes cache etc
       DOOMLOCALDIR = "${config.xdg.configHome}/doom-local";
       # where doom writes one more file
-      DOOMPROFILELOADFILE= "${config.xdg.configHome}/doom-local/cache/profile-load.el";
+      DOOMPROFILELOADFILE =
+        "${config.xdg.configHome}/doom-local/cache/profile-load.el";
     };
   };
   xdg.configFile = {
@@ -139,7 +137,6 @@ in
     '';
   };
 
-
   # TODO inspiration for more
   # - https://github.com/hlissner/dotfiles/
   # - https://github.com/colemickens/nixcfg/
@@ -155,6 +152,9 @@ in
     alacritty
     eza
 
+    # emacs
+    nixfmt
+
     # env
     direnv
     #nodejs
@@ -162,7 +162,7 @@ in
     # tools
     killall
     jq
-    (ripgrep.override {withPCRE2 = true;})
+    (ripgrep.override { withPCRE2 = true; })
 
     # images
     imagemagick
@@ -198,12 +198,7 @@ in
     brave
 
     # fonts
-    (pkgs.nerdfonts.override {
-      fonts = [
-        "JetBrainsMono"
-        "Iosevka"
-      ];
-    })
+    (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "Iosevka" ]; })
   ];
 
   # this puts files in the needed locations, but does however not make them
@@ -214,16 +209,19 @@ in
 
     "bg.jpg".source = dotfiles + "/bg.jpg";
 
-    ".config/alacritty/alacritty.yml".source = dotfiles + "/config/alacritty/alacritty.yml";
+    ".config/alacritty/alacritty.yml".source = dotfiles
+      + "/config/alacritty/alacritty.yml";
     ".config/sway".source = dotfiles + "/config/sway";
     ".config/xkb".source = dotfiles + "/config/xkb";
-    ".config/environment.d/envvars.conf".source = dotfiles + "/config/environment.d/envvars.conf";
+    ".config/environment.d/envvars.conf".source = dotfiles
+      + "/config/environment.d/envvars.conf";
     ".config/mako".source = dotfiles + "/config/mako";
     ".config/dunst".source = dotfiles + "/config/dunst";
     ".config/i3status-rust".source = dotfiles + "/config/i3status-rust";
 
     ".config/corectrl/profiles".source = dotfiles + "/config/corectrl/profiles";
-    ".config/corectrl/corectrl.ini".source = dotfiles + "/config/corectrl/corectrl.ini";
+    ".config/corectrl/corectrl.ini".source = dotfiles
+      + "/config/corectrl/corectrl.ini";
 
     ".config/pipewire".source = dotfiles + "/config/pipewire";
     ".config/wireplumber".source = dotfiles + "/config/wireplumber";
