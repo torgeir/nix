@@ -70,8 +70,10 @@ in {
     shell = pkgs.zsh;
     isNormalUser = true;
     extraGroups = [
-      "wheel"    # enable sudo
+      "torgeir"
+      "wheel" # enable sudo
       "corectrl" # adjust gpu fans
+      "audio"
     ];
   };
 
@@ -79,10 +81,18 @@ in {
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
       "spotify"
+
       "1password"
       "1password-cli"
       "1password-gui"
+
       "dropbox"
+
+      "reaper"
+
+      "steam"
+      "steam-run"
+      "steam-original"
     ];
 
   # password manager
@@ -119,6 +129,7 @@ in {
       };
     };
 
+    steam = { enable = true; };
 
     # shell
     zsh.enable = true;
