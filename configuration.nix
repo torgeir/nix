@@ -5,9 +5,10 @@
 { config, lib, pkgs, ... }:
 
 let
-  homeManagerSessionVars = "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh";
-in
-{
+  automounts = [ "torgeir" "music" "delt" "cam" ];
+  homeManagerSessionVars =
+    "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh";
+in {
   nix = {
     package = pkgs.nixFlakes;
     extraOptions = ''
@@ -15,10 +16,7 @@ in
     '';
   };
 
-  imports =
-    [
-      ./hardware-configuration.nix
-    ];
+  imports = [ ./hardware-configuration.nix ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -28,6 +26,22 @@ in
     "video=DP-1:1920x1080@60Hz"
     "video=DP-2:1920x1080@60Hz"
   ];
+
+  boot.supportedFilesystems = [ "cifs" ];
+  # https://discourse.nixos.org/t/systemd-mounts-and-systemd-automounts-options-causing-an-error/13796/5
+  systemd.mounts = map (mount: {
+    description = "Mount ${mount}";
+    what = "//fileserver/${mount}";
+    where = "/run/mount/${mount}";
+    type = "cifs";
+    options = "_netdev,credentials=/run/secrets/smb,iocharset=utf8,rw,vers=3.0";
+  }) automounts;
+
+  systemd.automounts = map (mount: {
+    description = "Automount /${mount}";
+    where = "/run/mount/${mount}";
+    wantedBy = [ "multi-user.target" ];
+  }) automounts;
 
   # https://github.com/jakeisnt/nixcfg/blob/main/modules/security.nix#L4
 
@@ -89,8 +103,8 @@ in
   ];
 
   # fix missing xdg session vars
-  environment.extraInit = "[[ -f ${homeManagerSessionVars} ]] && source ${homeManagerSessionVars}";
-
+  environment.extraInit =
+    "[[ -f ${homeManagerSessionVars} ]] && source ${homeManagerSessionVars}";
 
   programs = {
 
@@ -105,12 +119,16 @@ in
       };
     };
 
-    # here, and not home-manager, as my own config is in dotfiles/
-    sway.enable = true;
 
     # shell
     zsh.enable = true;
   };
+
+  # here, and not home-manager, as my own config is in dotfiles/
+  programs.sway.enable = true;
+
+  # sway needs polkit
+  security.polkit.enable = true;
 
   # ssh
   services.openssh.enable = false;
@@ -118,29 +136,35 @@ in
   # sound
   sound.enable = true;
 
-  services = {
-
-    # https://nixos.wiki/wiki/PipeWire
-    pipewire = {
-      enable = true;
-      jack.enable = true;
-      pulse.enable = true;
-      #alsa.enable = true;
-    };
-
-    # thunderbolt
-    # owc 11-port dock
-    hardware.bolt.enable = true;
+  # https://nixos.wiki/wiki/PipeWire
+  services.pipewire = {
+    enable = true;
+    jack.enable = true;
+    pulse.enable = true;
+    #alsa.enable = true;
   };
+  # make pipewire realtime-capable
+  #security.rtkit.enable = true;
+  # TODO realtime group for torgeir?
+  # TODO rtirq?
+  # TODO https://github.com/musnix/musnix
+  # TODO https://github.com/fufexan/nix-gaming low latency?
 
-  # sway needs polkit
-  security.polkit.enable = true;
+  # thunderbolt
+  # owc 11-port dock
+  services.hardware.bolt.enable = true;
+
+  # save ssds
+  services.fstrim.enable = true;
+
+  # moar https://github.com/NixOS/nixos-hardware
 
   # firewall
   networking.firewall.enable = true;
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
 
+  # mounts
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
