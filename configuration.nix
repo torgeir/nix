@@ -18,8 +18,22 @@ in {
 
   imports = [ ./hardware-configuration.nix ];
 
-  boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot = {
+    enable = true;
+    # number of generations to keep
+    configurationLimit = 20;
+  };
   boot.loader.efi.canTouchEfiVariables = true;
+
+  # clean up every once in a while
+  #   sudo nix-collect-garbage
+  #   sudo nix profile wipe-history --older-than 7d --profile /nix/var/nix/profiles/system
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 3w";
+  };
+  nix.settings.auto-optimise-store = true;
 
   boot.kernelParams = [
     # resolution during boot
