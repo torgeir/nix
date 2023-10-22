@@ -51,7 +51,10 @@ in {
   };
 
   #https://github.com/tejing1/nixos-config/blob/master/homeConfigurations/tejing/encryption.nix
-  programs.gpg.enable = true;
+  programs.gpg = {
+    enable = true;
+    package = pkgs.gnupg22;
+  };
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;

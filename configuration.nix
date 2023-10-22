@@ -35,6 +35,10 @@ in {
   };
   nix.settings.auto-optimise-store = true;
 
+  # emacs 29 needs older gnupg than 2.4.1 due to hangs, pkgs.gnupg22 seems to
+  # work it needs this older libcrypt
+  nixpkgs.config.permittedInsecurePackages = [ "libgcrypt-1.8.10" ];
+
   boot.kernelParams = [
     # resolution during boot
     "video=DP-1:1920x1080@60Hz"
