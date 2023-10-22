@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "5102aeb0188eb27d74a79e3a97c25f7bb0562617";
+    rev = "0675282b422c100d8df5402b0618b79a6cb34c84";
   };
 in {
 
