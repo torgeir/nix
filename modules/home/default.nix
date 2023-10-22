@@ -9,6 +9,12 @@ in {
 
   fonts.fontconfig.enable = true;
 
+  # systemd.services.mpd.environment = {
+  #   # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
+  #   # MPD will look inside this directory for the PipeWire socket.
+  #   XDG_RUNTIME_DIR = "/run/user/1000";
+  # };
+
   # sops with home manager is a little different, see configuration.nix
   #   imports = [ inputs.sops-nix.homeManagerModules.sops ];
   #   sops.age.keyFile = "/home/torgeir/nixos-config/smb.key";
@@ -186,8 +192,12 @@ in {
 
     #https://nixos.wiki/wiki/Samba
 
+    # formats
+    flac
+
     # apps
     mpv
+    #mpc_cli
     ncdu
     signal-desktop
     spotify

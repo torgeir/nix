@@ -83,7 +83,7 @@ in {
     type = "cifs";
     options = "_netdev,credentials=${
         config.sops.secrets."smb".path
-      },iocharset=utf8,rw,vers=3.0";
+      },uid=1000,gid=100,iocharset=utf8,rw,vers=3.0";
   }) automounts;
 
   systemd.automounts = map (mount: {
@@ -91,6 +91,8 @@ in {
     where = "/run/mount/${mount}";
     wantedBy = [ "multi-user.target" ];
   }) automounts;
+
+  # https://github.com/jakeisnt/nixcfg/blob/main/modules/security.nix#L4
 
   # https://nixos.wiki/wiki/MPD
   services.mpd = {
@@ -109,8 +111,6 @@ in {
     # MPD will look inside this directory for the PipeWire socket.
     XDG_RUNTIME_DIR = "/run/user/1000";
   };
-
-  # https://github.com/jakeisnt/nixcfg/blob/main/modules/security.nix#L4
 
   # amd gpu
   boot.initrd.kernelModules = [ "amdgpu" ];
