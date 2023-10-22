@@ -160,6 +160,10 @@ in {
   # - https://github.com/Horus645/swww
   # - https://github.com/redyf/nixdots
 
+  # find package paths with nix-env -qaP <pkg>
+  #   nix-env -qaP nodejs
+  #   nix-shell -p nodejs_20 --run "node -e 'console.log(42);'"
+  # the same name is used here
   home.packages = with pkgs; [
     # terminal
     alacritty
