@@ -5,10 +5,6 @@ let
     url = "https://github.com/torgeir/dotfiles";
     rev = "c8c7adfa813a5f65b8ada40faad9ebac4eb88de1";
   };
-  dotemacs = builtins.fetchGit {
-    url = "https://github.com/torgeir/.emacs.d";
-    rev = "5bfeecdd89d256ae1ce1e2885bf136a29d65e19f";
-  };
 in {
 
   fonts.fontconfig.enable = true;
@@ -86,7 +82,9 @@ in {
     };
   };
   xdg.configFile = {
-    "doom.d".source = dotemacs;
+    # git clone git@github.com:torgeir/.emacs.d.git ~/.doom.d
+    "doom.d".source = config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/.doom.d";
     "emacs" = {
       source = builtins.fetchGit {
         url = "https://github.com/hlissner/doom-emacs";
