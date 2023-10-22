@@ -36,7 +36,9 @@ in {
   # echo public key
   #   nix-shell -p age --run "age-keygen -y smb.key"
   #
-  sops.age.keyFile = "/home/torgeir/nixos-config/smb.key";
+  # https://github.com/Mic92/sops-nix/issues/149
+  # needs to live where it is available during boot
+  sops.age.keyFile = "/etc/nix-sops-smb.key";
   # put public key in .sops.yml
   #
   # cat <<EOF > .sops.yml
