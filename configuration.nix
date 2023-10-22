@@ -46,18 +46,19 @@ in {
   #   https://sr.ht/~bwolf/dotfiles/
   #
   # create private key
-  #   nix-shell -p age --run "age-keygen -o smb.key"
+  #   nix-shell -p age --run "age-keygen -o /etc/nix-sops-smb.key"
   # echo public key
-  #   nix-shell -p age --run "age-keygen -y smb.key"
+  #   nix-shell -p age --run "age-keygen -y /etc/nix-sops-smb.key"
   #
   # https://github.com/Mic92/sops-nix/issues/149
   # needs to live where it is available during boot
   sops.age.keyFile = "/etc/nix-sops-smb.key";
+
   # put public key in .sops.yml
   #
   # cat <<EOF > .sops.yml
   # keys:
-  #   - &torgeir $(nix-shell -p age --run "age-keygen -y smb.key")
+  #   - &torgeir $(nix-shell -p age --run "age-keygen -y /etc/nix-sops-smb.key")
   # creation_rules:
   #   - path_regex: .*
   #     key_groups:
@@ -68,8 +69,8 @@ in {
   # insert secrets
   #   nix-shell -p sops --run "sops secrets.yaml"
   #
-  # if you don't feel like committing  and want them to work with nix
-  #   for f in smb.key secrets.yaml; do git add -f --intent-to-add $f && git update-index --assume-unchanged $f; done
+  # if you don't feel like committing secrets.yaml,
+  # check out untrack-secrets.sh
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets."smb".owner = "torgeir";
 
