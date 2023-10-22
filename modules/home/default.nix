@@ -3,13 +3,11 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "c8c7adfa813a5f65b8ada40faad9ebac4eb88de1";
+    rev = "5102aeb0188eb27d74a79e3a97c25f7bb0562617";
   };
 in {
 
-  imports = [ ./gtk.nix ];
-
-  fonts.fontconfig.enable = true;
+  imports = [ ./gtk.nix ./fonts.nix ];
 
   # systemd.services.mpd.environment = {
   #   # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
@@ -26,7 +24,12 @@ in {
 
     home-manager.enable = true;
 
-    autojump = { enable = true; };
+    autojump = {
+      enable = true;
+      enableBashIntegration = true;
+      enableZshIntegration = true;
+      enableFishIntegration = false;
+    };
 
     # https://github.com/stefanDeveloper/nixos-lenovo-config/blob/master/modules/apps/editor/vim.nix
     neovim = {
