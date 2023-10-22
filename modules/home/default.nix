@@ -49,6 +49,8 @@ in {
     enableSshSupport = true;
     maxCacheTtl = 28800;
     defaultCacheTtl = 28800;
+    maxCacheTtlSsh = 28800;
+    defaultCacheTtlSsh = 28800;
     extraConfig = ''
       allow-preset-passphrase
     '';
