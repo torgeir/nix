@@ -38,7 +38,7 @@
 
             # pass inputs to imported modules for users
             home-manager.extraSpecialArgs = { inherit inputs; };
-            home-manager.users.torgeir = import ./modules/home;
+            home-manager.users.torgeir = import ./home;
           }
         ];
       };
