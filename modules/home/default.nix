@@ -7,6 +7,8 @@ let
   };
 in {
 
+  imports = [ ./gtk.nix ];
+
   fonts.fontconfig.enable = true;
 
   # systemd.services.mpd.environment = {
@@ -31,22 +33,6 @@ in {
       enable = true;
       vimAlias = true;
       vimdiffAlias = true;
-    };
-  };
-
-  gtk = {
-    enable = true;
-    theme = {
-      name = "arc-theme";
-      package = pkgs.arc-theme;
-    };
-    iconTheme = {
-      name = "Arc";
-      package = pkgs.arc-icon-theme;
-    };
-    cursorTheme = {
-      name = "Arc";
-      package = pkgs.arc-icon-theme;
     };
   };
 
