@@ -10,11 +10,7 @@ in {
   imports =
     [ ./autojump.nix ./gtk.nix ./fonts.nix ./gpg.nix ./terminal ./editors ];
 
-  # sops with home manager is a little different, see configuration.nix
-  #   imports = [ inputs.sops-nix.homeManagerModules.sops ];
-  #   sops.age.keyFile = "/home/torgeir/nixos-config/smb.key";
-  #   sops.secrets."smb".owner = "torgeir";
-
+  # let home manager install and manage itself
   programs.home-manager.enable = true;
 
   # TODO inspiration for more
@@ -123,6 +119,11 @@ in {
     ".zprofile".source = dotfiles + "/profile";
     ".inputrc".source = dotfiles + "/inputrc";
   };
+
+  # sops with home manager is a little different, see configuration.nix
+  #   imports = [ inputs.sops-nix.homeManagerModules.sops ];
+  #   sops.age.keyFile = "/etc/nix-sops-secret.key";
+  #   sops.secrets."smb".owner = "torgeir";
 
   home.stateVersion = "23.11";
 
