@@ -182,6 +182,9 @@ in {
     gnumake
     coreutils
     lm_sensors
+
+    # TODO torgeir
+    xfce.thunar
   ];
 
   # fix missing xdg session vars

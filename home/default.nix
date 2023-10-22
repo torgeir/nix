@@ -32,6 +32,7 @@ in {
     # terminal
     alacritty
     eza
+    htop
 
     # emacs
     nixfmt
@@ -49,7 +50,6 @@ in {
     imagemagick
 
     # notifications
-    paper-icon-theme
     mako
     libnotify
     # https://discourse.nixos.org/t/cant-get-gnupg-to-work-no-pinentry/15373/28?page=2
@@ -68,7 +68,9 @@ in {
 
     # apps
     mpv
-    #mpc_cli
+    #mpc-cli
+    ncmpcpp # mpd music player
+
     ncdu
     signal-desktop
     spotify
@@ -82,6 +84,9 @@ in {
     # internet
     brave
 
+    # wallpapers
+    # https://github.com/natpen/awesome-wayland#wallpaper
+
     # fonts
     (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "Iosevka" ]; })
   ];
@@ -94,8 +99,6 @@ in {
 
     "bg.jpg".source = dotfiles + "/bg.jpg";
 
-    ".config/alacritty/alacritty.yml".source = dotfiles
-      + "/config/alacritty/alacritty.yml";
     ".config/sway".source = dotfiles + "/config/sway";
     ".config/xkb".source = dotfiles + "/config/xkb";
     ".config/environment.d/envvars.conf".source = dotfiles
