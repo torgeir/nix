@@ -4,51 +4,48 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports =
-    [ (modulesPath + "/installer/scan/not-detected.nix")
-    ];
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.availableKernelModules =
+    [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/81e328cf-c6b3-4e1d-b60c-7d818c0fae9f";
-      fsType = "btrfs";
-      options = [ "subvol=root" ];
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/81e328cf-c6b3-4e1d-b60c-7d818c0fae9f";
+    fsType = "btrfs";
+    options = [ "subvol=root" ];
+  };
 
-  boot.initrd.luks.devices."crypted".device = "/dev/disk/by-uuid/01afee33-4f30-40d7-8f36-6de4b9064756";
+  boot.initrd.luks.devices."crypted".device =
+    "/dev/disk/by-uuid/01afee33-4f30-40d7-8f36-6de4b9064756";
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/D2A8-EC4A";
-      fsType = "vfat";
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/D2A8-EC4A";
+    fsType = "vfat";
+  };
 
-  fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/81e328cf-c6b3-4e1d-b60c-7d818c0fae9f";
-      fsType = "btrfs";
-      options = [ "subvol=home" ];
-    };
+  fileSystems."/home" = {
+    device = "/dev/disk/by-uuid/81e328cf-c6b3-4e1d-b60c-7d818c0fae9f";
+    fsType = "btrfs";
+    options = [ "subvol=home" ];
+  };
 
-  fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/81e328cf-c6b3-4e1d-b60c-7d818c0fae9f";
-      fsType = "btrfs";
-      options = [ "subvol=nix" ];
-    };
+  fileSystems."/nix" = {
+    device = "/dev/disk/by-uuid/81e328cf-c6b3-4e1d-b60c-7d818c0fae9f";
+    fsType = "btrfs";
+    options = [ "subvol=nix" ];
+  };
 
   swapDevices = [ ];
 
-  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
-  # (the default) this is the recommended approach. When using systemd-networkd it's
-  # still possible to use this option, but it's recommended to use it in conjunction
-  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp37s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp9s0u1u2c2.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp9s0u1u4u5.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.amd.updateMicrocode =
+    lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
