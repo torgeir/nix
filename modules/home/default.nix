@@ -53,8 +53,8 @@ in {
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
-    maxCacheTtl = 14400;
-    defaultCacheTtl = 14400;
+    maxCacheTtl = 28800;
+    defaultCacheTtl = 28800;
     extraConfig = ''
       allow-preset-passphrase
     '';
