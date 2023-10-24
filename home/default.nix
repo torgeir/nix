@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "0675282b422c100d8df5402b0618b79a6cb34c84";
+    rev = "5abec19af26cf11e3d3f0bc36604324507786907";
   };
 in {
 
@@ -45,6 +45,10 @@ in {
     killall
     jq
     (ripgrep.override { withPCRE2 = true; })
+    # screenshots
+    grim
+    slurp
+    sway-contrib.grimshot
 
     # images
     imagemagick

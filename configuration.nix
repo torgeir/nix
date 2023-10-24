@@ -182,9 +182,8 @@ in {
     gnumake
     coreutils
     lm_sensors
-
-    # TODO torgeir
     xfce.thunar
+    xfce.tumbler # thunar thumbnails
   ];
 
   # fix missing xdg session vars
@@ -192,6 +191,8 @@ in {
     "[[ -f ${homeManagerSessionVars} ]] && source ${homeManagerSessionVars}";
 
   programs = {
+
+    thunar.plugins = with pkgs.xfce; [ thunar-archive-plugin thunar-volman ];
 
     # amd gpu
     # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/hardware/corectrl.nix

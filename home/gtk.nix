@@ -19,9 +19,9 @@ in {
     };
 
     iconTheme = {
-      name = "papirus";
-      # nix-env -qaP papirus
-      package = pkgs.papirus-icon-theme;
+      name = "paper";
+      # nix-env -qaP '*icon-theme*'
+      package = pkgs.paper-icon-theme;
     };
 
     cursorTheme = {
