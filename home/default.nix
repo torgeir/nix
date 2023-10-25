@@ -7,8 +7,15 @@ let
   };
 in {
 
-  imports =
-    [ ./autojump.nix ./gtk.nix ./fonts.nix ./gpg.nix ./terminal ./editors ];
+  imports = [
+    ./autojump.nix
+    ./gtk.nix
+    ./fonts.nix
+    ./gpg.nix
+    ./terminal
+    ./editors
+    ./file-manager.nix
+  ];
 
   # let home manager install and manage itself
   programs.home-manager.enable = true;
@@ -110,7 +117,6 @@ in {
     ".config/mako".source = dotfiles + "/config/mako";
     ".config/dunst".source = dotfiles + "/config/dunst";
     ".config/i3status-rust".source = dotfiles + "/config/i3status-rust";
-
     ".config/corectrl/profiles".source = dotfiles + "/config/corectrl/profiles";
     ".config/corectrl/corectrl.ini".source = dotfiles
       + "/config/corectrl/corectrl.ini";

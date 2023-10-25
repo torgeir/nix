@@ -177,22 +177,27 @@ in {
   environment.systemPackages = with pkgs; [
     git
     vim
+    ark
     wget
     unzip
     gnumake
     coreutils
     lm_sensors
-    xfce.thunar
-    xfce.tumbler # thunar thumbnails
   ];
+
+  programs.thunar.enable = true;
+  programs.thunar.plugins = with pkgs.xfce; [
+    thunar-archive-plugin
+    thunar-volman
+  ];
+  services.tumbler.enable = true; # thunar thumbnails
+  services.gvfs.enable = true; # thunar mount, trash, other functionalities
 
   # fix missing xdg session vars
   environment.extraInit =
     "[[ -f ${homeManagerSessionVars} ]] && source ${homeManagerSessionVars}";
 
   programs = {
-
-    thunar.plugins = with pkgs.xfce; [ thunar-archive-plugin thunar-volman ];
 
     # amd gpu
     # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/hardware/corectrl.nix
