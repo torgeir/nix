@@ -85,6 +85,7 @@ in {
     ncdu
     signal-desktop
     spotify
+    slack
     playerctl
     dropbox
 

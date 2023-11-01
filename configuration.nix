@@ -153,6 +153,7 @@ in {
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [
       "spotify"
+      "slack"
 
       "1password"
       "1password-cli"
@@ -196,6 +197,10 @@ in {
   # fix missing xdg session vars
   environment.extraInit =
     "[[ -f ${homeManagerSessionVars} ]] && source ${homeManagerSessionVars}";
+
+  # slack wayland
+  # https://nixos.wiki/wiki/Slack
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
   programs = {
 
