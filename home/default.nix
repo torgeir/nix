@@ -42,6 +42,7 @@ in {
     htop
 
     # emacs
+    nil # nix lsp https://github.com/oxalica/nil
     nixfmt
 
     # env
