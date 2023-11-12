@@ -4,7 +4,7 @@
 
   xdg.configFile = {
     "foot/foot.ini".text = ''
-      font=JetBrainsMono Nerd Font:style=Regular:size=12
+      font=Iosevka Term Curly Slab:style=Regular:size=12
       [colors]
       foreground=cad3f5 # Text
       background=24273a # Base

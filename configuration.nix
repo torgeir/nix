@@ -149,6 +149,14 @@ in {
     ];
   };
 
+  # TODO torgeir
+  fonts = {
+    # https://github.com/NixOS/nixpkgs/blob/master/pkgs/data/fonts/iosevka/variants.nix
+    packages = with pkgs;
+    # [ (iosevka-bin.override { variant = "curly-slab"; }) ];
+      [ (iosevka-bin.override { variant = "sgr-iosevka-term-curly-slab"; }) ];
+  };
+
   # sorry stallman, can't live without them
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (lib.getName pkg) [

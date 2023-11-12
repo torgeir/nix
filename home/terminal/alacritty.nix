@@ -8,7 +8,7 @@
           opacity: 1
       font:
           size: 11
-          family: JetBrainsMono Nerd Font
+          family: Iosevka Term Curly Slab
       colors:
           # Default colors
           primary:

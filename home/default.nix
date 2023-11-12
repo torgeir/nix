@@ -21,6 +21,7 @@ in {
   programs.home-manager.enable = true;
 
   # TODO inspiration for more
+  # - https://github.com/panchoh/nixos
   # - https://github.com/hlissner/dotfiles/
   # - https://github.com/colemickens/nixcfg/
   # - https://github.com/nix-community/home-manager/
@@ -101,7 +102,9 @@ in {
     # https://github.com/natpen/awesome-wayland#wallpaper
 
     # fonts
-    (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" "Iosevka" ]; })
+    (pkgs.nerdfonts.override {
+      fonts = [ "JetBrainsMono" "Iosevka" "IosevkaTerm" ];
+    })
   ];
 
   # this puts files in the needed locations, but does however not make them
