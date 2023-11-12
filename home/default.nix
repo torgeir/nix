@@ -58,6 +58,7 @@ in {
     grim
     slurp
     sway-contrib.grimshot
+    swayimg
 
     # images
     imagemagick
