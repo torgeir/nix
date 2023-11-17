@@ -50,29 +50,36 @@
         ];
       };
 
-      nixosConfigurations.torgcam1 =
-        nixpkgs-stable.legacyPackages.x86_64-linux.pkgsCross.armv7l-hf-multiplatform.nixos {
+      nixosConfigurations.torgcam2 =
+        nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
           imports = [
-            "${nixpkgs-stable}/nixos/modules/installer/sd-card/sd-image-armv7l-multiplatform.nix"
-            ./modules/arm/sd-image.nix # sdImage.extraFirmwareConfig
-            nixosModules.torgcam1
+            "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64-new-kernel-no-zfs-installer.nix"
+            ./modules/arm/sd-image.nix
+            nixosModules.torgcam
           ];
         };
 
       # build it with
-      #   nix build .#images.torgcam1
+      #   nix build .#images.torgcam2
       #   zstdcat nixos-config/result/sd-image/nixos-sd-image-23.05pre-git-armv7l-linux.img.zst | sudo dd of=/dev/sdb bs=4M status=progress oflag=direct,
-      images.torgcam1 =
-        nixosConfigurations.torgcam1.config.system.build.sdImage;
+      images.torgcam2 =
+        nixosConfigurations.torgcam2.config.system.build.sdImage;
 
-      nixosModules.torgcam1 = ({ lib, config, pkgs, ... }: {
+      nixosModules.torgcam = ({ lib, config, pkgs, ... }: {
 
         boot = {
           initrd.availableKernelModules = [ "xhci_pci" "usbhid" "usb_storage" ];
+
           loader = {
             grub.enable = false;
             generic-extlinux-compatible.enable = true;
           };
+
+          kernelPackages = lib.mkForce (pkgs.linuxPackages_latest);
+
+          # Avoids warning: mdadm: Neither MAILADDR nor PROGRAM has been set. This will cause the `mdmon` service to crash.
+          # See: https://github.com/NixOS/nixpkgs/issues/254807
+          swraid.enable = lib.mkForce false;
         };
 
         fileSystems = {
@@ -84,8 +91,11 @@
           };
         };
 
-        # needed ??
-        # deal with that "module ahci not found" error
+        zramSwap = {
+          enable = true;
+          algorithm = "zstd";
+        };
+
         nixpkgs.overlays = [
           (final: super: {
             makeModulesClosure = x:
@@ -93,18 +103,19 @@
           })
         ];
 
-        environment.systemPackages = with pkgs; [ neofetch vim ];
+        environment.systemPackages = with pkgs; [ neofetch vim htop ];
 
+        # ! Need a trusted user for deploy-rs.
+        nix.settings.trusted-users = [ "@wheel" ];
+
+        sdImage.compressImage = false;
+        sdImage.imageName = "torgcam2.img";
         sdImage.extraFirmwareConfig = {
           # Give up VRAM for more Free System Memory
           # - Disable camera which automatically reserves 128MB VRAM
           # start_x = 0;
           # - Reduce allocation of VRAM to 16MB minimum for non-rotated (32MB for rotated)
           # gpu_mem = 16;
-          # Configure display to 800x600 so it fits on most screens
-          # * See: https://elinux.org/RPi_Configuration
-          hdmi_group = 2;
-          hdmi_mode = 8;
 
           # torgeir
           gpu_mem = 128;
@@ -116,46 +127,56 @@
           cma_offline_start = "";
         };
 
+        # Make sure wifi works
+        hardware.enableRedistributableFirmware = lib.mkForce false;
+        hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
+
         services.openssh.enable = true;
         services.timesyncd.enable = true;
-
-        users.users.root.openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIITJ5UIW0lXbeFfyOrdCXAfBtZsq/NycSzIADDZDi3TL"
-        ];
-
-        hardware.enableRedistributableFirmware = true;
 
         system.stateVersion = "23.11";
 
         networking = {
-          hostName = "torgcam1";
+          hostName = "torgcam2";
           wireless = {
             enable = true;
-            networks."the-ssid".psk = "the-password";
+            networks."ssid".psk = "pw";
             interfaces = [ "wlan0" ];
           };
           interfaces."wlan0".useDHCP = true;
         };
 
-        # needed for deploy-rs
-        # boot.binfmt.emulatedSystems = [ "x86_64-linux" ];
+        # users.users.root.openssh.authorizedKeys.keys = [ ];
 
-        # good luck
-        # needed for the stlink to work
-        # boot.kernelPackages = lib.mkForce pkgs.linuxKernel.packages.linux_rpi2;
+        users.users.torgeir = {
+          isNormalUser = true;
+          home = "/home/torgeir";
+          description = "torgeir";
+          extraGroups = [ "wheel" "networkmanager" ];
+          openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIITJ5UIW0lXbeFfyOrdCXAfBtZsq/NycSzIADDZDi3TL"
+          ];
+        };
+
+        security.sudo = {
+          enable = true;
+          wheelNeedsPassword = false;
+        };
+
+        # services.getty.autologinUser = lib.mkForce "torgeir";
 
       });
 
-      deploy.nodes.torgcam1 = {
+      deploy.nodes.torgcam2 = {
         profiles.system = {
           user = "root";
           path = deploy-rs.lib.aarch64-linux.activate.nixos
-            nixosConfigurations.torgcam1;
+            nixosConfigurations.torgcam2;
         };
 
         # this is how it ssh's into the target system to send packages/configs over.
-        sshUser = "root";
-        hostname = "torgcam1";
+        sshUser = "torgeir";
+        hostname = "torgcam2";
       };
 
     };

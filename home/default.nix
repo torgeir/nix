@@ -99,6 +99,9 @@ in {
     # internet
     brave
 
+    # sudo -EH rpi-imager
+    rpi-imager
+
     # wallpapers
     # https://github.com/natpen/awesome-wayland#wallpaper
 

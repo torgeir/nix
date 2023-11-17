@@ -28,5 +28,6 @@
         echo "${extraFirmwareConfigString}" >> $config
         chmod u-w $config
       '');
+
   };
 }
