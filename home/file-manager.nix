@@ -3,6 +3,7 @@
 {
 
   xdg.configFile = {
+
     # thunar
     "Thunar/accels.scm".text = ''
       (gtk_accel_path "<Actions>/ThunarWindow/open-parent" "Backspace")
