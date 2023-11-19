@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running `nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 let
   automounts = [ "torgeir" "music" "delt" "cam" ];
@@ -16,7 +16,11 @@ in {
     '';
   };
 
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    inputs.nix-gaming.nixosModules.pipewireLowLatency
+    inputs.nix-gaming.nixosModules.steamCompat
+  ];
 
   boot.loader.systemd-boot = {
     enable = true;
@@ -203,8 +207,12 @@ in {
   services.gvfs.enable = true; # thunar mount, trash, other functionalities
 
   # fix missing xdg session vars
-  environment.extraInit =
-    "[[ -f ${homeManagerSessionVars} ]] && source ${homeManagerSessionVars}";
+  environment.extraInit = ''
+    [[ -f ${homeManagerSessionVars} ]] && source ${homeManagerSessionVars}
+
+    # yabridgectl needs yabridge-host.exe from here
+    export PATH=$PATH:/etc/profiles/per-user/torgeir/lib
+  '';
 
   # slack wayland
   # https://nixos.wiki/wiki/Slack
@@ -238,22 +246,52 @@ in {
   # ssh
   services.openssh.enable = false;
 
-  # sound
-  sound.enable = true;
-
   # https://nixos.wiki/wiki/PipeWire
   services.pipewire = {
     enable = true;
     jack.enable = true;
+    alsa.enable = true;
     pulse.enable = true;
-    #alsa.enable = true;
+    wireplumber.enable = true;
+
+    # https://github.com/fufexan/nix-gaming low latency audio
+    lowLatency = {
+      enable = true;
+      quantum = 64;
+      rate = 48000;
+    };
   };
+
   # make pipewire realtime-capable
-  #security.rtkit.enable = true;
-  # TODO realtime group for torgeir?
-  # TODO rtirq?
+  security.rtkit.enable = true;
+  security.pam.loginLimits = [
+    {
+      domain = "@audio";
+      item = "memlock";
+      type = "-";
+      value = "unlimited";
+    }
+    {
+      domain = "@audio";
+      item = "rtprio";
+      type = "-";
+      value = "99";
+    }
+    {
+      domain = "@audio";
+      item = "nofile";
+      type = "soft";
+      value = "99999";
+    }
+    {
+      domain = "@audio";
+      item = "nofile";
+      type = "hard";
+      value = "524288";
+    }
+  ];
+
   # TODO https://github.com/musnix/musnix
-  # TODO https://github.com/fufexan/nix-gaming low latency?
 
   # thunderbolt
   # owc 11-port dock

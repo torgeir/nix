@@ -3,11 +3,12 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "8ce5eadd19a3c8a62d9b2f431cf525dc2942160f";
+    rev = "b1c7066806df0ddb5a4d1a04c5dcc9f92793864b";
   };
 in {
 
   imports = [
+    ./audio-production.nix
     ./autojump.nix
     ./gtk.nix
     ./fonts.nix
@@ -109,6 +110,12 @@ in {
     (pkgs.nerdfonts.override {
       fonts = [ "JetBrainsMono" "Iosevka" "IosevkaTerm" ];
     })
+
+    # vst/audio-production
+    reaper
+    yabridge
+    yabridgectl
+    inputs.nix-gaming.packages.${pkgs.system}.wine-tkg
   ];
 
   # this puts files in the needed locations, but does however not make them
@@ -129,9 +136,6 @@ in {
     ".config/corectrl/profiles".source = dotfiles + "/config/corectrl/profiles";
     ".config/corectrl/corectrl.ini".source = dotfiles
       + "/config/corectrl/corectrl.ini";
-
-    ".config/pipewire".source = dotfiles + "/config/pipewire";
-    ".config/wireplumber".source = dotfiles + "/config/wireplumber";
 
     ".p10k.zsh".source = dotfiles + "/p10k.zsh";
     ".gitconfig".source = dotfiles + "/gitconfig";

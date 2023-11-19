@@ -12,6 +12,9 @@
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
     nixpkgs-wayland.inputs.nixpkgs.follows = "nixpkgs";
 
+    nix-gaming.url = "github:fufexan/nix-gaming";
+    nix-gaming.inputs.nixpkgs.follows = "nixpkgs";
+
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -20,12 +23,16 @@
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-stable, home-manager
-    , nixpkgs-wayland, sops-nix, deploy-rs }: rec {
+    , nixpkgs-wayland, nix-gaming, sops-nix, deploy-rs }: rec {
       #
       # https://github.com/sebastiant/dotfiles/blob/master/flake.nix
       # https://github.com/wiltaylor/dotfiles
       nixosConfigurations.torgnix = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
+
+        # pass inputs to configuration.nix
+        specialArgs = { inherit inputs; };
+
         modules = [
 
           # os config
@@ -60,9 +67,9 @@
       };
 
       # build it with
-      #   nix build .#images.torgcam1
+      #   nix build .#images.torgcam1 .#images.torgcam2
       # burn it with
-      #   sudo dd if=results/sd-image/torgcam1.img of=/dev/sdb bs=4M status=progress oflag=direct,
+      #   sudo dd if=results/sd-image/torgcam1.img of=/dev/sdb bs=4M status=progress oflag=direct
       images.torgcam1 =
         nixosConfigurations.torgcam1.config.system.build.sdImage;
       images.torgcam2 =
