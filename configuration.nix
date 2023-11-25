@@ -249,6 +249,9 @@ in {
     execWheelOnly = true;
   };
 
+  # make helix native activation happy
+  environment.etc.machine-id.source = ./machine-id;
+
   # ssh
   services.openssh = {
     enable = false;
