@@ -243,6 +243,12 @@ in {
   # sway needs polkit
   security.polkit.enable = true;
 
+  # only wheels sudo
+  security.sudo = {
+    enable = true;
+    execWheelOnly = true;
+  };
+
   # ssh
   services.openssh = {
     enable = false;
