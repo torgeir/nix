@@ -244,7 +244,21 @@ in {
   security.polkit.enable = true;
 
   # ssh
-  services.openssh.enable = false;
+  services.openssh = {
+    enable = false;
+    allowSFTP = false;
+    settings = {
+      passwordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+    };
+    extraConfig = ''
+      AllowTcpForwarding yes
+      X11Forwarding no
+      AllowAgentForwarding no
+      AllowStreamLocalForwarding no
+      AuthenticationMethods publickey
+    '';
+  };
 
   # https://nixos.wiki/wiki/PipeWire
   services.pipewire = {
