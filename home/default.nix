@@ -10,6 +10,7 @@ in {
   imports = [
     ./audio-production.nix
     ./autojump.nix
+    ./browser.nix
     ./gtk.nix
     ./fonts.nix
     ./gpg.nix
@@ -103,10 +104,6 @@ in {
     # jack2
     qjackctl
 
-    # internet
-    brave
-    firefox
-
     # sudo -EH rpi-imager
     rpi-imager
 
@@ -128,9 +125,6 @@ in {
       wine = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
     })
     winetricks
-    # (winetricks.override {
-    #   wine = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
-    # })
     dxvk_2
   ];
 
