@@ -47,6 +47,7 @@ in {
   # work it needs this older libcrypt
   nixpkgs.config.permittedInsecurePackages = [ "libgcrypt-1.8.10" ];
 
+  # cat /proc/cmdline
   boot.kernelParams = [
     # realtime audio tuning
     "preemt=full"
@@ -157,7 +158,8 @@ in {
       "torgeir"
       "wheel" # enable sudo
       "corectrl" # adjust gpu fans
-      "audio" # realtime audio
+      "audio" # realtime audio for user
+      "pipewire" # realtime for pipewire
     ];
   };
 
@@ -284,15 +286,17 @@ in {
   # make helix native activation happy
   environment.etc.machine-id.source = ./machine-id;
 
-  # make pipewire realtime-capable
-  security.rtkit.enable = true;
-
+  # https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Performance-tuning#rlimits
   # https://nixos.wiki/wiki/PipeWire
+  #   pw-dump to check pipewire config
+  #   systemctl --user status pipewire wireplumber
+  #   systemctl --user restart pipewire wireplumber
   services.pipewire = {
     enable = true;
-    jack.enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
+    audio.enable = true;
+    alsa.enable = true; # alsa support
+    jack.enable = true; # pipewire jack emulation
+    pulse.enable = true; # pipewire pulse emulation
     wireplumber.enable = true;
 
     # https://github.com/fufexan/nix-gaming low latency audio
@@ -301,23 +305,17 @@ in {
       # https://gist.github.com/cidkidnix/86a01ecf82f54eec39f27a9807b90a1b
       quantum = 64;
       rate = 48000;
-
-      # xruns but why
-      # https://linuxmusicians.com/viewtopic.php?t=19276&hilit=Xruns+but+why
     };
   };
 
-  # ps axHo user,lwp,pid,rtprio,ni,command | grep reaper
-  environment.etc."pipewire/pipewire.d/1-jack-rt.conf".text = ''
-    #context.properties = {
-    #    mem.mlock-all   = true
-    #    log.level        = 0
-    #}
+  # make pipewire realtime-capable, jack needs this (libpipewire-module-rt)
+  security.rtkit.enable = true;
 
-    #context.spa-libs = {
-    #    support.* = support/libspa-support
-    #}
-
+  # find default configs
+  #   ls -la $(which pipewire)
+  #   ls /nix/store/..xyz..-pipewire-0.3.84/share/pipewire/
+  #   ps axHo user,lwp,pid,rtprio,ni,command | grep reaper
+  environment.etc."pipewire/jack.conf.d/1-jack-rt.conf".text = ''
     context.modules = [
         { name = libpipewire-module-rt
           args = {
@@ -328,26 +326,45 @@ in {
                  }
           flags = [ ifexists nofail ]
         }
-        { name = libpipewire-module-protocol-native }
-        { name = libpipewire-module-client-node }
-        { name = libpipewire-module-metadata }
     ]
 
     # global properties for all jack clients
     jack.properties = {
-         node.latency       = 64/48000
-         #node.lock-quantum  = false
-         #jack.show-monitor  = true
-                      }
+         node.latency      = 64/48000
+         #node.lock-quantum = false
+         #jack.show-monitor = true
+    }
   '';
+
+  security.pam.loginLimits = [
+    {
+      domain = "@pipewire";
+      item = "memlock";
+      type = "-";
+      value = "4194304";
+    }
+    {
+      domain = "@pipewire";
+      item = "rtprio";
+      type = "-";
+      value = "95";
+    }
+    {
+      domain = "@pipewire";
+      item = "nice";
+      type = "-";
+      value = "-19";
+    }
+  ];
 
   musnix.enable = true;
   musnix.kernel.realtime = true;
   musnix.kernel.packages = pkgs.linuxPackages_latest_rt;
 
-  # while true; do cat /proc/interrupts; sleep 0.2; done
   # put name at the end of the line that holds the number
   # that increasing the fastest in this list
+  #   while true; do cat /proc/interrupts; sleep 0.2; done
+  #   rtirq status | head -n 30
   musnix.rtirq.nameList = "xhci_hcd usb snd i8024";
   musnix.rtirq.enable = true;
 
