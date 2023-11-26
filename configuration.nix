@@ -48,6 +48,7 @@ in {
   nixpkgs.config.permittedInsecurePackages = [ "libgcrypt-1.8.10" ];
 
   boot.kernelParams = [
+    # realtime audio tuning
     "preemt=full"
     "cpufreq.default_governor=performance"
     # resolution during boot
@@ -139,10 +140,11 @@ in {
   # wireless
   # networking.wireless.enable = true;
   # networking.networkmanager.enable = true;
-
-  # proxy
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+  #
+  # firewall
+  networking.firewall.enable = true;
+  # networking.firewall.allowedTCPPorts = ...;
+  # networking.firewall.allowedUDPPorts = [ ... ];
 
   # locale
   i18n.defaultLocale = "en_US.UTF-8";
@@ -156,9 +158,6 @@ in {
       "wheel" # enable sudo
       "corectrl" # adjust gpu fans
       "audio" # realtime audio
-      # TODO remove?
-      # "realtime" # realtime audio
-      # "pipewire" # realtime audio??
     ];
   };
 
@@ -211,12 +210,6 @@ in {
     coreutils
     lm_sensors
   ];
-
-  # power mgmt controlled from userspace (audio) group
-  # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
-  services.udev.extraRules = ''
-    DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
-  '';
 
   programs.thunar.enable = true;
   programs.thunar.plugins = with pkgs.xfce; [
@@ -271,42 +264,6 @@ in {
   security.audit.enable = true;
   security.audit.rules = [ "-a exit,always -F arch=b64 -S execve" ];
 
-  # make helix native activation happy
-  environment.etc.machine-id.source = ./machine-id;
-
-  environment.etc."pipewire/pipewire.d/1-jack-rt.conf".text = ''
-    context.properties = {
-        mem.mlock-all   = true
-        log.level        = 0
-    }
-
-    context.spa-libs = {
-        support.* = support/libspa-support
-    }
-
-    context.modules = [
-        { name = libpipewire-module-rtkit
-          args = {
-              #nice.level   = -11
-              rt.prio      = 95
-              rt.time.soft = -1
-              rt.time.hard = -1
-          }
-          flags = [ ifexists nofail ]
-        }
-        { name = libpipewire-module-protocol-native }
-        { name = libpipewire-module-client-node }
-        { name = libpipewire-module-metadata }
-    ]
-
-    # global properties for all jack clients
-    jack.properties = {
-         node.latency       = 64/48000
-         #node.lock-quantum  = false
-         #jack.show-monitor  = true
-    }
-  '';
-
   # ssh
   services.openssh = {
     enable = false;
@@ -324,15 +281,20 @@ in {
     '';
   };
 
+  # make helix native activation happy
+  environment.etc.machine-id.source = ./machine-id;
+
+  # make pipewire realtime-capable
+  security.rtkit.enable = true;
+
   # https://nixos.wiki/wiki/PipeWire
   services.pipewire = {
     enable = true;
     jack.enable = true;
     alsa.enable = true;
-    pulse.enable = false;
+    pulse.enable = true;
     wireplumber.enable = true;
 
-    # TODO torgeir
     # https://github.com/fufexan/nix-gaming low latency audio
     lowLatency = {
       enable = true;
@@ -340,21 +302,61 @@ in {
       quantum = 64;
       rate = 48000;
 
-      # TODO xruns but why
+      # xruns but why
       # https://linuxmusicians.com/viewtopic.php?t=19276&hilit=Xruns+but+why
     };
   };
 
-  # TODO torgeir
+  # ps axHo user,lwp,pid,rtprio,ni,command | grep reaper
+  environment.etc."pipewire/pipewire.d/1-jack-rt.conf".text = ''
+    #context.properties = {
+    #    mem.mlock-all   = true
+    #    log.level        = 0
+    #}
+
+    #context.spa-libs = {
+    #    support.* = support/libspa-support
+    #}
+
+    context.modules = [
+        { name = libpipewire-module-rt
+          args = {
+              #nice.level   = -11
+              rt.prio      = 95
+              rt.time.soft = -1
+              rt.time.hard = -1
+                 }
+          flags = [ ifexists nofail ]
+        }
+        { name = libpipewire-module-protocol-native }
+        { name = libpipewire-module-client-node }
+        { name = libpipewire-module-metadata }
+    ]
+
+    # global properties for all jack clients
+    jack.properties = {
+         node.latency       = 64/48000
+         #node.lock-quantum  = false
+         #jack.show-monitor  = true
+                      }
+  '';
+
   musnix.enable = true;
   musnix.kernel.realtime = true;
   musnix.kernel.packages = pkgs.linuxPackages_latest_rt;
-  musnix.rtirq.enable = true;
-  musnix.rtirq.nameList = "xhci_hcd usb snd i8024";
 
-  # # TODO torgeir
-  # make pipewire realtime-capable
-  security.rtkit.enable = true;
+  # while true; do cat /proc/interrupts; sleep 0.2; done
+  # put name at the end of the line that holds the number
+  # that increasing the fastest in this list
+  musnix.rtirq.nameList = "xhci_hcd usb snd i8024";
+  musnix.rtirq.enable = true;
+
+  # help reaper control cpu latency, when you start it from audio group user
+  # control power mgmt from userspace (audio) group
+  # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
+  services.udev.extraRules = ''
+    DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
+  '';
 
   # thunderbolt
   # owc 11-port dock
@@ -364,11 +366,6 @@ in {
   services.fstrim.enable = true;
 
   # moar https://github.com/NixOS/nixos-hardware
-
-  # firewall
-  networking.firewall.enable = true;
-  # networking.firewall.allowedTCPPorts = ...;
-  # networking.firewall.allowedUDPPorts = [ ... ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

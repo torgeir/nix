@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "8ce5eadd19a3c8a62d9b2f431cf525dc2942160f";
+    rev = "9a96d4a3819b1f7b159f624adc84b95bed6e05c6";
   };
 in {
 
@@ -22,7 +22,7 @@ in {
   # let home manager install and manage itself
   programs.home-manager.enable = true;
 
-  # TODO inspiration for more
+  # inspiration for more
   # - https://github.com/panchoh/nixos
   # - https://github.com/hlissner/dotfiles/
   # - https://github.com/colemickens/nixcfg/
@@ -117,7 +117,7 @@ in {
 
     # vst/audio-production
     reaper
-    inputs.nix-gaming.packages.${pkgs.system}.wine-tkg
+    inputs.nix-gaming.packages.${pkgs.system}.wine-tkg # helix native needs wine with fsync patches
     (yabridge.override {
       wine = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
     })
