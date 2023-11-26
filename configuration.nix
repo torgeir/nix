@@ -18,7 +18,11 @@ in {
 
   imports = [
     ./hardware-configuration.nix
+
+    # https://github.com/musnix/musnix
+    inputs.musnix.nixosModules.musnix
     inputs.nix-gaming.nixosModules.pipewireLowLatency
+
     inputs.nix-gaming.nixosModules.steamCompat
   ];
 
@@ -44,6 +48,8 @@ in {
   nixpkgs.config.permittedInsecurePackages = [ "libgcrypt-1.8.10" ];
 
   boot.kernelParams = [
+    "preemt=full"
+    "cpufreq.default_governor=performance"
     # resolution during boot
     "video=DP-1:1920x1080@60Hz"
     "video=DP-2:1920x1080@60Hz"
@@ -149,7 +155,10 @@ in {
       "torgeir"
       "wheel" # enable sudo
       "corectrl" # adjust gpu fans
-      "audio"
+      "audio" # realtime audio
+      # TODO remove?
+      # "realtime" # realtime audio
+      # "pipewire" # realtime audio??
     ];
   };
 
@@ -193,10 +202,21 @@ in {
     ark
     wget
     unzip
+    #TODO remove
+    #python3
+    pciutils # e.g. lspci
+    usbutils # e.g. lsusb
+    cmake
     gnumake
     coreutils
     lm_sensors
   ];
+
+  # power mgmt controlled from userspace (audio) group
+  # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
+  services.udev.extraRules = ''
+    DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
+  '';
 
   programs.thunar.enable = true;
   programs.thunar.plugins = with pkgs.xfce; [
@@ -209,9 +229,6 @@ in {
   # fix missing xdg session vars
   environment.extraInit = ''
     [[ -f ${homeManagerSessionVars} ]] && source ${homeManagerSessionVars}
-
-    # yabridgectl needs yabridge-host.exe from here
-    export PATH=$PATH:/etc/profiles/per-user/torgeir/lib
   '';
 
   # slack wayland
@@ -257,6 +274,39 @@ in {
   # make helix native activation happy
   environment.etc.machine-id.source = ./machine-id;
 
+  environment.etc."pipewire/pipewire.d/1-jack-rt.conf".text = ''
+    context.properties = {
+        mem.mlock-all   = true
+        log.level        = 0
+    }
+
+    context.spa-libs = {
+        support.* = support/libspa-support
+    }
+
+    context.modules = [
+        { name = libpipewire-module-rtkit
+          args = {
+              #nice.level   = -11
+              rt.prio      = 95
+              rt.time.soft = -1
+              rt.time.hard = -1
+          }
+          flags = [ ifexists nofail ]
+        }
+        { name = libpipewire-module-protocol-native }
+        { name = libpipewire-module-client-node }
+        { name = libpipewire-module-metadata }
+    ]
+
+    # global properties for all jack clients
+    jack.properties = {
+         node.latency       = 64/48000
+         #node.lock-quantum  = false
+         #jack.show-monitor  = true
+    }
+  '';
+
   # ssh
   services.openssh = {
     enable = false;
@@ -279,47 +329,32 @@ in {
     enable = true;
     jack.enable = true;
     alsa.enable = true;
-    pulse.enable = true;
+    pulse.enable = false;
     wireplumber.enable = true;
 
+    # TODO torgeir
     # https://github.com/fufexan/nix-gaming low latency audio
     lowLatency = {
       enable = true;
+      # https://gist.github.com/cidkidnix/86a01ecf82f54eec39f27a9807b90a1b
       quantum = 64;
       rate = 48000;
+
+      # TODO xruns but why
+      # https://linuxmusicians.com/viewtopic.php?t=19276&hilit=Xruns+but+why
     };
   };
 
+  # TODO torgeir
+  musnix.enable = true;
+  musnix.kernel.realtime = true;
+  musnix.kernel.packages = pkgs.linuxPackages_latest_rt;
+  musnix.rtirq.enable = true;
+  musnix.rtirq.nameList = "xhci_hcd usb snd i8024";
+
+  # # TODO torgeir
   # make pipewire realtime-capable
   security.rtkit.enable = true;
-  security.pam.loginLimits = [
-    {
-      domain = "@audio";
-      item = "memlock";
-      type = "-";
-      value = "unlimited";
-    }
-    {
-      domain = "@audio";
-      item = "rtprio";
-      type = "-";
-      value = "99";
-    }
-    {
-      domain = "@audio";
-      item = "nofile";
-      type = "soft";
-      value = "99999";
-    }
-    {
-      domain = "@audio";
-      item = "nofile";
-      type = "hard";
-      value = "524288";
-    }
-  ];
-
-  # TODO https://github.com/musnix/musnix
 
   # thunderbolt
   # owc 11-port dock
@@ -332,7 +367,7 @@ in {
 
   # firewall
   networking.firewall.enable = true;
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedTCPPorts = ...;
   # networking.firewall.allowedUDPPorts = [ ... ];
 
   # This value determines the NixOS release from which the default

@@ -97,8 +97,15 @@ in {
     pavucontrol
     qpwgraph
 
+    # unused, pipewire handles this
+    # https://nixos.wiki/wiki/JACK
+    # libjack2
+    # jack2
+    qjackctl
+
     # internet
     brave
+    firefox
 
     # sudo -EH rpi-imager
     rpi-imager
@@ -113,9 +120,18 @@ in {
 
     # vst/audio-production
     reaper
-    yabridge
-    yabridgectl
     inputs.nix-gaming.packages.${pkgs.system}.wine-tkg
+    (yabridge.override {
+      wine = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
+    })
+    (yabridgectl.override {
+      wine = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
+    })
+    winetricks
+    # (winetricks.override {
+    #   wine = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
+    # })
+    dxvk_2
   ];
 
   # this puts files in the needed locations, but does however not make them
