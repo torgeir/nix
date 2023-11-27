@@ -33,6 +33,9 @@ in {
   };
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # blacklist pci sound card, use usb arturia audiofuse
+  boot.blacklistedKernelModules = [ "snd_hda_intel" ];
+
   # clean up every once in a while
   #   sudo nix-collect-garbage
   #   sudo nix profile wipe-history --older-than 7d --profile /nix/var/nix/profiles/system
@@ -347,9 +350,6 @@ in {
   # that increasing the fastest in RTIRQ_NAME_LIST
   #   while true; do cat /proc/interrupts; sleep 0.2; done
   #   rtirq status | head -n 30
-  #
-  # TODO blacklist the main soundcard?
-  #   echo -e "blacklist snd_hda_intel" | sudo tee -a /etc/modprobe.d/HDAblacklist.conf
   environment.etc."rtirq.conf".source = pkgs.writeText "rtirq.conf" ''
     # generated file, do not edit!
     RTIRQ_NAME_LIST="xhci_hcd usb snd i8024"
