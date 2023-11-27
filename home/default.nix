@@ -43,6 +43,8 @@ in {
     alacritty
     eza
     htop
+    # TODO configure CONFIG_LATENCYTOP?
+    latencytop
 
     # emacs
     nil # nix lsp https://github.com/oxalica/nil
@@ -149,6 +151,13 @@ in {
 
     ".p10k.zsh".source = dotfiles + "/p10k.zsh";
     ".gitconfig".source = dotfiles + "/gitconfig";
+
+    ".config/pipewire/pipewire.conf".source = dotfiles
+      + "/config/pipewire/pipewire.conf";
+    ".config/pipewire/1-jack-rt.conf".source = dotfiles
+      + "/config/pipewire/1-jack-rt.conf";
+    ".config/pipewire/pipewire-pulse.conf".source = dotfiles
+      + "/config/pipewire/pipewire-pulse.conf";
 
     ".zsh".source = dotfiles + "/zsh/";
     ".zshrc".source = dotfiles + "/zshrc";

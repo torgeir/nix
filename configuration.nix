@@ -16,11 +16,11 @@ in {
     '';
   };
 
+  nixpkgs.overlays = [ (import ./overlay.nix) ];
+
   imports = [
     ./hardware-configuration.nix
 
-    # https://github.com/musnix/musnix
-    inputs.musnix.nixosModules.musnix
     inputs.nix-gaming.nixosModules.pipewireLowLatency
 
     inputs.nix-gaming.nixosModules.steamCompat
@@ -50,12 +50,15 @@ in {
   # cat /proc/cmdline
   boot.kernelParams = [
     # realtime audio tuning
+    "threadirqs"
     "preemt=full"
-    "cpufreq.default_governor=performance"
     # resolution during boot
     "video=DP-1:1920x1080@60Hz"
     "video=DP-2:1920x1080@60Hz"
   ];
+
+  # realtime audio
+  boot.kernel.sysctl = { "vm.swappiness" = 10; };
 
   # https://github.com/Mic92/sops-nix/blob/master/README.md
   # a good description of how to deploy to a host
@@ -159,7 +162,6 @@ in {
       "wheel" # enable sudo
       "corectrl" # adjust gpu fans
       "audio" # realtime audio for user
-      "pipewire" # realtime for pipewire
     ];
   };
 
@@ -211,6 +213,7 @@ in {
     gnumake
     coreutils
     lm_sensors
+    rtirq
   ];
 
   programs.thunar.enable = true;
@@ -286,7 +289,12 @@ in {
   # make helix native activation happy
   environment.etc.machine-id.source = ./machine-id;
 
+  # low latency audio tuning
+  # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
+
   # https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Performance-tuning#rlimits
+  # https://linuxmusicians.com/viewtopic.php?t=25556
+  # https://github.com/chmaha/ArchProAudio
   # https://nixos.wiki/wiki/PipeWire
   #   pw-dump to check pipewire config
   #   systemctl --user status pipewire wireplumber
@@ -308,65 +316,25 @@ in {
     };
   };
 
-  # make pipewire realtime-capable, jack needs this (libpipewire-module-rt)
-  security.rtkit.enable = true;
-
-  # find default configs
-  #   ls -la $(which pipewire)
-  #   ls /nix/store/..xyz..-pipewire-0.3.84/share/pipewire/
-  #   ps axHo user,lwp,pid,rtprio,ni,command | grep reaper
-  environment.etc."pipewire/jack.conf.d/1-jack-rt.conf".text = ''
-    context.modules = [
-        { name = libpipewire-module-rt
-          args = {
-              #nice.level   = -11
-              rt.prio      = 95
-              rt.time.soft = -1
-              rt.time.hard = -1
-                 }
-          flags = [ ifexists nofail ]
-        }
-    ]
-
-    # global properties for all jack clients
-    jack.properties = {
-         node.latency      = 64/48000
-         #node.lock-quantum = false
-         #jack.show-monitor = true
-    }
+  # TODO is this needed?
+  # https://github.com/hannesmann/dotfiles/blob/51a52957d49d83e5e57113a8cd838147cd79ccc2/etc/wireplumber/main.lua.d/90-realtek.lua#L27
+  # https://forum.manjaro.org/t/click-sound-before-playing-any-audio/47237/2
+  environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
+    table.insert(alsa_monitor.rules, {
+      matches = {
+        { -- Matches all sources.
+          { "node.name", "matches", "alsa_input.*" },
+        },
+        { -- Matches all sinks.
+          { "node.name", "matches", "alsa_output.*" },
+        },
+      },
+      apply_properties = { ["session.suspend-timeout-seconds"] = 0 },
+    })
   '';
 
-  security.pam.loginLimits = [
-    {
-      domain = "@pipewire";
-      item = "memlock";
-      type = "-";
-      value = "4194304";
-    }
-    {
-      domain = "@pipewire";
-      item = "rtprio";
-      type = "-";
-      value = "95";
-    }
-    {
-      domain = "@pipewire";
-      item = "nice";
-      type = "-";
-      value = "-19";
-    }
-  ];
-
-  musnix.enable = true;
-  musnix.kernel.realtime = true;
-  musnix.kernel.packages = pkgs.linuxPackages_latest_rt;
-
-  # put name at the end of the line that holds the number
-  # that increasing the fastest in this list
-  #   while true; do cat /proc/interrupts; sleep 0.2; done
-  #   rtirq status | head -n 30
-  musnix.rtirq.nameList = "xhci_hcd usb snd i8024";
-  musnix.rtirq.enable = true;
+  # ensure realtime processes don't hack the machine
+  services.das_watchdog.enable = true;
 
   # help reaper control cpu latency, when you start it from audio group user
   # control power mgmt from userspace (audio) group
@@ -374,6 +342,79 @@ in {
   services.udev.extraRules = ''
     DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
   '';
+
+  # put name at the end of the line that holds the number
+  # that increasing the fastest in RTIRQ_NAME_LIST
+  #   while true; do cat /proc/interrupts; sleep 0.2; done
+  #   rtirq status | head -n 30
+  #
+  # TODO blacklist the main soundcard?
+  #   echo -e "blacklist snd_hda_intel" | sudo tee -a /etc/modprobe.d/HDAblacklist.conf
+  environment.etc."rtirq.conf".source = pkgs.writeText "rtirq.conf" ''
+    # generated file, do not edit!
+    RTIRQ_NAME_LIST="xhci_hcd usb snd i8024"
+    RTIRQ_PRIO_HIGH=90
+    RTIRQ_PRIO_DECR=5
+    RTIRQ_PRIO_LOW=51
+    RTIRQ_RESET_ALL=0
+    RTIRQ_NON_THREADED="rtc snd"
+  '';
+
+  systemd.services.rtirq = {
+    description = "IRQ thread tuning for realtime kernels";
+    after = [ "multi-user.target" "sound.target" ];
+    wantedBy = [ "multi-user.target" ];
+    path = with pkgs; [ gawk gnugrep gnused procps ];
+    serviceConfig = {
+      User = "root";
+      Type = "oneshot";
+      ExecStart = "${pkgs.rtirq}/bin/rtirq start";
+      ExecStop = "${pkgs.rtirq}/bin/rtirq stop";
+      RemainAfterExit = true;
+    };
+  };
+
+  # cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+  powerManagement.cpuFreqGovernor = "performance";
+
+  # TODO is this needed? maybe try without this and set LimitRTPRIO on the service
+  # https://unix.stackexchange.com/questions/658363/unable-to-set-realtime-priority-on-systemd-service
+  # make pipewire realtime-capable, jack needs this (libpipewire-module-rt)
+  security.rtkit.enable = true;
+
+  security.pam.loginLimits = [
+    {
+      domain = "@audio";
+      item = "memlock";
+      type = "-";
+      value = "unlimited";
+    }
+    {
+      domain = "@audio";
+      item = "rtprio";
+      type = "-";
+      value = "98";
+    }
+    {
+      domain = "@audio";
+      item = "nice";
+      type = "-";
+      value = "-11";
+    }
+    # these two needed?
+    {
+      domain = "@audio";
+      item = "nofile";
+      type = "soft";
+      value = "99999";
+    }
+    {
+      domain = "@audio";
+      item = "nofile";
+      type = "hard";
+      value = "99999";
+    }
+  ];
 
   # thunderbolt
   # owc 11-port dock

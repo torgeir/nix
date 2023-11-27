@@ -15,9 +15,6 @@
     nix-gaming.url = "github:fufexan/nix-gaming";
     nix-gaming.inputs.nixpkgs.follows = "nixpkgs";
 
-    musnix.url = "github:musnix/musnix";
-    musnix.inputs.nixpkgs.follows = "nixpkgs";
-
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -26,7 +23,7 @@
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-stable, home-manager
-    , nixpkgs-wayland, nix-gaming, musnix, sops-nix, deploy-rs }: rec {
+    , nixpkgs-wayland, nix-gaming, sops-nix, deploy-rs }: rec {
       #
       # https://github.com/sebastiant/dotfiles/blob/master/flake.nix
       # https://github.com/wiltaylor/dotfiles
