@@ -21,8 +21,6 @@ in {
   imports = [
     ./hardware-configuration.nix
 
-    inputs.nix-gaming.nixosModules.pipewireLowLatency
-
     inputs.nix-gaming.nixosModules.steamCompat
   ];
 
@@ -209,7 +207,7 @@ in {
     wget
     unzip
     #TODO remove
-    #python3
+    python3
     pciutils # e.g. lspci
     usbutils # e.g. lsusb
     cmake
@@ -310,31 +308,15 @@ in {
     pulse.enable = true; # pipewire pulse emulation
     wireplumber.enable = true;
 
+    # TODO torgeir
     # https://github.com/fufexan/nix-gaming low latency audio
-    lowLatency = {
-      enable = true;
-      # https://gist.github.com/cidkidnix/86a01ecf82f54eec39f27a9807b90a1b
-      quantum = 64;
-      rate = 48000;
-    };
+    # lowLatency = {
+    #   enable = true;
+    #   # https://gist.github.com/cidkidnix/86a01ecf82f54eec39f27a9807b90a1b
+    #   quantum = 64;
+    #   rate = 48000;
+    # };
   };
-
-  # TODO is this needed?
-  # https://github.com/hannesmann/dotfiles/blob/51a52957d49d83e5e57113a8cd838147cd79ccc2/etc/wireplumber/main.lua.d/90-realtek.lua#L27
-  # https://forum.manjaro.org/t/click-sound-before-playing-any-audio/47237/2
-  environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
-    table.insert(alsa_monitor.rules, {
-      matches = {
-        { -- Matches all sources.
-          { "node.name", "matches", "alsa_input.*" },
-        },
-        { -- Matches all sinks.
-          { "node.name", "matches", "alsa_output.*" },
-        },
-      },
-      apply_properties = { ["session.suspend-timeout-seconds"] = 0 },
-    })
-  '';
 
   # ensure realtime processes don't hack the machine
   services.das_watchdog.enable = true;

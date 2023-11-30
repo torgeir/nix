@@ -152,12 +152,57 @@ in {
     ".p10k.zsh".source = dotfiles + "/p10k.zsh";
     ".gitconfig".source = dotfiles + "/gitconfig";
 
-    ".config/pipewire/pipewire.conf".source = dotfiles
-      + "/config/pipewire/pipewire.conf";
-    ".config/pipewire/1-jack-rt.conf".source = dotfiles
-      + "/config/pipewire/1-jack-rt.conf";
-    ".config/pipewire/pipewire-pulse.conf".source = dotfiles
-      + "/config/pipewire/pipewire-pulse.conf";
+    ".config/pipewire/1-jack-rt.conf".text = ''
+      context.properties = {
+          mem.mlock-all   = true
+          log.level        = 0
+      }
+
+      context.spa-libs = {
+          support.* = support/libspa-support
+      }
+
+      context.modules = [
+          { name = libpipewire-module-rt
+              args = {
+                  # rtirq status | head
+                  # less than my usb sound card that has from 90 to 72, irq/*-xhci_hcd
+                  rt.prio      = 71
+                  rt.time.soft = -1
+                  rt.time.hard = -1
+                   }
+              flags = [ ifexists nofail ]
+          }
+          { name = libpipewire-module-protocol-native }
+          { name = libpipewire-module-client-node }
+          { name = libpipewire-module-metadata }
+      ]
+
+      jack.properties = {
+           node.latency       = 64/48000
+      }
+    '';
+
+    # TODO is this needed?
+    # https://github.com/hannesmann/dotfiles/blob/51a52957d49d83e5e57113a8cd838147cd79ccc2/etc/wireplumber/main.lua.d/90-realtek.lua#L27
+    # https://forum.manjaro.org/t/click-sound-before-playing-any-audio/47237/2
+    ".config/wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
+      table.insert(alsa_monitor.rules, {
+        matches = {
+          { -- Matches all sources.
+            { "node.name", "matches", "alsa_input.*" },
+          },
+          { -- Matches all sinks.
+            { "node.name", "matches", "alsa_output.*" },
+          },
+        },
+        apply_properties = {
+          ["session.suspend-timeout-seconds"] = 0,
+          ["suspend-node"] = false,
+          ["node.pause-on-idle"] = false,
+        },
+      })
+    '';
 
     ".zsh".source = dotfiles + "/zsh/";
     ".zshrc".source = dotfiles + "/zshrc";
