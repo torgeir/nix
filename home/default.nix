@@ -354,7 +354,7 @@ in {
           ## Properties for the DSP configuration.
           default.clock.rate          = 48000
           default.clock.allowed-rates = [ 48000 ]
-          #default.clock.quantum       = 512
+          default.clock.quantum       = 256
           default.clock.min-quantum   = 32
           default.clock.max-quantum   = 2048
           #default.clock.quantum-limit = 8192
@@ -712,7 +712,7 @@ in {
 
       # global properties for all jack clients
       jack.properties = {
-           node.latency        = 64/48000
+           node.latency        = 256/48000
            #node.rate          = 1/48000
            #node.quantum       = 1024/48000
            #node.lock-quantum  = true

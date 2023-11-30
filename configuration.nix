@@ -21,6 +21,8 @@ in {
   imports = [
     ./hardware-configuration.nix
 
+    inputs.musnix.nixosModules.musnix
+
     inputs.nix-gaming.nixosModules.steamCompat
   ];
 
@@ -60,6 +62,9 @@ in {
 
   # realtime audio
   boot.kernel.sysctl = { "vm.swappiness" = 10; };
+
+  musnix.kernel.realtime = true;
+  musnix.kernel.packages = pkgs.linuxPackages_6_4_rt;
 
   # https://github.com/Mic92/sops-nix/blob/master/README.md
   # a good description of how to deploy to a host
