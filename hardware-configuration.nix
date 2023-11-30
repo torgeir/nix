@@ -44,7 +44,7 @@
 
   # networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp37s0.useDHCP = lib.mkDefault true;
-  networking.interfaces.enp9s0u1u2.useDHCP = lib.mkDefault true;
+  networking.interfaces.enp9s0u1u2c2.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp9s0u1u4u5.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
