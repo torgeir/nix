@@ -318,6 +318,27 @@ in {
     # };
   };
 
+  # TODO is this needed?
+  # https://github.com/hannesmann/dotfiles/blob/51a52957d49d83e5e57113a8cd838147cd79ccc2/etc/wireplumber/main.lua.d/90-realtek.lua#L27
+  # https://forum.manjaro.org/t/click-sound-before-playing-any-audio/47237/2
+  environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
+    table.insert(alsa_monitor.rules, {
+      matches = {
+        { -- Matches all sources.
+          { "node.name", "matches", "alsa_input.*" },
+        },
+        { -- Matches all sinks.
+          { "node.name", "matches", "alsa_output.*" },
+        },
+      },
+      apply_properties = {
+        ["session.suspend-timeout-seconds"] = 0,
+        ["suspend-node"] = false,
+        ["node.pause-on-idle"] = false,
+      },
+    })
+  '';
+
   # ensure realtime processes don't hack the machine
   services.das_watchdog.enable = true;
 
