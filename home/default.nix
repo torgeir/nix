@@ -435,6 +435,10 @@ in {
       for_window [class="REAPER" title=".*JS.*"] floating enable
       for_window [class="REAPER" title="^VST.*"] floating enable
 
+      # https://github.com/signalapp/Signal-Desktop/issues/5719
+      for_window [app_id="signal"] floating enable
+      assign [app_id="signal*"] 6
+
       assign [title="^Psensor.*"] 5
       for_window [title="^Psensor.*"] resize set height 512px
       for_window [title="^alacritty-journalctl"] resize set height 300px
@@ -463,7 +467,7 @@ in {
 
       exec dropbox
 
-      exec "signal-desktop"
+      exec "signal-desktop --ozone-platform=wayland"
 
       exec 'alacritty --title alacritty-btop -e btop'
       exec 'env -u WAYLAND_DISPLAY psensor'
