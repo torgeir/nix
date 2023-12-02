@@ -485,16 +485,6 @@ in {
     ".config/corectrl/corectrl.ini".source = dotfiles
       + "/config/corectrl/corectrl.ini";
 
-    # https://linuxmusicians.com/viewtopic.php?t=26271
-    # pw-metadata -n settings 0 clock.force-quantum 48
-    ".config/pipewire/jack.conf.d/override.conf".text = ''
-      jack.properties = {
-        node.force-quantum = 384
-        #node.force-quantum = 144
-        #node.force-quantum = 48
-      }
-    '';
-
     ".p10k.zsh".source = dotfiles + "/p10k.zsh";
     ".gitconfig".source = dotfiles + "/gitconfig";
 

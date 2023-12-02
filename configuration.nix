@@ -38,6 +38,14 @@ in {
 
   boot.postBootCommands = ''
     #!/bin/bash
+
+    echo 2048 > /sys/class/rtc/rtc0/max_user_freq
+    echo 2048 > /proc/sys/dev/hpet/max-user-freq
+    setpci -v -d *:* latency_timer=b0
+    for p in $(lspci | grep -i thunderbolt | awk '{print $1}'); do
+      setpci -v -s $p latency_timer=ff
+    done
+
     # https://www.reddit.com/r/linuxaudio/comments/8isvxn/comment/dywjory/
     # run xhci_hcd driver (extensible host controller interface, used for usb 3.0) # with real time priority on cpu 2
     # check it with top -c 0.2
@@ -349,10 +357,6 @@ in {
   # cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
   powerManagement.cpuFreqGovernor = "performance";
 
-  # TODO is this needed? maybe try without this and set LimitRTPRIO on the service
-  # https://unix.stackexchange.com/questions/658363/unable-to-set-realtime-priority-on-systemd-service
-  # make pipewire realtime-capable, jack needs this (libpipewire-module-rt)
-  # TODO torgeir nødvendig?
   security.rtkit.enable = true;
 
   security.pam.loginLimits = [
