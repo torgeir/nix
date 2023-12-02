@@ -177,6 +177,7 @@ in {
       "wheel" # enable sudo
       "corectrl" # adjust gpu fans
       "audio" # realtime audio for user
+      "pipewire" # realtime audio for user
       "jackaudio"
     ];
   };
@@ -369,6 +370,10 @@ in {
   powerManagement.cpuFreqGovernor = "performance";
 
   security.rtkit.enable = true;
+  systemd.services.rtkit-daemon.serviceConfig.ExecStart = [
+    ""
+    "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=98 --max-realtime-priority=97 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
+  ];
 
   #  jackd -R -P 99 -d alsa -d hw:AudioFuse,0 -r 48000 -p 168 -n 3
   #  for p in $(ps -eLo pid,cmd | grep -i jack | grep -v grep | awk '{print $1}'); do chrt -f -p 99 $p; done
@@ -430,18 +435,23 @@ in {
       type = "-";
       value = "-11";
     }
-    # these two needed?
     {
-      domain = "@audio";
-      item = "nofile";
-      type = "soft";
-      value = "99999";
+      domain = "@pipewire";
+      item = "memlock";
+      type = "-";
+      value = "unlimited";
     }
     {
-      domain = "@audio";
-      item = "nofile";
-      type = "hard";
-      value = "99999";
+      domain = "@pipewire";
+      item = "rtprio";
+      type = "-";
+      value = "98";
+    }
+    {
+      domain = "@pipewire";
+      item = "nice";
+      type = "-";
+      value = "-11";
     }
   ];
 
