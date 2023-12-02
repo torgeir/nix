@@ -36,6 +36,34 @@ in {
   # blacklist pci sound card, use usb arturia audiofuse
   boot.blacklistedKernelModules = [ "snd_hda_intel" ];
 
+  boot.postBootCommands = ''
+    # echo 2048 > /sys/class/rtc/rtc0/max_user_freq
+    # echo 2048 > /proc/sys/dev/hpet/max-user-freq
+    # setpci -v -d *:* latency_timer=b0
+    # for $p in (lspci | grep -i thunderbolt | awk '{print $1}'); do
+    #   setpci -v -s $p latency_timer=ff
+    # done
+
+    # https://www.reddit.com/r/linuxaudio/comments/8isvxn/comment/dywjory/
+    # run xhci_hcd driver (extensible host controller interface, used for usb 3.0) # with real time priority on cpu 2
+    # check it with top -c 0.2
+    pidof_xhci=`ps -eLo pid,cmd | grep -i xhci | head -1 | awk '{print $1}'`
+    intof_xhci=`cat /proc/interrupts | grep xhci_hcd | cut -f1 -d: | sed s/\ //g`
+
+    # set realtime priority for all pids
+    chrt -f -p 99 $pidof_xhci
+
+    # pin them to a single cpu
+    cpu=2
+    taskset -cp $cpu $pidof_xhci
+    for i in $intof_xhci; do
+      echo $cpu > /proc/irq/$i/smp_affinity
+      echo $cpu > /proc/irq/$i/smp_affinity_list
+      cat /proc/irq/$i/smp_affinity
+      cat /proc/irq/$i/smp_affinity_list
+    done
+  '';
+
   # clean up every once in a while
   #   sudo nix-collect-garbage
   #   sudo nix profile wipe-history --older-than 7d --profile /nix/var/nix/profiles/system
@@ -53,7 +81,6 @@ in {
   # cat /proc/cmdline
   boot.kernelParams = [
     # realtime audio tuning
-    "threadirqs"
     "preemt=full"
     # resolution during boot
     "video=DP-1:1920x1080@60Hz"
@@ -220,7 +247,7 @@ in {
     gnumake
     coreutils
     lm_sensors
-    rtirq
+    dmenu-wayland
   ];
 
   programs.thunar.enable = true;
@@ -303,6 +330,7 @@ in {
   hardware.pulseaudio = {
     enable = true;
     package = pkgs.pulseaudioFull.override { jackaudioSupport = true; };
+    extraConfig = "unload-module module-suspend-on-idle";
   };
   services.jack = {
     jackd.enable = true;
@@ -322,40 +350,13 @@ in {
     DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
   '';
 
-  # put name at the end of the line that holds the number
-  # that increasing the fastest in RTIRQ_NAME_LIST
-  #   while true; do cat /proc/interrupts; sleep 0.2; done
-  #   rtirq status | head -n 30
-  environment.etc."rtirq.conf".source = pkgs.writeText "rtirq.conf" ''
-    # generated file, do not edit!
-    RTIRQ_NAME_LIST="xhci_hcd usb snd i8024"
-    RTIRQ_PRIO_HIGH=90
-    RTIRQ_PRIO_DECR=5
-    RTIRQ_PRIO_LOW=51
-    RTIRQ_RESET_ALL=0
-    RTIRQ_NON_THREADED="rtc snd"
-  '';
-
-  systemd.services.rtirq = {
-    description = "IRQ thread tuning for realtime kernels";
-    after = [ "multi-user.target" "sound.target" ];
-    wantedBy = [ "multi-user.target" ];
-    path = with pkgs; [ gawk gnugrep gnused procps ];
-    serviceConfig = {
-      User = "root";
-      Type = "oneshot";
-      ExecStart = "${pkgs.rtirq}/bin/rtirq start";
-      ExecStop = "${pkgs.rtirq}/bin/rtirq stop";
-      RemainAfterExit = true;
-    };
-  };
-
   # cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
   powerManagement.cpuFreqGovernor = "performance";
 
   # TODO is this needed? maybe try without this and set LimitRTPRIO on the service
   # https://unix.stackexchange.com/questions/658363/unable-to-set-realtime-priority-on-systemd-service
   # make pipewire realtime-capable, jack needs this (libpipewire-module-rt)
+  # TODO torgeir nødvendig?
   security.rtkit.enable = true;
 
   security.pam.loginLimits = [
