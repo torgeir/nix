@@ -37,18 +37,13 @@ in {
   boot.blacklistedKernelModules = [ "snd_hda_intel" ];
 
   boot.postBootCommands = ''
-    # echo 2048 > /sys/class/rtc/rtc0/max_user_freq
-    # echo 2048 > /proc/sys/dev/hpet/max-user-freq
-    # setpci -v -d *:* latency_timer=b0
-    # for $p in (lspci | grep -i thunderbolt | awk '{print $1}'); do
-    #   setpci -v -s $p latency_timer=ff
-    # done
-
+    #!/bin/bash
     # https://www.reddit.com/r/linuxaudio/comments/8isvxn/comment/dywjory/
     # run xhci_hcd driver (extensible host controller interface, used for usb 3.0) # with real time priority on cpu 2
     # check it with top -c 0.2
-    pidof_xhci=`ps -eLo pid,cmd | grep -i xhci | head -1 | awk '{print $1}'`
-    intof_xhci=`cat /proc/interrupts | grep xhci_hcd | cut -f1 -d: | sed s/\ //g`
+
+    pidof_xhci=$(ps -eLo pid,cmd | grep -i xhci | head -1 | awk '{print $1}')
+    intof_xhci=$(cat /proc/interrupts | grep xhci_hcd | cut -f1 -d: | sed s/\ //g)
 
     # set realtime priority for all pids
     chrt -f -p 99 $pidof_xhci
@@ -58,8 +53,9 @@ in {
     taskset -cp $cpu $pidof_xhci
     for i in $intof_xhci; do
       echo $cpu > /proc/irq/$i/smp_affinity
-      echo $cpu > /proc/irq/$i/smp_affinity_list
       cat /proc/irq/$i/smp_affinity
+
+      echo $cpu > /proc/irq/$i/smp_affinity_list
       cat /proc/irq/$i/smp_affinity_list
     done
   '';
