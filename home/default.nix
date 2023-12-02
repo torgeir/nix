@@ -167,6 +167,7 @@ in {
 
       ## TODO
       # xwayland disable
+      # killall Xwayland
 
       # Your preferred application launcher
       # Note: pass the final command to swaymsg so that the resulting window can be opened

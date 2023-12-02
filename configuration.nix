@@ -229,8 +229,15 @@ in {
     gnumake
     coreutils
     lm_sensors
+    # TODO moar wayland
     dmenu-wayland
+    # TODO torgeir
+    irqbalance
   ];
+
+  # TODO torgeir mer
+  # disable bluetooth
+  # disable wifi
 
   programs.thunar.enable = true;
   programs.thunar.plugins = with pkgs.xfce; [
@@ -337,6 +344,11 @@ in {
 
   security.rtkit.enable = true;
 
+  #  jackd -R -P 99 -d alsa -d hw:AudioFuse,0 -r 48000 -p 168 -n 3
+  #  for p in $(ps -eLo pid,cmd | grep -i jack | grep -v grep | awk '{print $1}'); do chrt -f -p 99 $p; done
+  # TODO torgeir
+  services.irqbalance.enable = true;
+
   systemd.services.adjust-sound-card-irqs = {
     description = "IRQ thread tuning for realtime kernels";
     after = [ "multi-user.target" "sound.target" ];
@@ -360,7 +372,7 @@ in {
         PATH=/run/current-system/sw/bin/:$PATH chrt -f -p 99 $pidof_xhci
 
         # pin them to a single cpu
-        cpu=2
+        cpu=10
         PATH=/run/current-system/sw/bin:$PATH taskset -cp $cpu $pidof_xhci
         for i in $intof_xhci; do
           echo $cpu > /proc/irq/$i/smp_affinity
