@@ -332,6 +332,7 @@ in {
   };
 
   # pw-metadata -n settings 0 clock.force-quantum 512
+  # for p in $(ps -eLo pid,cmd | grep -i pipewire | grep -v grep | awk '{print $1}'); do sudo chrt -f -p 99 $p; done
   environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
     table.insert(alsa_monitor.rules, {
       matches = {
@@ -344,8 +345,9 @@ in {
         ["suspend-node"] = false,
         ["node.pause-on-idle"] = false,
         ["api.alsa.rate"] = 48000,
-        ["api.alsa.period-size"] = 256,
         --["api.alsa.period-size"] = 168,
+        --["api.alsa.period-size"] = 256,
+        ["api.alsa.period-size"] = 512,
         ["api.alsa.period-num"] = 3,
       },
     })

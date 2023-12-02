@@ -143,10 +143,10 @@ in {
     # PIPEWIRE_QUANTUM=48/48000 reaper
     ".config/pipewire/jack.conf.d/override.conf".text = ''
       jack.properties = {
-        # node.force-quantum = 48
-        # node.force-quantum = 96
-
-        node.force-quantum = 480
+        # node.force-quantum = 144 # 0.003s
+        # node.force-quantum = 240 # 0.005s
+        # node.force-quantum = 384 # 0.008s
+        node.force-quantum = 480 # 0.01s
       }
     '';
 
