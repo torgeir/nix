@@ -485,13 +485,12 @@ in {
     ".config/corectrl/corectrl.ini".source = dotfiles
       + "/config/corectrl/corectrl.ini";
 
-    # TODO torgeir
     # https://linuxmusicians.com/viewtopic.php?t=26271
     # pw-metadata -n settings 0 clock.force-quantum 48
-    # PIPEWIRE_QUANTUM=48/48000 reaper
     ".config/pipewire/jack.conf.d/override.conf".text = ''
       jack.properties = {
-        node.force-quantum = 144
+        node.force-quantum = 384
+        #node.force-quantum = 144
         #node.force-quantum = 48
       }
     '';
