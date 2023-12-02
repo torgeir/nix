@@ -168,6 +168,7 @@ in {
       "wheel" # enable sudo
       "corectrl" # adjust gpu fans
       "audio" # realtime audio for user
+      "jackaudio"
     ];
   };
 
@@ -298,54 +299,21 @@ in {
   # low latency audio tuning
   # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
 
-  # https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Performance-tuning#rlimits
-  # https://linuxmusicians.com/viewtopic.php?t=25556
-  # https://github.com/chmaha/ArchProAudio
-  # https://nixos.wiki/wiki/PipeWire
-  #   pw-dump to check pipewire config
-  #   systemctl --user status pipewire wireplumber
-  #   systemctl --user restart pipewire wireplumber
-  services.pipewire = {
+  sound.enable = true;
+  hardware.pulseaudio = {
     enable = true;
-    audio.enable = true;
-    alsa.enable = true; # alsa support
-    jack.enable = true; # pipewire jack emulation
-    pulse.enable = true; # pipewire pulse emulation
-    wireplumber.enable = true;
-
-    # TODO torgeir
-    # https://github.com/fufexan/nix-gaming low latency audio
-    # lowLatency = {
-    #   enable = true;
-    #   # https://gist.github.com/cidkidnix/86a01ecf82f54eec39f27a9807b90a1b
-    #   quantum = 64;
-    #   rate = 48000;
-    # };
+    package = pkgs.pulseaudioFull.override { jackaudioSupport = true; };
   };
-
-  # TODO is this needed?
-  # https://github.com/hannesmann/dotfiles/blob/51a52957d49d83e5e57113a8cd838147cd79ccc2/etc/wireplumber/main.lua.d/90-realtek.lua#L27
-  # https://forum.manjaro.org/t/click-sound-before-playing-any-audio/47237/2
-  environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
-    table.insert(alsa_monitor.rules, {
-      matches = {
-        { -- Matches all sources.
-          { "node.name", "matches", "alsa_input.*" },
-        },
-        { -- Matches all sinks.
-          { "node.name", "matches", "alsa_output.*" },
-        },
-      },
-      apply_properties = {
-        ["session.suspend-timeout-seconds"] = 0,
-        ["suspend-node"] = false,
-        ["node.pause-on-idle"] = false,
-      },
-    })
-  '';
+  services.jack = {
+    jackd.enable = true;
+    jackd.package = pkgs.jack2;
+    alsa.enable = true;
+  };
 
   # ensure realtime processes don't hack the machine
   services.das_watchdog.enable = true;
+
+  services.getty.autologinUser = lib.mkForce "torgeir";
 
   # help reaper control cpu latency, when you start it from audio group user
   # control power mgmt from userspace (audio) group
