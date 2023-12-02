@@ -9,9 +9,8 @@
   # https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/editors/emacs/default.nix
   programs.emacs = {
     enable = true;
-    # TODO torgeir emacs29-pgtk
     #  https://www.reddit.com/r/emacs/comments/rj8k32/the_pgtk_pure_gtk_branch_was_merged/
-    package = pkgs.emacs29-gtk3;
+    package = pkgs.emacs29-pgtk;
     extraPackages = epkgs: [ epkgs.vterm ];
   };
 
