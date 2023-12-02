@@ -138,6 +138,18 @@ in {
 
     "bg.jpg".source = dotfiles + "/bg.jpg";
 
+    # https://linuxmusicians.com/viewtopic.php?t=26271
+    # pw-metadata -n settings 0 clock.force-quantum 48
+    # PIPEWIRE_QUANTUM=48/48000 reaper
+    ".config/pipewire/jack.conf.d/override.conf".text = ''
+      jack.properties = {
+        # node.force-quantum = 48
+        # node.force-quantum = 96
+
+        node.force-quantum = 480
+      }
+    '';
+
     # ".config/sway".source = dotfiles + "/config/sway";
     ".config/sway/config".text = ''
       # Inspiration

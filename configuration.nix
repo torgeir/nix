@@ -315,17 +315,41 @@ in {
   # low latency audio tuning
   # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
 
-  sound.enable = true;
-  hardware.pulseaudio = {
+  # https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Performance-tuning#rlimits
+  # https://linuxmusicians.com/viewtopic.php?t=25556
+  # https://github.com/chmaha/ArchProAudio
+  # https://nixos.wiki/wiki/PipeWire
+  #   pw-dump to check pipewire config
+  #   systemctl --user status pipewire wireplumber
+  #   systemctl --user restart pipewire wireplumber
+  services.pipewire = {
     enable = true;
-    package = pkgs.pulseaudioFull.override { jackaudioSupport = true; };
-    extraConfig = "unload-module module-suspend-on-idle";
+    audio.enable = true;
+    alsa.enable = true; # alsa support
+    jack.enable = true; # pipewire jack emulation
+    pulse.enable = true; # pipewire pulse emulation
+    wireplumber.enable = true;
   };
-  services.jack = {
-    jackd.enable = true;
-    jackd.package = pkgs.jack2;
-    alsa.enable = true;
-  };
+
+  # pw-metadata -n settings 0 clock.force-quantum 512
+  environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
+    table.insert(alsa_monitor.rules, {
+      matches = {
+        {
+          { "node.name", "matches", "alsa_output.*" },
+        },
+      },
+      apply_properties = {
+        ["session.suspend-timeout-seconds"] = 0,
+        ["suspend-node"] = false,
+        ["node.pause-on-idle"] = false,
+        ["api.alsa.rate"] = 48000,
+        ["api.alsa.period-size"] = 256,
+        --["api.alsa.period-size"] = 168,
+        ["api.alsa.period-num"] = 3,
+      },
+    })
+  '';
 
   # ensure realtime processes don't hack the machine
   services.das_watchdog.enable = true;
