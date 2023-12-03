@@ -28,6 +28,8 @@
     echo 2048 > /sys/class/rtc/rtc0/max_user_freq
     echo 2048 > /proc/sys/dev/hpet/max-user-freq
 
+    export PATH=/run/current-system/sw/bin/:$PATH
+
     setpci -v -d *:* latency_timer=b0
     for p in $(lspci | grep -i thunderbolt | awk '{print $1}'); do
       setpci -v -s $p latency_timer=ff
