@@ -66,6 +66,7 @@ in {
 
     # images
     imagemagick
+    gnuplot
 
     # notifications
     mako
