@@ -100,12 +100,6 @@ in {
     pavucontrol
     qpwgraph
 
-    # unused, pipewire handles this
-    # https://nixos.wiki/wiki/JACK
-    # libjack2
-    # jack2
-    qjackctl
-
     # sudo -EH rpi-imager
     rpi-imager
 
@@ -137,18 +131,6 @@ in {
     "dotfiles".source = dotfiles;
 
     "bg.jpg".source = dotfiles + "/bg.jpg";
-
-    # https://linuxmusicians.com/viewtopic.php?t=26271
-    # pw-metadata -n settings 0 clock.force-quantum 48
-    # PIPEWIRE_QUANTUM=48/48000 reaper
-    ".config/pipewire/jack.conf.d/override.conf".text = ''
-      jack.properties = {
-        # node.force-quantum = 144 # 0.003s
-        # node.force-quantum = 240 # 0.005s
-        # node.force-quantum = 384 # 0.008s
-        node.force-quantum = 480 # 0.01s
-      }
-    '';
 
     # ".config/sway".source = dotfiles + "/config/sway";
     ".config/sway/config".text = ''

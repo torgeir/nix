@@ -34,9 +34,11 @@
     done
   '';
 
-  # cat /proc/cmdline
+  # check what is set with
+  #   cat /proc/cmdline
   boot.kernelParams = [
-    # realtime audio tuning
+    # realtime audio tuning for preemt_dynamic kernels
+    # maybe not needed for rt kernels?
     "preemt=full"
   ];
 
@@ -72,6 +74,24 @@
   # this sets the realtime priority for a list of pids, it is no longer needed
   # after rtkit was adjusted to handle pipewire, also 99 is probably too high
   #   for p in $(ps -eLo pid,cmd | grep -i pipewire | grep -v grep | awk '{print $1}'); do sudo chrt -f -p 99 $p; done
+
+  # https://linuxmusicians.com/viewtopic.php?t=26271
+  # pw-metadata -n settings 0 clock.force-quantum 48
+  # PIPEWIRE_QUANTUM=48/48000 reaper
+  #
+  # flip reaper audio system over to DummyAudio and back to Jack
+  # after adjusting these. Also remember to
+  #   systemctl --user restart pipewire wireplumber
+  environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
+    jack.properties = {
+      # node.force-quantum = 48 # 0.001s, given alsa rate 48000
+      # node.force-quantum = 144 # 0.003s
+      # node.force-quantum = 240 # 0.005s
+      # node.force-quantum = 384 # 0.008s
+      node.force-quantum = 480 # 0.01s
+    }
+  '';
+
   environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
     table.insert(alsa_monitor.rules, {
       matches = {
@@ -100,12 +120,15 @@
 
         -- pipewire docs: ALSA Buffer Properties
         -- extra delay between hardware pointers and software pointers
-        ["api.alsa.headroom"] = 0,
+        --["api.alsa.headroom"] = 0,
 
         ["api.alsa.rate"] = 48000,
+
         --["api.alsa.period-size"] = 168,
         --["api.alsa.period-size"] = 256,
-        ["api.alsa.period-size"] = 512,
+        --["api.alsa.period-size"] = 512,
+        ["api.alsa.period-size"] = 1024,
+
         ["api.alsa.period-num"] = 3,
       },
     })
@@ -125,6 +148,12 @@
   # cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
   powerManagement.cpuFreqGovernor = "performance";
 
+  # Tese settings go well with reaper
+  #   Thread priority: Time Critical
+  #   Behavior: 15 - Very Aggressive
+  #   Anticipate FX processing [x]
+  #   Allow live FX processing [2 CPUs] on the 5950x
+  #
   # enable realtime kit, so that pipewire's realtime priority can be adjusted automatically
   # https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Performance-tuning#rtkit
   security.rtkit.enable = true;
