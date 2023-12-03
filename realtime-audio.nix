@@ -75,9 +75,14 @@
   # after rtkit was adjusted to handle pipewire, also 99 is probably too high
   #   for p in $(ps -eLo pid,cmd | grep -i pipewire | grep -v grep | awk '{print $1}'); do sudo chrt -f -p 99 $p; done
 
+  # jack
+  #
+  # ~direct monitoring, some pops
+  #   pw-metadata -n settings 0 clock.force-quantum 48
+  # reasonable latency, few/no pops
+  #   pw-metadata -n settings 0 clock.force-quantum 480
+  #
   # https://linuxmusicians.com/viewtopic.php?t=26271
-  # pw-metadata -n settings 0 clock.force-quantum 48
-  # PIPEWIRE_QUANTUM=48/48000 reaper
   #
   # flip reaper audio system over to DummyAudio and back to Jack
   # after adjusting these. Also remember to
