@@ -76,14 +76,32 @@
     table.insert(alsa_monitor.rules, {
       matches = {
         {
-          --{ "node.name", "matches", "alsa_output.*" },
+          -- { "node.name", "matches", "alsa_output.*" },
           { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
         },
       },
       apply_properties = {
+
+        -- keep it alive
         ["session.suspend-timeout-seconds"] = 0,
         ["suspend-node"] = false,
         ["node.pause-on-idle"] = false,
+
+        -- pipewire docs: ALSA Buffer Properties:
+        -- It removes the extra delay added of period-size/2 if the device can
+        -- support this. for batch devices it is also a good idea to lower the
+        -- period-size (and increase the IRQ frequency) to get smaller batch
+        -- updates and lower latency.
+        ["api.alsa.disable-batch"] = true,
+
+        -- pipewire docs: Change node priority:
+        -- Device priorities are usually from 0 to 2000.
+        ["priority.session"] = 3000,
+
+        -- pipewire docs: ALSA Buffer Properties
+        -- extra delay between hardware pointers and software pointers
+        ["api.alsa.headroom"] = 0,
+
         ["api.alsa.rate"] = 48000,
         --["api.alsa.period-size"] = 168,
         --["api.alsa.period-size"] = 256,
