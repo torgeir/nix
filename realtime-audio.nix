@@ -101,8 +101,12 @@
     table.insert(alsa_monitor.rules, {
       matches = {
         {
-          -- { "node.name", "matches", "alsa_output.*" },
-          { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
+          -- run pw-top to see the names
+          -- { "node.name", "matches", "alsa_output." },
+          -- { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
+          -- { "node.name", "matches", "alsa_output.usb-LINE_6_HELIX*" },
+          { "node.name", "matches", "alsa_input.*" },
+          { "node.name", "matches", "alsa_output.*" },
         },
       },
       apply_properties = {
