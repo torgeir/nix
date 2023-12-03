@@ -1,6 +1,52 @@
 { config, lib, inputs, pkgs, ... }:
 
-{
+let
+  sound-card-irq-script = pkgs.writers.writeBash "sound-card-irq-script" ''
+    # https://github.com/jhernberg/udev-rtirq/blob/1a1c49b2fc789c7f6d3fe39825c0520693ea8a41/udev-rtirq
+
+    # nix: fix missing binaries
+    export PATH=/run/current-system/sw/bin/:$PATH
+
+    priority=95
+
+    action=$1
+    dev_path=`echo $2 | cut -c1-32`
+    pci_address=`echo $dev_path | cut -c21-35`
+
+    function blacklisted () {
+      # double dashes is nix escape for $
+      for i in "''${blacklist[@]}"; do
+        if [[ $pci_address =~ $i ]]; then
+          return 0
+        fi
+      done
+      return 1
+    }
+
+    if blacklisted; then
+      logger -p user.info "[udev-rtirq] Ignoring blacklisted $pci_address"
+      exit 1
+    fi
+
+    irq=`cat /sys$dev_path/irq 2>/dev/null`
+    pid=`pgrep irq/$irq-`
+
+    if [ -z "$pid" ]; then
+      logger -p user.err "[udev-rtirq] Error: Unable to retrieve the thread-id"
+      exit 1;
+    fi
+
+    thread=`ps -eo comm | grep irq/$irq-`
+
+    if [ $action = a ]; then
+      logger -p user.info "[udev-rtirq] Setting $thread (PID:$pid) to priority $priority for $pci_address"
+      chrt -f -p $priority $pid
+    else
+      logger -p user.info "[udev-rtirq] Setting $thread (PID:$pid) to priority 50 for $pci_address"
+      chrt -f -p 50 $pid
+    fi
+  '';
+in {
   imports = [ inputs.musnix.nixosModules.musnix ];
 
   musnix.kernel.realtime = true;
@@ -162,6 +208,8 @@
   # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
   services.udev.extraRules = ''
     DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
+    ACTION=="add", SUBSYSTEM=="sound", KERNEL=="card*", RUN+="${pkgs.systemd}/bin/systemd-run --no-block ${sound-card-irq-script} a $env{DEVPATH}"
+    ACTION=="remove", SUBSYSTEM=="sound", KERNEL=="card*",RUN+="${pkgs.systemd}/bin/systemd-run --no-block ${sound-card-irq-script} r $env{DEVPATH}"
   '';
 
   # force full perf cpu mode
@@ -186,43 +234,43 @@
   #   reader.parse-on-load.enabled false
   #   media.webspeech.synth.enabled false
 
-  # realtime priority for usb sound card, and peg interrupts to one cpu
-  systemd.services.adjust-sound-card-irqs = {
-    description = "IRQ thread tuning for realtime kernels";
-    after = [ "multi-user.target" "sound.target" ];
-    wantedBy = [ "multi-user.target" ];
-    path = with pkgs; [ nix gawk gnugrep gnused procps ];
-    serviceConfig = {
-      User = "root";
-      # run it once
-      Type = "oneshot";
-      # its ok that it exits
-      RemainAfterExit = true;
-      ExecStart = pkgs.writers.writeBash "adjust-sound-card-irqs" ''
-        # https://www.reddit.com/r/linuxaudio/comments/8isvxn/comment/dywjory/
-        # run xhci_hcd driver (extensible host controller interface, used for
-        # usb 3.0) with real time priority on cpu 2
-        # check it with top -c 0.2
+  # # realtime priority for usb sound card, and peg interrupts to one cpu
+  # systemd.services.adjust-sound-card-irqs = {
+  #   description = "IRQ thread tuning for realtime kernels";
+  #   after = [ "multi-user.target" "sound.target" ];
+  #   wantedBy = [ "multi-user.target" ];
+  #   path = with pkgs; [ nix gawk gnugrep gnused procps ];
+  #   serviceConfig = {
+  #     User = "root";
+  #     # run it once
+  #     Type = "oneshot";
+  #     # its ok that it exits
+  #     RemainAfterExit = true;
+  #     ExecStart = pkgs.writers.writeBash "adjust-sound-card-irqs" ''
+  #       # https://www.reddit.com/r/linuxaudio/comments/8isvxn/comment/dywjory/
+  #       # run xhci_hcd driver (extensible host controller interface, used for
+  #       # usb 3.0) with real time priority on cpu 2
+  #       # check it with top -c 0.2
 
-        pidof_xhci=$(ps -eLo pid,cmd | grep -i xhci | head -1 | awk '{print $1}')
-        intof_xhci=$(cat /proc/interrupts | grep xhci_hcd | cut -f1 -d: | sed s/\ //g)
+  #       pidof_xhci=$(ps -eLo pid,cmd | grep -i xhci | head -1 | awk '{print $1}')
+  #       intof_xhci=$(cat /proc/interrupts | grep xhci_hcd | cut -f1 -d: | sed s/\ //g)
 
-        # set realtime priority for all pids
-        PATH=/run/current-system/sw/bin/:$PATH chrt -f -p 99 $pidof_xhci
+  #       # set realtime priority for all pids
+  #       PATH=/run/current-system/sw/bin/:$PATH chrt -f -p 99 $pidof_xhci
 
-        # peg them on a single cpu
-        cpu=10
-        PATH=/run/current-system/sw/bin:$PATH taskset -cp $cpu $pidof_xhci
-        for i in $intof_xhci; do
-          echo $cpu > /proc/irq/$i/smp_affinity
-          cat /proc/irq/$i/smp_affinity
+  #       # peg them on a single cpu
+  #       cpu=10
+  #       PATH=/run/current-system/sw/bin:$PATH taskset -cp $cpu $pidof_xhci
+  #       for i in $intof_xhci; do
+  #         echo $cpu > /proc/irq/$i/smp_affinity
+  #         cat /proc/irq/$i/smp_affinity
 
-          echo $cpu > /proc/irq/$i/smp_affinity_list
-          cat /proc/irq/$i/smp_affinity_list
-        done
-      '';
-    };
-  };
+  #         echo $cpu > /proc/irq/$i/smp_affinity_list
+  #         cat /proc/irq/$i/smp_affinity_list
+  #       done
+  #     '';
+  #   };
+  # };
 
   # allow realtime for pipewire and user audio group
   security.pam.loginLimits = [
