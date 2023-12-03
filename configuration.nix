@@ -21,7 +21,7 @@ in {
   imports = [
     ./hardware-configuration.nix
 
-    inputs.musnix.nixosModules.musnix
+    ./realtime-audio.nix
 
     inputs.nix-gaming.nixosModules.steamCompat
   ];
@@ -32,19 +32,6 @@ in {
     configurationLimit = 20;
   };
   boot.loader.efi.canTouchEfiVariables = true;
-
-  # blacklist pci sound card, use usb arturia audiofuse
-  boot.blacklistedKernelModules = [ "snd_hda_intel" ];
-
-  boot.postBootCommands = ''
-    #!/bin/bash
-    echo 2048 > /sys/class/rtc/rtc0/max_user_freq
-    echo 2048 > /proc/sys/dev/hpet/max-user-freq
-    setpci -v -d *:* latency_timer=b0
-    for p in $(lspci | grep -i thunderbolt | awk '{print $1}'); do
-      setpci -v -s $p latency_timer=ff
-    done
-  '';
 
   # clean up every once in a while
   #   sudo nix-collect-garbage
@@ -60,20 +47,11 @@ in {
   # work it needs this older libcrypt
   nixpkgs.config.permittedInsecurePackages = [ "libgcrypt-1.8.10" ];
 
-  # cat /proc/cmdline
   boot.kernelParams = [
-    # realtime audio tuning
-    "preemt=full"
     # resolution during boot
     "video=DP-1:1920x1080@60Hz"
     "video=DP-2:1920x1080@60Hz"
   ];
-
-  # realtime audio
-  boot.kernel.sysctl = { "vm.swappiness" = 10; };
-
-  musnix.kernel.realtime = true;
-  musnix.kernel.packages = pkgs.linuxPackages_6_4_rt;
 
   # https://github.com/Mic92/sops-nix/blob/master/README.md
   # a good description of how to deploy to a host
@@ -177,8 +155,7 @@ in {
       "wheel" # enable sudo
       "corectrl" # adjust gpu fans
       "audio" # realtime audio for user
-      "pipewire" # realtime audio for user
-      "jackaudio"
+      "pipewire" # realtime audio for pw
     ];
   };
 
@@ -232,13 +209,7 @@ in {
     lm_sensors
     # TODO moar wayland
     dmenu-wayland
-    # TODO torgeir
-    irqbalance
   ];
-
-  # TODO torgeir mer
-  # disable bluetooth
-  # disable wifi
 
   programs.thunar.enable = true;
   programs.thunar.plugins = with pkgs.xfce; [
@@ -310,150 +281,7 @@ in {
     '';
   };
 
-  # make helix native activation happy
-  environment.etc.machine-id.source = ./machine-id;
-
-  # low latency audio tuning
-  # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
-
-  # https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Performance-tuning#rlimits
-  # https://linuxmusicians.com/viewtopic.php?t=25556
-  # https://github.com/chmaha/ArchProAudio
-  # https://nixos.wiki/wiki/PipeWire
-  #   pw-dump to check pipewire config
-  #   systemctl --user status pipewire wireplumber
-  #   systemctl --user restart pipewire wireplumber
-  services.pipewire = {
-    enable = true;
-    audio.enable = true;
-    alsa.enable = true; # alsa support
-    jack.enable = true; # pipewire jack emulation
-    pulse.enable = true; # pipewire pulse emulation
-    wireplumber.enable = true;
-  };
-
-  # pw-metadata -n settings 0 clock.force-quantum 512
-  # for p in $(ps -eLo pid,cmd | grep -i pipewire | grep -v grep | awk '{print $1}'); do sudo chrt -f -p 99 $p; done
-  environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
-    table.insert(alsa_monitor.rules, {
-      matches = {
-        {
-          { "node.name", "matches", "alsa_output.*" },
-        },
-      },
-      apply_properties = {
-        ["session.suspend-timeout-seconds"] = 0,
-        ["suspend-node"] = false,
-        ["node.pause-on-idle"] = false,
-        ["api.alsa.rate"] = 48000,
-        --["api.alsa.period-size"] = 168,
-        --["api.alsa.period-size"] = 256,
-        ["api.alsa.period-size"] = 512,
-        ["api.alsa.period-num"] = 3,
-      },
-    })
-  '';
-
-  # ensure realtime processes don't hack the machine
-  services.das_watchdog.enable = true;
-
   services.getty.autologinUser = lib.mkForce "torgeir";
-
-  # help reaper control cpu latency, when you start it from audio group user
-  # control power mgmt from userspace (audio) group
-  # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
-  services.udev.extraRules = ''
-    DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
-  '';
-
-  # cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-  powerManagement.cpuFreqGovernor = "performance";
-
-  security.rtkit.enable = true;
-  systemd.services.rtkit-daemon.serviceConfig.ExecStart = [
-    ""
-    "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=98 --max-realtime-priority=97 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
-  ];
-
-  #  jackd -R -P 99 -d alsa -d hw:AudioFuse,0 -r 48000 -p 168 -n 3
-  #  for p in $(ps -eLo pid,cmd | grep -i jack | grep -v grep | awk '{print $1}'); do chrt -f -p 99 $p; done
-  # TODO torgeir
-  services.irqbalance.enable = true;
-
-  systemd.services.adjust-sound-card-irqs = {
-    description = "IRQ thread tuning for realtime kernels";
-    after = [ "multi-user.target" "sound.target" ];
-    wantedBy = [ "multi-user.target" ];
-    path = with pkgs; [ nix gawk gnugrep gnused procps ];
-    serviceConfig = {
-      User = "root";
-      # run it once
-      Type = "oneshot";
-      # its ok that it exits
-      RemainAfterExit = true;
-      ExecStart = pkgs.writers.writeBash "adjust-sound-card-irqs" ''
-        # https://www.reddit.com/r/linuxaudio/comments/8isvxn/comment/dywjory/
-        # run xhci_hcd driver (extensible host controller interface, used for usb 3.0) # with real time priority on cpu 2
-        # check it with top -c 0.2
-
-        pidof_xhci=$(ps -eLo pid,cmd | grep -i xhci | head -1 | awk '{print $1}')
-        intof_xhci=$(cat /proc/interrupts | grep xhci_hcd | cut -f1 -d: | sed s/\ //g)
-
-        # set realtime priority for all pids
-        PATH=/run/current-system/sw/bin/:$PATH chrt -f -p 99 $pidof_xhci
-
-        # pin them to a single cpu
-        cpu=10
-        PATH=/run/current-system/sw/bin:$PATH taskset -cp $cpu $pidof_xhci
-        for i in $intof_xhci; do
-          echo $cpu > /proc/irq/$i/smp_affinity
-          cat /proc/irq/$i/smp_affinity
-
-          echo $cpu > /proc/irq/$i/smp_affinity_list
-          cat /proc/irq/$i/smp_affinity_list
-        done
-      '';
-    };
-  };
-
-  security.pam.loginLimits = [
-    {
-      domain = "@audio";
-      item = "memlock";
-      type = "-";
-      value = "unlimited";
-    }
-    {
-      domain = "@audio";
-      item = "rtprio";
-      type = "-";
-      value = "98";
-    }
-    {
-      domain = "@audio";
-      item = "nice";
-      type = "-";
-      value = "-11";
-    }
-    {
-      domain = "@pipewire";
-      item = "memlock";
-      type = "-";
-      value = "unlimited";
-    }
-    {
-      domain = "@pipewire";
-      item = "rtprio";
-      type = "-";
-      value = "98";
-    }
-    {
-      domain = "@pipewire";
-      item = "nice";
-      type = "-";
-      value = "-11";
-    }
-  ];
 
   # thunderbolt
   # owc 11-port dock
