@@ -127,6 +127,15 @@
         -- extra delay between hardware pointers and software pointers
         --["api.alsa.headroom"] = 0,
 
+        -- ???
+        -- Interface: Arturia Audiofuse
+        -- Reaper using alsa only can do this, without any pops;
+        --   Rate 48000
+        --   Size 168
+        --   Periods 3
+        -- I have no idea why pipewire cant, with the same alsa config
+        -- ???
+
         ["api.alsa.rate"] = 48000,
 
         --["api.alsa.period-size"] = 168,
