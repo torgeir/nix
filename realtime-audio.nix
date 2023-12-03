@@ -7,7 +7,7 @@ let
     # nix: fix missing binaries
     export PATH=/run/current-system/sw/bin/:$PATH
 
-    priority=98
+    priority=95
 
     action=$1
     dev_path=`echo $2 | cut -c1-32`
@@ -38,6 +38,15 @@ let
       exit 1;
     fi
 
+    # pin irq to single cpu
+    cpu=7
+    taskset -cp $cpu $pid
+    echo $cpu > /proc/irq/$irq/smp_affinity
+    cat /proc/irq/$irq/smp_affinity
+    echo $cpu > /proc/irq/$irq/smp_affinity_list
+    cat /proc/irq/$irq/smp_affinity_list
+
+    # get the full 
     thread=`ps -eo comm | grep irq/$irq-`
 
     if [ $action = a ]; then
@@ -47,6 +56,19 @@ let
       logger -p user.info "[udev-rtirq] Setting $thread (PID:$pid) to priority 50 for $pci_address"
       chrt -f -p 50 $pid
     fi
+
+    # special handling of irq/85-xhci_hcd
+    # it is the one with the fastest increasing number when
+    #   cat /proc/interrupts
+    irq=85
+    pid=$(pgrep irq/85-xhci_hcd)
+    chrt -f -p 99 $pid
+    cpu=9
+    taskset -cp $cpu $pid
+    echo $cpu > /proc/irq/$irq/smp_affinity
+    cat /proc/irq/$irq/smp_affinity
+    echo $cpu > /proc/irq/$irq/smp_affinity_list
+    cat /proc/irq/$irq/smp_affinity_list
   '';
 in {
   imports = [ inputs.musnix.nixosModules.musnix ];
@@ -207,14 +229,20 @@ in {
         -- I have no idea why pipewire cant, with the same alsa config
         -- ???
 
+	-- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
+
         ["api.alsa.rate"] = 48000,
 
         --["api.alsa.period-size"] = 128,
-        ["api.alsa.period-size"] = 168,
 
+        --["api.alsa.period-size"] = 144,
+
+        --["api.alsa.period-size"] = 168,
         --["api.alsa.period-size"] = 256,
+        --["api.alsa.period-size"] = 160,
+        ["api.alsa.period-size"] = 128,
 
-        --["api.alsa.period-num"] = 3,
+        ["api.alsa.period-num"] = 3,
         --["api.alsa.period-num"] = 2,
       },
     })
