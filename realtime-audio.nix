@@ -7,11 +7,13 @@ let
     # nix: fix missing binaries
     export PATH=/run/current-system/sw/bin/:$PATH
 
-    priority=95
+    priority=98
 
     action=$1
     dev_path=`echo $2 | cut -c1-32`
     pci_address=`echo $dev_path | cut -c21-35`
+
+    #blacklist=("00:03.0" "0000:00:1d.0")
 
     function blacklisted () {
       # double dashes is nix escape for $
@@ -141,7 +143,7 @@ in {
       # node.force-quantum = 144 # 0.003s
       # node.force-quantum = 240 # 0.005s
       # node.force-quantum = 384 # 0.008s
-      node.force-quantum = 480 # 0.01s
+      #node.force-quantum = 480 # 0.01s
     }
   '';
 
@@ -150,11 +152,28 @@ in {
       matches = {
         {
           -- run pw-top to see the names
-          -- { "node.name", "matches", "alsa_output." },
-          -- { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
-          -- { "node.name", "matches", "alsa_output.usb-LINE_6_HELIX*" },
-          { "node.name", "matches", "alsa_input.*" },
-          { "node.name", "matches", "alsa_output.*" },
+          { "node.name", "matches", "alsa_input.usb-LINE_6_HELIX*" },
+          { "node.name", "matches", "alsa_output.usb-LINE_6_HELIX*" },
+        },
+      },
+      apply_properties = {
+        -- keep it alive
+        ["session.suspend-timeout-seconds"] = 0,
+        ["suspend-node"] = false,
+        ["node.pause-on-idle"] = false,
+        ["api.alsa.disable-batch"] = true,
+        ["priority.session"] = 3000,
+        ["api.alsa.rate"] = 48000,
+        ["api.alsa.period-size"] = 128,
+      }
+    })
+
+    table.insert(alsa_monitor.rules, {
+      matches = {
+        {
+          -- run pw-top to see the names
+          { "node.name", "matches", "alsa_input.usb-ARTURIA_AudioFuse*" },
+          { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
         },
       },
       apply_properties = {
@@ -190,12 +209,13 @@ in {
 
         ["api.alsa.rate"] = 48000,
 
-        --["api.alsa.period-size"] = 168,
-        --["api.alsa.period-size"] = 256,
-        --["api.alsa.period-size"] = 512,
-        ["api.alsa.period-size"] = 1024,
+        --["api.alsa.period-size"] = 128,
+        ["api.alsa.period-size"] = 168,
 
-        ["api.alsa.period-num"] = 3,
+        --["api.alsa.period-size"] = 256,
+
+        --["api.alsa.period-num"] = 3,
+        --["api.alsa.period-num"] = 2,
       },
     })
   '';
@@ -217,17 +237,17 @@ in {
   powerManagement.cpuFreqGovernor = "performance";
 
   # Tese settings go well with reaper
-  #   Thread priority: Time Critical
-  #   Behavior: 15 - Very Aggressive
+  #   Thread priority: Highest (recommended)
+  #   Behavior: 8 - Aggressive
   #   Anticipate FX processing [x]
-  #   Allow live FX processing [2 CPUs] on the 5950x
+  #   Allow live FX processing off (5950x)
   #
   # enable realtime kit, so that pipewire's realtime priority can be adjusted automatically
   # https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Performance-tuning#rtkit
   security.rtkit.enable = true;
   systemd.services.rtkit-daemon.serviceConfig.ExecStart = [
     ""
-    "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=89 --max-realtime-priority=88 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
+    "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=99 --max-realtime-priority=98 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
   ];
 
   # firefox about:config, disable cpu heavy tasks
