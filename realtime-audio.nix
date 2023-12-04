@@ -1,80 +1,14 @@
 { config, lib, inputs, pkgs, ... }:
 
-let
-  sound-card-irq-script = pkgs.writers.writeBash "sound-card-irq-script" ''
-    # https://github.com/jhernberg/udev-rtirq/blob/1a1c49b2fc789c7f6d3fe39825c0520693ea8a41/udev-rtirq
-
-    # nix: fix missing binaries
-    export PATH=/run/current-system/sw/bin/:$PATH
-
-    priority=95
-
-    action=$1
-    dev_path=`echo $2 | cut -c1-32`
-    pci_address=`echo $dev_path | cut -c21-35`
-
-    #blacklist=("00:03.0" "0000:00:1d.0")
-
-    function blacklisted () {
-      # double dashes is nix escape for $
-      for i in "''${blacklist[@]}"; do
-        if [[ $pci_address =~ $i ]]; then
-          return 0
-        fi
-      done
-      return 1
-    }
-
-    if blacklisted; then
-      logger -p user.info "[udev-rtirq] Ignoring blacklisted $pci_address"
-      exit 1
-    fi
-
-    irq=`cat /sys$dev_path/irq 2>/dev/null`
-    pid=`pgrep irq/$irq-`
-
-    if [ -z "$pid" ]; then
-      logger -p user.err "[udev-rtirq] Error: Unable to retrieve the thread-id"
-      exit 1;
-    fi
-
-    # pin irq to single cpu
-    cpu=7
-    taskset -cp $cpu $pid
-    echo $cpu > /proc/irq/$irq/smp_affinity
-    cat /proc/irq/$irq/smp_affinity
-    echo $cpu > /proc/irq/$irq/smp_affinity_list
-    cat /proc/irq/$irq/smp_affinity_list
-
-    # get the full 
-    thread=`ps -eo comm | grep irq/$irq-`
-
-    if [ $action = a ]; then
-      logger -p user.info "[udev-rtirq] Setting $thread (PID:$pid) to priority $priority for $pci_address"
-      chrt -f -p $priority $pid
-    else
-      logger -p user.info "[udev-rtirq] Setting $thread (PID:$pid) to priority 50 for $pci_address"
-      chrt -f -p 50 $pid
-    fi
-
-    # special handling of irq/85-xhci_hcd
-    # it is the one with the fastest increasing number when
-    #   cat /proc/interrupts
-    irq=85
-    pid=$(pgrep irq/85-xhci_hcd)
-    chrt -f -p 99 $pid
-    cpu=9
-    taskset -cp $cpu $pid
-    echo $cpu > /proc/irq/$irq/smp_affinity
-    cat /proc/irq/$irq/smp_affinity
-    echo $cpu > /proc/irq/$irq/smp_affinity_list
-    cat /proc/irq/$irq/smp_affinity_list
-  '';
-in {
+{
   imports = [ inputs.musnix.nixosModules.musnix ];
 
-  musnix.kernel.realtime = true;
-  musnix.kernel.packages = pkgs.linuxPackages_6_4_rt;
+  # TODO torgeir
+  # musnix.kernel.realtime = true;
+  # musnix.kernel.packages = pkgs.linuxPackages_6_4_rt;
+
+  musnix.rtirq.enable = true;
+  musnix.rtirq.nameList = "85-xhci_hcd";
 
   # TODO does this work?
   # make helix native activation happy
@@ -92,24 +26,47 @@ in {
 
   # minimize latency
   # increase frequencies for how often userspace applications can read from timekeeping devices
-  # also lower pci latency for thunderbolt devices
+  # also prioritize the pid and interrupts of the sound card
   boot.postBootCommands = ''
     #!/bin/bash
     echo 2048 > /sys/class/rtc/rtc0/max_user_freq
     echo 2048 > /proc/sys/dev/hpet/max-user-freq
 
+    # fix nix paths
     export PATH=/run/current-system/sw/bin/:$PATH
 
-    setpci -v -d *:* latency_timer=b0
-    for p in $(lspci | grep -i thunderbolt | awk '{print $1}'); do
-      setpci -v -s $p latency_timer=ff
-    done
+    #
+    # poor mans rtirqs
+    # the number the fastest increasing counter when running
+    #   while true; do cat /proc/interrupts; sleep 0.2; done
+    #
+    cpu=7
+    priority=89 # ends up as -90
+
+    irq=85
+    pid=$(pgrep irq/$irq-)
+    thread=$(ps -eo comm | grep irq/$irq-)
+
+    # increase the pids realtime priority
+    logger -p user.info "[realtime audio]: setting priority to $priority for $pid, thread $thread."
+    chrt -f -p $priority $pid
+
+    # pin to single cpu
+    logger -p user.info "[realtime audio]: pinning $pid on thread $thread to cpu $cpu."
+    taskset -cp $cpu $pid
+
+    echo $cpu > /proc/irq/$irq/smp_affinity
+    logger -p user.info "[realtime audio] smp_affinity for irq $irq is now $(cat /proc/irq/$irq/smp_affinity)"
+
+    echo $cpu > /proc/irq/$irq/smp_affinity_list
+    logger -p user.info "[realtime audio] smp_affinity_list for irq $irq is now $(cat /proc/irq/$irq/smp_affinity_list)"
   '';
 
   # check what is set with
   #   cat /proc/cmdline
   boot.kernelParams = [
     # realtime audio tuning for preemt_dynamic kernels
+    "threadirqs"
     # maybe not needed for rt kernels?
     "preemt=full"
   ];
@@ -135,17 +92,13 @@ in {
     pulse.enable = true; # pipewire pulse emulation
 
     # if you launch jack manually (non pipewire)
-    #   jackd -R -P 99 -d alsa -d hw:AudioFuse,0 -r 48000 -p 168 -n 3
-    #   for p in $(ps -eLo pid,cmd | grep -i jack | grep -v grep | awk '{print $1}'); do chrt -f -p 99 $p; done
+    #   jackd -R -P 88 -d alsa -d hw:AudioFuse,0 -r 48000 -p 168 -n 3
+    #   for p in $(ps -eLo pid,cmd | grep -i jack | grep -v grep | awk '{print $1}'); do chrt -f -p 88 $p; done
     jack.enable = true; # pipewire jack emulation
   };
 
   # adjust pipewire settings at runtime
   #   pw-metadata -n settings 0 clock.force-quantum 512
-  #
-  # this sets the realtime priority for a list of pids, it is no longer needed
-  # after rtkit was adjusted to handle pipewire, also 99 is probably too high
-  #   for p in $(ps -eLo pid,cmd | grep -i pipewire | grep -v grep | awk '{print $1}'); do sudo chrt -f -p 99 $p; done
 
   # jack
   #
@@ -159,105 +112,101 @@ in {
   # flip reaper audio system over to DummyAudio and back to Jack
   # after adjusting these. Also remember to
   #   systemctl --user restart pipewire wireplumber
-  environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
-    jack.properties = {
-      # node.force-quantum = 48 # 0.001s, given alsa rate 48000
-      # node.force-quantum = 144 # 0.003s
-      # node.force-quantum = 240 # 0.005s
-      # node.force-quantum = 384 # 0.008s
-      #node.force-quantum = 480 # 0.01s
-    }
-  '';
+  # TODO torgeir
+  #environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
+  #  jack.properties = {
+  #    # node.force-quantum = 48 # 0.001s, given alsa rate 48000
+  #    # node.force-quantum = 144 # 0.003s
+  #    # node.force-quantum = 240 # 0.005s
+  #    # node.force-quantum = 384 # 0.008s
+  #    # node.force-quantum = 480 # 0.01s
+  #  }
+  #'';
 
   environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
-    table.insert(alsa_monitor.rules, {
-      matches = {
-        {
-          -- run pw-top to see the names
-          { "node.name", "matches", "alsa_input.usb-LINE_6_HELIX*" },
-          { "node.name", "matches", "alsa_output.usb-LINE_6_HELIX*" },
-        },
-      },
-      apply_properties = {
-        -- keep it alive
-        ["session.suspend-timeout-seconds"] = 0,
-        ["suspend-node"] = false,
-        ["node.pause-on-idle"] = false,
-        ["api.alsa.disable-batch"] = true,
-        ["priority.session"] = 3000,
-        ["api.alsa.rate"] = 48000,
-        ["api.alsa.period-size"] = 128,
-      }
-    })
+        table.insert(alsa_monitor.rules, {
+          matches = {
+            {
+              -- run pw-top to see the names
+              { "node.name", "matches", "alsa_input.usb-LINE_6_HELIX*" },
+              { "node.name", "matches", "alsa_output.usb-LINE_6_HELIX*" },
+            },
+          },
+          apply_properties = {
+            -- keep it alive
+            ["session.suspend-timeout-seconds"] = 0,
+            ["suspend-node"] = false,
+            ["node.pause-on-idle"] = false,
+            ["api.alsa.disable-batch"] = true,
+            ["priority.session"] = 3000,
+            ["api.alsa.rate"] = 48000,
+            ["api.alsa.period-size"] = 128,
+          }
+        })
 
-    table.insert(alsa_monitor.rules, {
-      matches = {
-        {
-          -- run pw-top to see the names
-          { "node.name", "matches", "alsa_input.usb-ARTURIA_AudioFuse*" },
-          { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
-        },
-      },
-      apply_properties = {
+        table.insert(alsa_monitor.rules, {
+          matches = {
+            {
+              -- run pw-top to see the names
+              { "node.name", "matches", "alsa_input.usb-ARTURIA_AudioFuse*" },
+              { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
+            },
+          },
+          apply_properties = {
 
-        -- keep it alive
-        ["session.suspend-timeout-seconds"] = 0,
-        ["suspend-node"] = false,
-        ["node.pause-on-idle"] = false,
+            -- keep it alive
+            ["session.suspend-timeout-seconds"] = 0,
+            ["suspend-node"] = false,
+            ["node.pause-on-idle"] = false,
 
-        -- pipewire docs: ALSA Buffer Properties:
-        -- It removes the extra delay added of period-size/2 if the device can
-        -- support this. for batch devices it is also a good idea to lower the
-        -- period-size (and increase the IRQ frequency) to get smaller batch
-        -- updates and lower latency.
-        ["api.alsa.disable-batch"] = true,
+            -- pipewire docs: ALSA Buffer Properties:
+            -- It removes the extra delay added of period-size/2 if the device can
+            -- support this. for batch devices it is also a good idea to lower the
+            -- period-size (and increase the IRQ frequency) to get smaller batch
+            -- updates and lower latency.
+            ["api.alsa.disable-batch"] = true,
 
-        -- pipewire docs: Change node priority:
-        -- Device priorities are usually from 0 to 2000.
-        ["priority.session"] = 3000,
+            -- pipewire docs: Change node priority:
+            -- Device priorities are usually from 0 to 2000.
+            ["priority.session"] = 3000,
 
-        -- pipewire docs: ALSA Buffer Properties
-        -- extra delay between hardware pointers and software pointers
-        --["api.alsa.headroom"] = 0,
+            -- pipewire docs: ALSA Buffer Properties
+            -- extra delay between hardware pointers and software pointers
+            --["api.alsa.headroom"] = 0,
 
-        -- ???
-        -- Interface: Arturia Audiofuse
-        -- Reaper using alsa only can do this, without any pops;
-        --   Rate 48000
-        --   Size 168
-        --   Periods 3
-        -- I have no idea why pipewire cant, with the same alsa config
-        -- ???
+            -- ???
+            -- Interface: Arturia Audiofuse
+            -- Reaper using alsa only can do this, without any pops;
+            --   Rate 48000
+            --   Size 168
+            --   Periods 3
+            -- I have no idea why pipewire cant, with the same alsa config
+            -- ???
 
-	-- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
+    	-- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
 
-        ["api.alsa.rate"] = 48000,
+            ["api.alsa.rate"] = 48000,
 
-        --["api.alsa.period-size"] = 128,
+            --["api.alsa.period-size"] = 128,
 
-        --["api.alsa.period-size"] = 144,
+            --["api.alsa.period-size"] = 144,
 
-        --["api.alsa.period-size"] = 168,
-        --["api.alsa.period-size"] = 256,
-        --["api.alsa.period-size"] = 160,
-        ["api.alsa.period-size"] = 128,
+            ["api.alsa.period-size"] = 168,
+            --["api.alsa.period-size"] = 256,
+            --["api.alsa.period-size"] = 160,
+            --["api.alsa.period-size"] = 128,
 
-        ["api.alsa.period-num"] = 3,
-        --["api.alsa.period-num"] = 2,
-      },
-    })
+            ["api.alsa.period-num"] = 3,
+            --["api.alsa.period-num"] = 2,
+          },
+        })
   '';
-
-  # ensure realtime processes don't hang the machine
-  services.das_watchdog.enable = true;
 
   # help reaper control cpu latency, when you start it from audio group user
   # control power mgmt from userspace (audio) group
   # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
   services.udev.extraRules = ''
     DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
-    ACTION=="add", SUBSYSTEM=="sound", KERNEL=="card*", RUN+="${pkgs.systemd}/bin/systemd-run --no-block ${sound-card-irq-script} a $env{DEVPATH}"
-    ACTION=="remove", SUBSYSTEM=="sound", KERNEL=="card*",RUN+="${pkgs.systemd}/bin/systemd-run --no-block ${sound-card-irq-script} r $env{DEVPATH}"
   '';
 
   # force full perf cpu mode
@@ -275,50 +224,12 @@ in {
   security.rtkit.enable = true;
   systemd.services.rtkit-daemon.serviceConfig.ExecStart = [
     ""
-    "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=99 --max-realtime-priority=98 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
+    "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=89 --max-realtime-priority=88 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
   ];
 
   # firefox about:config, disable cpu heavy tasks
   #   reader.parse-on-load.enabled false
   #   media.webspeech.synth.enabled false
-
-  # # realtime priority for usb sound card, and peg interrupts to one cpu
-  # systemd.services.adjust-sound-card-irqs = {
-  #   description = "IRQ thread tuning for realtime kernels";
-  #   after = [ "multi-user.target" "sound.target" ];
-  #   wantedBy = [ "multi-user.target" ];
-  #   path = with pkgs; [ nix gawk gnugrep gnused procps ];
-  #   serviceConfig = {
-  #     User = "root";
-  #     # run it once
-  #     Type = "oneshot";
-  #     # its ok that it exits
-  #     RemainAfterExit = true;
-  #     ExecStart = pkgs.writers.writeBash "adjust-sound-card-irqs" ''
-  #       # https://www.reddit.com/r/linuxaudio/comments/8isvxn/comment/dywjory/
-  #       # run xhci_hcd driver (extensible host controller interface, used for
-  #       # usb 3.0) with real time priority on cpu 2
-  #       # check it with top -c 0.2
-
-  #       pidof_xhci=$(ps -eLo pid,cmd | grep -i xhci | head -1 | awk '{print $1}')
-  #       intof_xhci=$(cat /proc/interrupts | grep xhci_hcd | cut -f1 -d: | sed s/\ //g)
-
-  #       # set realtime priority for all pids
-  #       PATH=/run/current-system/sw/bin/:$PATH chrt -f -p 99 $pidof_xhci
-
-  #       # peg them on a single cpu
-  #       cpu=10
-  #       PATH=/run/current-system/sw/bin:$PATH taskset -cp $cpu $pidof_xhci
-  #       for i in $intof_xhci; do
-  #         echo $cpu > /proc/irq/$i/smp_affinity
-  #         cat /proc/irq/$i/smp_affinity
-
-  #         echo $cpu > /proc/irq/$i/smp_affinity_list
-  #         cat /proc/irq/$i/smp_affinity_list
-  #       done
-  #     '';
-  #   };
-  # };
 
   # allow realtime for pipewire and user audio group
   security.pam.loginLimits = [
