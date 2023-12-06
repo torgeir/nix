@@ -4,11 +4,8 @@
   imports = [ inputs.musnix.nixosModules.musnix ];
 
   # TODO torgeir
-  # musnix.kernel.realtime = true;
-  # musnix.kernel.packages = pkgs.linuxPackages_6_4_rt;
-
-  musnix.rtirq.enable = true;
-  musnix.rtirq.nameList = "85-xhci_hcd";
+  musnix.kernel.realtime = true;
+  musnix.kernel.packages = pkgs.linuxPackages_6_4_rt;
 
   # TODO does this work?
   # make helix native activation happy
@@ -22,6 +19,9 @@
     # blacklist bluetooth
     "bluetooth"
     "btusb"
+
+    # blacklist wifi
+    "cfg80211"
   ];
 
   # minimize latency
@@ -32,6 +32,9 @@
     echo 2048 > /sys/class/rtc/rtc0/max_user_freq
     echo 2048 > /proc/sys/dev/hpet/max-user-freq
 
+    # let realtime processes dominate cpu indefinitely
+    echo -1 > /proc/sys/kernel/sched_rt_runtime_us
+
     # fix nix paths
     export PATH=/run/current-system/sw/bin/:$PATH
 
@@ -40,8 +43,12 @@
     # the number the fastest increasing counter when running
     #   while true; do cat /proc/interrupts; sleep 0.2; done
     #
-    cpu=7
-    priority=89 # ends up as -90
+
+    cpu=18
+    # ends up as -95
+    # needs to be higher than reaper
+    # reaper+yabridge-host needs to be higher than pipewire+wireplumber
+    priority=94
 
     irq=85
     pid=$(pgrep irq/$irq-)
@@ -90,18 +97,12 @@
     wireplumber.enable = true;
     alsa.enable = true; # alsa support
     pulse.enable = true; # pipewire pulse emulation
-
-    # if you launch jack manually (non pipewire)
-    #   jackd -R -P 88 -d alsa -d hw:AudioFuse,0 -r 48000 -p 168 -n 3
-    #   for p in $(ps -eLo pid,cmd | grep -i jack | grep -v grep | awk '{print $1}'); do chrt -f -p 88 $p; done
     jack.enable = true; # pipewire jack emulation
   };
 
-  # adjust pipewire settings at runtime
-  #   pw-metadata -n settings 0 clock.force-quantum 512
-
   # jack
   #
+  # adjust pipewire settings at runtime
   # ~direct monitoring, some pops
   #   pw-metadata -n settings 0 clock.force-quantum 48
   # reasonable latency, few/no pops
@@ -114,6 +115,7 @@
   #   systemctl --user restart pipewire wireplumber
   # TODO torgeir
   #environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
+
   #  jack.properties = {
   #    # node.force-quantum = 48 # 0.001s, given alsa rate 48000
   #    # node.force-quantum = 144 # 0.003s
@@ -124,82 +126,80 @@
   #'';
 
   environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
-        table.insert(alsa_monitor.rules, {
-          matches = {
-            {
-              -- run pw-top to see the names
-              { "node.name", "matches", "alsa_input.usb-LINE_6_HELIX*" },
-              { "node.name", "matches", "alsa_output.usb-LINE_6_HELIX*" },
-            },
-          },
-          apply_properties = {
-            -- keep it alive
-            ["session.suspend-timeout-seconds"] = 0,
-            ["suspend-node"] = false,
-            ["node.pause-on-idle"] = false,
-            ["api.alsa.disable-batch"] = true,
-            ["priority.session"] = 3000,
-            ["api.alsa.rate"] = 48000,
-            ["api.alsa.period-size"] = 128,
-          }
-        })
+    table.insert(alsa_monitor.rules, {
+      matches = {
+        {
+          -- run pw-top to see the names
+          { "node.name", "matches", "alsa_input.usb-LINE_6_HELIX*" },
+          { "node.name", "matches", "alsa_output.usb-LINE_6_HELIX*" },
+        },
+      },
+      apply_properties = {
+        -- keep it alive
+        ["session.suspend-timeout-seconds"] = 0,
+        ["suspend-node"] = false,
+        ["node.pause-on-idle"] = false,
+        ["api.alsa.disable-batch"] = false,
+        ["priority.session"] = 3000,
+        ["api.alsa.rate"] = 48000,
+        ["api.alsa.period-size"] = 128,
+      }
+    })
 
-        table.insert(alsa_monitor.rules, {
-          matches = {
-            {
-              -- run pw-top to see the names
-              { "node.name", "matches", "alsa_input.usb-ARTURIA_AudioFuse*" },
-              { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
-            },
-          },
-          apply_properties = {
+    table.insert(alsa_monitor.rules, {
+      matches = {
+        {
+          -- run pw-top to see the names
+          { "node.name", "matches", "alsa_input.usb-ARTURIA_AudioFuse*" },
+          { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
+        },
+      },
+      apply_properties = {
 
-            -- keep it alive
-            ["session.suspend-timeout-seconds"] = 0,
-            ["suspend-node"] = false,
-            ["node.pause-on-idle"] = false,
+        -- keep it alive
+        ["session.suspend-timeout-seconds"] = 0,
+        ["suspend-node"] = false,
+        ["node.pause-on-idle"] = false,
 
-            -- pipewire docs: ALSA Buffer Properties:
-            -- It removes the extra delay added of period-size/2 if the device can
-            -- support this. for batch devices it is also a good idea to lower the
-            -- period-size (and increase the IRQ frequency) to get smaller batch
-            -- updates and lower latency.
-            ["api.alsa.disable-batch"] = true,
+        -- pipewire docs: ALSA Buffer Properties:
+        -- It removes the extra delay added of period-size/2 if the device can
+        -- support this. for batch devices it is also a good idea to lower the
+        -- period-size (and increase the IRQ frequency) to get smaller batch
+        -- updates and lower latency.
+        ["api.alsa.disable-batch"] = false,
 
-            -- pipewire docs: Change node priority:
-            -- Device priorities are usually from 0 to 2000.
-            ["priority.session"] = 3000,
+        -- pipewire docs: Change node priority:
+        -- Device priorities are usually from 0 to 2000.
+        ["priority.session"] = 3000,
 
-            -- pipewire docs: ALSA Buffer Properties
-            -- extra delay between hardware pointers and software pointers
-            --["api.alsa.headroom"] = 0,
+        -- pipewire docs: ALSA Buffer Properties
+        -- extra delay between hardware pointers and software pointers
+        ["api.alsa.headroom"] = 0,
 
-            -- ???
-            -- Interface: Arturia Audiofuse
-            -- Reaper using alsa only can do this, without any pops;
-            --   Rate 48000
-            --   Size 168
-            --   Periods 3
-            -- I have no idea why pipewire cant, with the same alsa config
-            -- ???
+        -- ???
+        -- Interface: Arturia Audiofuse
+        -- Reaper using alsa only can do this, without any pops;
+        --   Rate 48000
+        --   Size 168
+        --   Periods 3
+        -- I have no idea why pipewire cant, with the same alsa config
+        -- ???
 
-    	-- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
+        -- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
+        ["api.alsa.rate"] = 48000,
 
-            ["api.alsa.rate"] = 48000,
+        ["api.alsa.period-num"] = 3,
+        --["api.alsa.period-num"] = 2,
 
-            --["api.alsa.period-size"] = 128,
+        ["api.alsa.period-size"] = 168, -- and run reaper with PIPEWIRE_LATENCY=384/48000 reaper, this gives 8ms latency
 
-            --["api.alsa.period-size"] = 144,
-
-            ["api.alsa.period-size"] = 168,
-            --["api.alsa.period-size"] = 256,
-            --["api.alsa.period-size"] = 160,
-            --["api.alsa.period-size"] = 128,
-
-            ["api.alsa.period-num"] = 3,
-            --["api.alsa.period-num"] = 2,
-          },
-        })
+        -- experiments
+        --["api.alsa.period-size"] = 128,
+        --["api.alsa.period-size"] = 144,
+        --["api.alsa.period-size"] = 160,
+        --["api.alsa.period-size"] = 256,
+      },
+    })
   '';
 
   # help reaper control cpu latency, when you start it from audio group user
@@ -213,11 +213,21 @@
   # cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
   powerManagement.cpuFreqGovernor = "performance";
 
-  # Tese settings go well with reaper
+  # These settings go well with reaper
   #   Thread priority: Highest (recommended)
   #   Behavior: 8 - Aggressive
   #   Anticipate FX processing [x]
   #   Allow live FX processing off (5950x)
+  #
+  # Thread priorities needs to be
+  #   1. xhci_hcd (e.g. 95)
+  #   2. reaper + yabridge (e.g. 92)
+  #   3. pipewire + wireplumber (e.g. 89)
+  #
+  # bump their priority
+  #   for p in $(ps -eo pid,comm | grep -E '(yabridge|reaper)' | awk '{print $1}'); do sudo chrt -f -p 91 $p; done
+  # bring them to the same cpu
+  #   for p in $(ps -eo pid,comm | grep -E '(yabridge|reaper)' | awk '{print $1}'); do sudo taskset -cp 3 $p; done
   #
   # enable realtime kit, so that pipewire's realtime priority can be adjusted automatically
   # https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Performance-tuning#rtkit

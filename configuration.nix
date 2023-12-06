@@ -51,6 +51,16 @@ in {
     # resolution during boot
     "video=DP-1:1920x1080@60Hz"
     "video=DP-2:1920x1080@60Hz"
+
+    # for rt kernel
+    # https://ubuntu.com/blog/real-time-kernel-tuning
+    #"rcu_nocb_poll"
+    #"rcu_nocbs=4-15"
+    #"nohz=on"
+    #"nohz_full=4-15"
+    #"kthread_cpus=0,1,2,3"
+    #"irqaffinity=0,1,2,3"
+    #"isolcpus=managed_irq,domain,4-15"
   ];
 
   # https://github.com/Mic92/sops-nix/blob/master/README.md
