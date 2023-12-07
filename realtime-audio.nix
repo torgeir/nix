@@ -3,9 +3,9 @@
 {
   imports = [ inputs.musnix.nixosModules.musnix ];
 
-  # TODO torgeir
-  musnix.kernel.realtime = true;
-  musnix.kernel.packages = pkgs.linuxPackages_6_4_rt;
+  # # TODO torgeir
+  # musnix.kernel.realtime = true;
+  # musnix.kernel.packages = pkgs.linuxPackages_6_4_rt;
 
   # TODO does this work?
   # make helix native activation happy
