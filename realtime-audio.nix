@@ -40,7 +40,7 @@
 
     #
     # poor mans rtirqs
-    # the number the fastest increasing counter when running
+    # the irq number below is the fastest increasing counter when running
     #   while true; do cat /proc/interrupts; sleep 0.2; done
     #
 
