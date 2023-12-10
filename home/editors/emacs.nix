@@ -35,7 +35,7 @@
     "emacs" = {
       source = builtins.fetchGit {
         url = "https://github.com/hlissner/doom-emacs";
-        rev = "986398504d09e585c7d1a8d73a6394024fe6f164";
+        rev = "03d692f129633e3bf0bd100d91b3ebf3f77db6d1";
       };
       # rev bumps will make doom sync run
       onChange = "${pkgs.writeShellScript "doom-change" ''
@@ -59,7 +59,7 @@
 
             # having the env generated also prevents doom install from asking y/n on stdin,
             # also bring ssh socket
-            ${config.xdg.configHome}/emacs/bin/doom env -a ^SSH_
+            ${config.xdg.configHome}/emacs/bin/doom env -a ^SSH_ -a ^GPG
 
             echo "doom-change :: Doom not installed: run doom install. ::"
 
