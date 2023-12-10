@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "0394d2c2e03e97fba8d4a6acdea04582b9288e7c";
+    rev = "1fc3bd1e769cf500d75a959c197c713086ac2734";
   };
 in {
 
@@ -129,6 +129,10 @@ in {
   # editable allows interop with torgeir/dotfiles.git without moving all this
   # configuration to .nix files
   home.file = {
+    ".local/bin/reaper-low-latency".source =
+      pkgs.writeShellScript "launch-reaper-low-latency" ''
+        PIPEWIRE_QUANTUM=384/48000 ${pkgs.reaper}/bin/reaper
+      '';
     "dotfiles".source = dotfiles;
 
     "bg.jpg".source = dotfiles + "/bg.jpg";

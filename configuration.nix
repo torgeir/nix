@@ -238,6 +238,9 @@ in {
   # https://nixos.wiki/wiki/Slack
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
+  # add .local/bin/ to front of path
+  environment.localBinInPath = true;
+
   programs = {
 
     # amd gpu

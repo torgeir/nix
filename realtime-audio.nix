@@ -285,6 +285,7 @@
     [
       # don't really need this?
       # irqbalance
+      cpuset
     ];
 
   # services.irqbalance.enable = true;
