@@ -17,4 +17,9 @@
     '';
 
   };
+
+  # neural amp modeler
+  home.packages = with pkgs; [ neural-amp-modeler-lv2 ];
+  home.file.".lv2/${pkgs.neural-amp-modeler-lv2.name}".source =
+    pkgs.neural-amp-modeler-lv2;
 }
