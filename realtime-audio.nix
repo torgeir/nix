@@ -87,6 +87,9 @@
     "preemt=full"
   ];
 
+  # latest kernel has realtime audio improvements
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_6;
+
   # realtime audio
   boot.kernel.sysctl = { "vm.swappiness" = 10; };
 
