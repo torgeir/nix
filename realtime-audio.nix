@@ -10,6 +10,15 @@
   # TODO does this work?
   # make helix native activation happy
   environment.etc.machine-id.source = ./machine-id;
+  # Chatgpt suggests this instead
+  # # Use systemd.tmpfiles.rules to create the symlink
+  # systemd.tmpfiles.rules = [
+  #   "L /etc/machine-id - - - - /var/lib/dbus/machine-id"
+  # ];
+
+  # # Ensure the /var/lib/dbus/machine-id has the correct content
+  # environment.etc."var/lib/dbus/machine-id".text =
+  #   builtins.readFile /path/to/your/static/machine-id;
 
   boot.blacklistedKernelModules = [
     # blacklist pci sound card, use usb arturia audiofuse
