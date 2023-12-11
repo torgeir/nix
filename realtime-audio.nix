@@ -33,6 +33,18 @@
     "cfg80211"
   ];
 
+  # TODO torgeir
+  # for p in $(ps -eo pid,comm | grep -E '(yabridge|reaper)' | grep -v grep |awk '{print $1}'); do sudo chrt -f -p 92 $p; done
+  # sudo cset shield --cpu 3 --kthread=on
+  # sudo cset shield --force --shield --pid $(ps xa | grep -E '(reaper|yabridge)' | grep -v "oom" | grep -v grep |awk '{print $1}' | cut -d" " -f1 | paste -s -d,)
+  # https://linuxmusicians.com/viewtopic.php?f=27&t=20419
+  # cgroups https://developers.redhat.com/blog/2015/09/21/controlling-resources-with-cgroups-for-performance-testing#rhel_7
+  # https://discuss.linuxcontainers.org/t/what-is-the-best-way-to-use-numactl-or-taskset-and-chrt-in-lxd-which-cpus-are-isolated-from-the-host/7641/7
+  #
+  # https://rigtorp.se/low-latency-guide/
+  #   echo never > /sys/kernel/mm/transparent_hugepage/enabled
+  #   isolcpus
+
   # minimize latency
   # increase frequencies for how often userspace applications can read from timekeeping devices
   # also prioritize the pid and interrupts of the sound card
