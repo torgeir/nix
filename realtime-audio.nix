@@ -274,6 +274,9 @@
   # firefox about:config, disable cpu heavy tasks
   #   reader.parse-on-load.enabled false
   #   media.webspeech.synth.enabled false
+  #
+  # TODO
+  # pgrep -f -w firefox | xargs renice --relative 5 {}
 
   # allow realtime for pipewire and user audio group
   security.pam.loginLimits = [
