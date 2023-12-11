@@ -147,16 +147,17 @@
   # after adjusting these. Also remember to
   #   systemctl --user restart pipewire wireplumber
   # TODO torgeir
-  #environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
-
-  #  jack.properties = {
-  #    # node.force-quantum = 48 # 0.001s, given alsa rate 48000
-  #    # node.force-quantum = 144 # 0.003s
-  #    # node.force-quantum = 240 # 0.005s
-  #    # node.force-quantum = 384 # 0.008s
-  #    # node.force-quantum = 480 # 0.01s
-  #  }
-  #'';
+  # environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
+  #
+  #   jack.properties = {
+  #     # node.force-quantum = 48 # 0.001s, given alsa rate 48000
+  #     # node.force-quantum = 144 # 0.003s
+  #     # node.force-quantum = 240 # 0.005s
+  #     # node.force-quantum = 288 # 0.006s
+  #     # node.force-quantum = 384 # 0.008s
+  #     # node.force-quantum = 480 # 0.01s
+  #   }
+  # '';
 
   environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
     table.insert(alsa_monitor.rules, {
@@ -207,7 +208,7 @@
 
         -- pipewire docs: ALSA Buffer Properties
         -- extra delay between hardware pointers and software pointers
-        ["api.alsa.headroom"] = 0,
+        ["api.alsa.headroom"] = 64,
 
         -- ???
         -- Interface: Arturia Audiofuse
