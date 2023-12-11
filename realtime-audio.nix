@@ -65,7 +65,7 @@
     #   while true; do cat /proc/interrupts; sleep 0.2; done
     #
 
-    cpu=18
+    cpu=3
     # ends up as -95
     # needs to be higher than reaper
     # reaper+yabridge-host needs to be higher than pipewire+wireplumber
