@@ -252,6 +252,10 @@
   # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
   services.udev.extraRules = ''
     DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
+
+    # set scheduler for nvme
+    # cat /sys/block/*/queue/scheduler
+    ACTION=="add|change", KERNEL=="nvme[0-9]*", ATTR{queue/scheduler}="none"
   '';
 
   # force full perf cpu mode
