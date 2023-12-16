@@ -3,9 +3,11 @@
 {
   imports = [ inputs.musnix.nixosModules.musnix ];
 
-  # # TODO torgeir
   # musnix.kernel.realtime = true;
-  # musnix.kernel.packages = pkgs.linuxPackages_6_4_rt;
+  # musnix.kernel.packages = pkgs.linuxPackages_6_6_rt;
+
+  # latest kernel has realtime audio improvements
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_6;
 
   # TODO does this work?
   # make helix native activation happy
@@ -93,16 +95,13 @@
   # check what is set with
   #   cat /proc/cmdline
   boot.kernelParams = [
-    # realtime audio tuning for preemt_dynamic kernels
+    # make threads out of irqs, for preemt_dynamic kernels
     "threadirqs"
-    # maybe not needed for rt kernels?
+    # not needed for rt kernels
     "preemt=full"
   ];
 
-  # latest kernel has realtime audio improvements
-  boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_6;
-
-  # realtime audio
+  # limit swappiness, but really i use zram instead
   boot.kernel.sysctl = { "vm.swappiness" = 10; };
 
   # disable wifi

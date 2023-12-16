@@ -131,7 +131,7 @@ in {
   home.file = {
     ".local/bin/reaper-low-latency".source =
       pkgs.writeShellScript "launch-reaper-low-latency" ''
-        PIPEWIRE_QUANTUM=288/48000 ${pkgs.reaper}/bin/reaper
+        PIPEWIRE_QUANTUM=48/48000 ${pkgs.reaper}/bin/reaper
       '';
     "dotfiles".source = dotfiles;
 

@@ -55,12 +55,16 @@ in {
     # for rt kernel
     # https://ubuntu.com/blog/real-time-kernel-tuning
     #"rcu_nocb_poll"
-    #"rcu_nocbs=4-15"
-    #"nohz=on"
-    #"nohz_full=4-15"
-    #"kthread_cpus=0,1,2,3"
-    #"irqaffinity=0,1,2,3"
-    #"isolcpus=managed_irq,domain,4-15"
+    #"rcu_nocbs=3-5"
+    #"irqaffinity=0,1,2"
+    #https://lwn.net/Articles/816298/
+
+    # "nohz=on"
+    # "nohz_full=8-10"
+    # "kthread_cpus=0-7"
+    # "irqaffinity=0,1,2,3,4,5,6"
+    # "isolcpus=managed_irq,nohz,domain,8-10"
+
   ];
 
   # https://github.com/Mic92/sops-nix/blob/master/README.md

@@ -12,14 +12,19 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
+  boot.initrd.luks.devices."crypted".device =
+    "/dev/disk/by-uuid/01afee33-4f30-40d7-8f36-6de4b9064756";
+
+  # compression performance tests:
+  # https://gist.github.com/braindevices/fde49c6a8f6b9aaf563fb977562aafec
+  # - chooze lzo emphasizing realtime audio, it has the least overhead
+  # - nodiscard prevents constant idle writes to nvme, use fstrim.service instead
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/81e328cf-c6b3-4e1d-b60c-7d818c0fae9f";
     fsType = "btrfs";
-    options = [ "subvol=root" ];
+    options =
+      [ "subvol=root" "noatime" "nodiscard" "space_cache=v2" "compress=lzo" ];
   };
-
-  boot.initrd.luks.devices."crypted".device =
-    "/dev/disk/by-uuid/01afee33-4f30-40d7-8f36-6de4b9064756";
 
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/D2A8-EC4A";
@@ -29,17 +34,20 @@
   fileSystems."/home" = {
     device = "/dev/disk/by-uuid/81e328cf-c6b3-4e1d-b60c-7d818c0fae9f";
     fsType = "btrfs";
-    options = [ "subvol=home" ];
+    options =
+      [ "subvol=home" "noatime" "nodiscard" "space_cache=v2" "compress=lzo" ];
   };
 
   fileSystems."/nix" = {
     device = "/dev/disk/by-uuid/81e328cf-c6b3-4e1d-b60c-7d818c0fae9f";
     fsType = "btrfs";
-    options = [ "subvol=nix" ];
+    options =
+      [ "subvol=nix" "noatime" "nodiscard" "space_cache=v2" "compress=lzo" ];
   };
 
   # add more lsblk -o PATH,FSTYPE,UUID
 
+  # use zramSwap instead
   swapDevices = [ ];
 
   # networking.useDHCP = lib.mkDefault true;

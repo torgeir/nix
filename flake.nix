@@ -27,7 +27,7 @@
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-stable, home-manager
     , nixpkgs-wayland, musnix, nix-gaming, sops-nix, deploy-rs }: rec {
-      #
+
       # https://github.com/sebastiant/dotfiles/blob/master/flake.nix
       # https://github.com/wiltaylor/dotfiles
       nixosConfigurations.torgnix = nixpkgs.lib.nixosSystem {
