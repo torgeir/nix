@@ -1,13 +1,20 @@
-{ config, lib, inputs, pkgs, ... }:
+{ config, lib, inputs, pkgs, nixpkgs, ... }: {
 
-{
   imports = [ inputs.musnix.nixosModules.musnix ];
 
-  # musnix.kernel.realtime = true;
-  # musnix.kernel.packages = pkgs.linuxPackages_6_6_rt;
+  # realtime kernel
+  musnix.kernel.realtime = true;
+  musnix.kernel.packages = pkgs.linuxPackages_6_6_rt;
+  # musnix.rtirq.nameList = "xhci_hcd";
+  # musnix.rtirq.enable = true;
+  #
+  # or, latest kernel has realtime audio improvements
+  # boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_6;
 
-  # latest kernel has realtime audio improvements
-  boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_6;
+  # permission denied when creating cpuset.cpus
+  # https://www.reddit.com/r/NixOS/comments/158azri/changing_user_slices_cgroup_controllers/
+  # TODO gjør at cset shield --cpu 7 -kthread=on ikke virker?
+  # systemd.services."user@".serviceConfig.Delegate = "memory pids cpu cpuset";
 
   # TODO does this work?
   # make helix native activation happy
@@ -35,17 +42,14 @@
     "cfg80211"
   ];
 
-  # TODO torgeir
-  # for p in $(ps -eo pid,comm | grep -E '(yabridge|reaper)' | grep -v grep |awk '{print $1}'); do sudo chrt -f -p 92 $p; done
-  # sudo cset shield --cpu 3 --kthread=on
-  # sudo cset shield --force --shield --pid $(ps xa | grep -E '(reaper|yabridge)' | grep -v "oom" | grep -v grep |awk '{print $1}' | cut -d" " -f1 | paste -s -d,)
+  # shield processes on certain cpus
+  #   for p in $(ps -eo pid,comm | grep -E '(yabridge|reaper)' | grep -v grep |awk '{print $1}'); do sudo chrt -f -p 92 $p; done
+  #   sudo cset shield --cpu 16-31 --kthread=on
+  #   sudo cset shield --force --shield --pid $(ps xa | grep -E '(reaper|yabridge)' | grep -v "oom" | grep -v grep |awk '{print $1}' | cut -d" " -f1 | paste -s -d,)
+  #
   # https://linuxmusicians.com/viewtopic.php?f=27&t=20419
   # cgroups https://developers.redhat.com/blog/2015/09/21/controlling-resources-with-cgroups-for-performance-testing#rhel_7
   # https://discuss.linuxcontainers.org/t/what-is-the-best-way-to-use-numactl-or-taskset-and-chrt-in-lxd-which-cpus-are-isolated-from-the-host/7641/7
-  #
-  # https://rigtorp.se/low-latency-guide/
-  #   echo never > /sys/kernel/mm/transparent_hugepage/enabled
-  #   isolcpus
 
   # minimize latency
   # increase frequencies for how often userspace applications can read from timekeeping devices
@@ -61,18 +65,18 @@
     # fix nix paths
     export PATH=/run/current-system/sw/bin/:$PATH
 
-    #
+    # https://rigtorp.se/low-latency-guide/
+    # sudo sh -c "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled
+
     # poor mans rtirqs
     # the irq number below is the fastest increasing counter when running
-    #   while true; do cat /proc/interrupts; sleep 0.2; done
+    #   watch -n0.1 'cat /proc/interrupts'
     #
-
-    cpu=3
-    # ends up as -95
-    # needs to be higher than reaper
-    # reaper+yabridge-host needs to be higher than pipewire+wireplumber
+    ## ends up as -95
+    ## needs to be higher than reaper
+    ## reaper+yabridge-host needs to be higher than pipewire+wireplumber
     priority=94
-
     irq=85
     pid=$(pgrep irq/$irq-)
     thread=$(ps -eo comm | grep irq/$irq-)
@@ -81,6 +85,7 @@
     logger -p user.info "[realtime audio]: setting priority to $priority for $pid, thread $thread."
     chrt -f -p $priority $pid
 
+    cpu=16
     # pin to single cpu
     logger -p user.info "[realtime audio]: pinning $pid on thread $thread to cpu $cpu."
     taskset -cp $cpu $pid
@@ -90,6 +95,10 @@
 
     echo $cpu > /proc/irq/$irq/smp_affinity_list
     logger -p user.info "[realtime audio] smp_affinity_list for irq $irq is now $(cat /proc/irq/$irq/smp_affinity_list)"
+
+    # unused, for irqbalance:
+    #   one bit per cpu: 0000 0000 1100 0000 => 00c0 in hex
+    #export IRQBALANCE_BANNED_CPUS="00c0"
   '';
 
   # check what is set with
@@ -157,18 +166,16 @@
   # flip reaper audio system over to DummyAudio and back to Jack
   # after adjusting these. Also remember to
   #   systemctl --user restart pipewire wireplumber
-  # TODO torgeir
-  # environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
-  #
-  #   jack.properties = {
-  #     # node.force-quantum = 48 # 0.001s, given alsa rate 48000
-  #     # node.force-quantum = 144 # 0.003s
-  #     # node.force-quantum = 240 # 0.005s
-  #     # node.force-quantum = 288 # 0.006s
-  #     # node.force-quantum = 384 # 0.008s
-  #     # node.force-quantum = 480 # 0.01s
-  #   }
-  # '';
+  environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
+    jack.properties = {
+      node.force-quantum = 48 # 0.001s, given alsa rate 48000
+      # node.force-quantum = 144 # 0.003s
+      # node.force-quantum = 240 # 0.005s
+      # node.force-quantum = 288 # 0.006s
+      # node.force-quantum = 384 # 0.008s
+      # node.force-quantum = 480 # 0.01s
+    }
+  '';
 
   environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
     table.insert(alsa_monitor.rules, {
@@ -227,7 +234,6 @@
         --   Rate 48000
         --   Size 168
         --   Periods 3
-        -- I have no idea why pipewire cant, with the same alsa config
         -- ???
 
         -- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
@@ -333,12 +339,16 @@
     }
   ];
 
-  environment.systemPackages = with pkgs;
-    [
-      # don't really need this?
-      # irqbalance
-      cpuset
-    ];
+  environment.systemPackages = with pkgs; [
+    # don't really need this?
+    # irqbalance
 
+    cpuset
+
+    sysstat # iostat etc
+    iotop # e.g. sudo iotop -d 0.1 -a
+    lsof # e.g. lsof -p $(pidof wineserver)
+  ];
+  # https://magazine.odroid.com/article/setting-irq-cpu-affinities-improving-irq-performance-on-the-odroid-xu4/
   # services.irqbalance.enable = true;
 }

@@ -16,7 +16,21 @@ in {
     '';
   };
 
-  nixpkgs.overlays = [ (import ./overlay.nix) ];
+  nixpkgs.overlays = [
+    (import ./overlay.nix)
+    # TODO torgeir not working
+    # https://github.com/musnix/musnix/issues/167
+    # (final: prev: {
+    #   linuxPackages_torgeir = pkgs.linuxPackagesFor
+    #     (pkgs.linuxPackages_6_6_rt.override {
+    #       structuredExtraConfig = with prev.pkgs.lib.kernel; {
+    #         LATENCYTOP = yes;
+    #         SCHEDSTATS = yes;
+    #       };
+    #     });
+    # })
+
+  ];
 
   imports = [
     ./hardware-configuration.nix
@@ -52,19 +66,14 @@ in {
     "video=DP-1:1920x1080@60Hz"
     "video=DP-2:1920x1080@60Hz"
 
-    # for rt kernel
-    # https://ubuntu.com/blog/real-time-kernel-tuning
-    #"rcu_nocb_poll"
-    #"rcu_nocbs=3-5"
-    #"irqaffinity=0,1,2"
-    #https://lwn.net/Articles/816298/
-
-    # "nohz=on"
-    # "nohz_full=8-10"
-    # "kthread_cpus=0-7"
-    # "irqaffinity=0,1,2,3,4,5,6"
-    # "isolcpus=managed_irq,nohz,domain,8-10"
-
+    # rt kernel tuning
+    # - https://ubuntu.com/blog/real-time-kernel-tuning
+    # - https://lwn.net/Articles/816298/
+    "nohz=on"
+    "nohz_full=16-31"
+    "kthread_cpus=0-15"
+    "irqaffinity=0-15"
+    "isolcpus=managed_irq,nohz,domain,16-31"
   ];
 
   # https://github.com/Mic92/sops-nix/blob/master/README.md
@@ -277,8 +286,8 @@ in {
   };
 
   # audit, https://xeiaso.net/blog/paranoid-nixos-2021-07-18/
-  security.auditd.enable = true;
-  security.audit.enable = true;
+  security.auditd.enable = false;
+  security.audit.enable = false;
   security.audit.rules = [ "-a exit,always -F arch=b64 -S execve" ];
 
   # ssh
@@ -306,6 +315,12 @@ in {
 
   # save ssds
   services.fstrim.enable = true;
+
+  # zram instead of swap
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+  };
 
   # moar https://github.com/NixOS/nixos-hardware
 
