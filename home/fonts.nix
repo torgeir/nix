@@ -1,12 +1,22 @@
 { config, lib, pkgs, ... }:
 
-{
+let
+  # https://github.com/NixOS/nixpkgs/blob/master/pkgs/data/fonts/iosevka/default.nix
+  # https://github.com/NixOS/nixpkgs/blob/master/pkgs/data/fonts/iosevka/variants.nix
+  patched-prebuilt-iosevka-font = pkgs.callPackage ./../pkgs/patch-nerd-fonts {
+    font = pkgs.iosevka-bin.override { variant = "sgr-iosevka-term-ss05"; };
+  };
+
+in {
 
   # discover fonts installed through home.packages and nix-env
   fonts.fontconfig.enable = true;
 
-  # TODO patch fonts yourself
-  # https://codeberg.org/municorn/iosevka-muse/src/commit/ca362ea18ef57eef395a96b9f9c9cb06d1fef3f2/flake.nix#L24
-  # https://dee.underscore.world/blog/home-manager-fonts/
+  # debug what is installed
+  #   nix repl --expr 'import <nixpkgs> {}'
+  #   :b pkgs.iosevka-bin.override { variant = "sgr-iosevka-term-ss05"; }
+  #   c-d
+  #   fd . <the-path-printed-from-the-above-command>
+  home.packages = with pkgs; [ patched-prebuilt-iosevka-font ];
 
 }
