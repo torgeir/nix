@@ -292,13 +292,6 @@
     "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=89 --max-realtime-priority=88 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
   ];
 
-  # firefox about:config, disable cpu heavy tasks
-  #   reader.parse-on-load.enabled false
-  #   media.webspeech.synth.enabled false
-  #
-  # TODO
-  # pgrep -f -w firefox | xargs renice --relative 5 {}
-
   # allow realtime for pipewire and user audio group
   security.pam.loginLimits = [
     {

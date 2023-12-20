@@ -25,6 +25,17 @@
           (extension "1password-x-password-manager"
             "{d634138d-c276-4fc8-924b-40a0ea21d284}")
         ];
+      Preferences = let
+        locked-false = {
+          Value = false;
+          Status = "locked";
+        };
+      in {
+        # prevent cpu intensive defaults interfering with realtime audio
+        "reader.parse-on-load.enabled" = locked-false;
+        "media.webspeech.synth.enabled" = locked-false;
+      };
+
     };
   };
 }
