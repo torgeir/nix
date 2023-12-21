@@ -212,9 +212,9 @@ in {
     git
     vim
     ark
+    fzf
     wget
     unzip
-    #TODO remove
     python3
     pciutils # e.g. lspci
     usbutils # e.g. lsusb
