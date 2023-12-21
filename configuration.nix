@@ -222,8 +222,6 @@ in {
     gnumake
     coreutils
     lm_sensors
-    # TODO moar wayland
-    dmenu-wayland
   ];
 
   programs.thunar.enable = true;
