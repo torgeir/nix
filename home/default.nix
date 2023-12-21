@@ -108,11 +108,6 @@ in {
     # wallpapers
     # https://github.com/natpen/awesome-wayland#wallpaper
 
-    # fonts
-    (pkgs.nerdfonts.override {
-      fonts = [ "JetBrainsMono" "Iosevka" "IosevkaTerm" ];
-    })
-
     # vst/audio-production
     reaper
     inputs.nix-gaming.packages.${pkgs.system}.wine-tkg # helix native needs wine with fsync patches
