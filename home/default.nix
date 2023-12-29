@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "8293becdc115d00068d41df2be1297b7f71eaee9";
+    rev = "484920fc8580998417ace19fdaafacd6b4264e97";
   };
 in {
 
@@ -44,6 +44,7 @@ in {
     alacritty
     eza
     htop
+    tmux
     # TODO configure CONFIG_LATENCYTOP?
     latencytop
 
@@ -131,7 +132,8 @@ in {
         pgrep -f -w firefox | xargs renice --relative 5 {}
         PIPEWIRE_QUANTUM=48/48000 ${pkgs.reaper}/bin/reaper
       '';
-    "dotfiles".source = dotfiles;
+
+    ".config/dotfiles".source = dotfiles;
 
     "bg.jpg".source = dotfiles + "/bg.jpg";
 
@@ -153,6 +155,7 @@ in {
     ".zshrc".source = dotfiles + "/zshrc";
     ".zprofile".source = dotfiles + "/profile";
     ".inputrc".source = dotfiles + "/inputrc";
+    ".tmux.conf".source = dotfiles + "/tmux.conf";
   };
 
   # sops with home manager is a little different, see configuration.nix
