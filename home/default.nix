@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "484920fc8580998417ace19fdaafacd6b4264e97";
+    rev = "61f0fee98fae02fcacaa059d3cdadb2a9ece905e";
   };
 in {
 
@@ -19,20 +19,6 @@ in {
     ./editors
     ./file-manager.nix
   ];
-
-  # let home manager install and manage itself
-  programs.home-manager.enable = true;
-
-  # inspiration for more
-  # - https://github.com/panchoh/nixos
-  # - https://github.com/hlissner/dotfiles/
-  # - https://github.com/colemickens/nixcfg/
-  # - https://github.com/nix-community/home-manager/
-  # - https://github.com/nix-community/nixpkgs-wayland
-  # - https://github.com/NixOS/nixpkgs/
-  #
-  # - https://github.com/Horus645/swww
-  # - https://github.com/redyf/nixdots
 
   # find package paths with nix-env -qaP <pkg>
   #   nix-env -qaP nodejs
