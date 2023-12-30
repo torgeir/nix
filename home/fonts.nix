@@ -19,12 +19,6 @@ in {
       font = pkgs.iosevka-bin.override { variant = "sgr-iosevka-etoile"; };
     })
     (pkgs.callPackage ./../pkgs/patch-nerd-fonts {
-      font = pkgs.iosevka-bin.override { variant = "sgr-iosevka-term-ss05"; };
-    })
-    (pkgs.callPackage ./../pkgs/patch-nerd-fonts {
-      font = pkgs.iosevka-bin.override { variant = "sgr-iosevka-term-slab"; };
-    })
-    (pkgs.callPackage ./../pkgs/patch-nerd-fonts {
       font =
         pkgs.iosevka-bin.override { variant = "sgr-iosevka-term-curly-slab"; };
     })
