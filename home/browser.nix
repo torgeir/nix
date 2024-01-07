@@ -1,30 +1,33 @@
 { config, lib, pkgs, ... }:
 
-{
+let extensions = (pkgs.callPackage ./firefox-extensions.nix { });
+in {
   programs.firefox = {
     enable = true;
-    profiles."torgeir" = { };
+    profiles.torgeir = {
+      id = 0;
+      settings = {
+        # enable userChrome
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+      };
+      # https://github.com/piroor/treestyletab/wiki/Code-snippets-for-custom-style-rules#for-userchromecss
+      userChrome = ''
+        /* remove tabs toolbar */
+        #TabsToolbar    {visibility: collapse !important;}
+        /* remove tree style tabs heading a */
+        #sidebar-header {visibility: collapse !important;}
+      '';
+      extensions = [
+        extensions.darkreader
+        extensions.vimium-ff
+        extensions.ublock-origin
+        extensions.multi-account-containers
+        extensions.firefox-color
+        extensions.onepassword-x-password-manager
+        extensions.tree-style-tab
+      ];
+    };
     policies = {
-      ExtensionSettings = with builtins;
-        let
-          extension = id: uuid: {
-            name = uuid;
-            value = {
-              install_url =
-                "https://addons.mozilla.org/en-US/firefox/downloads/latest/${id}/latest.xpi";
-              installation_mode = "normal_installed";
-            };
-          };
-        in listToAttrs [
-          # find it on addons.mozilla.org
-          # find the id in the url https://addons.mozilla.org/en-US/firefox/addon/{id}
-          # install plugin extension then find the Extension ID in about:debugging#/runtime/this-firefox.
-          (extension "darkreader" "addon@darkreader.org")
-          (extension "ublock-origin" "uBlock0@raymondhill.net")
-          (extension "vimium-ff" "{d7742d87-e61d-4b78-b8a1-b469842139fa}")
-          (extension "1password-x-password-manager"
-            "{d634138d-c276-4fc8-924b-40a0ea21d284}")
-        ];
       Preferences = let
         locked-false = {
           Value = false;
@@ -35,7 +38,6 @@
         "reader.parse-on-load.enabled" = locked-false;
         "media.webspeech.synth.enabled" = locked-false;
       };
-
     };
   };
 }
