@@ -5,7 +5,7 @@
   #https://github.com/tejing1/nixos-config/blob/master/homeConfigurations/tejing/encryption.nix
   programs.gpg = {
     enable = true;
-    package = pkgs.gnupg22;
+    package = pkgs.gnupg_plus_960877b;
   };
 
   services.gpg-agent = {
