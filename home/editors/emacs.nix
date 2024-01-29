@@ -1,6 +1,9 @@
 { config, lib, pkgs, ... }:
 
-{
+let
+  emacs = pkgs.emacs29-pgtk;
+  treesit = (pkgs.emacsPackagesFor emacs).treesit-grammars.with-all-grammars;
+in {
 
   # doom emacs
   # inspiration https://discourse.nixos.org/t/advice-needed-installing-doom-emacs/8806/7
@@ -10,12 +13,23 @@
   programs.emacs = {
     enable = true;
     #  https://www.reddit.com/r/emacs/comments/rj8k32/the_pgtk_pure_gtk_branch_was_merged/
-    package = pkgs.emacs29-pgtk;
+    package = emacs;
     extraPackages = epkgs: [ epkgs.vterm ];
   };
 
   xdg.enable = true;
   home = {
+
+    # doom deps
+    packages = with pkgs; [
+      nodejs_20
+      nodePackages.prettier
+      nodePackages.bash-language-server
+      nodePackages.ts-node
+      nodePackages.typescript
+      nodePackages.typescript-language-server
+    ];
+
     # put doom on path
     sessionPath = [ "${config.xdg.configHome}/emacs/bin" ];
     sessionVariables = {
@@ -29,6 +43,7 @@
     };
   };
   xdg.configFile = {
+    "doom-local/cache/tree-sitter".source = "${treesit}/lib";
     # git clone git@github.com:torgeir/.emacs.d.git ~/.doom.d
     "doom.d".source = config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/.doom.d";

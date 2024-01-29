@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "61f0fee98fae02fcacaa059d3cdadb2a9ece905e";
+    rev = "2a5c8b450f44e3ed44475c52d016087149bfa376";
   };
 in {
 
@@ -29,6 +29,7 @@ in {
     # terminal
     alacritty
     eza
+    fzf
     htop
     tmux
     # TODO configure CONFIG_LATENCYTOP?
@@ -40,7 +41,6 @@ in {
 
     # env
     direnv
-    #nodejs
 
     # tools
     killall
