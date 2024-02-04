@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "c6f8f37e62c30c5ec96866dcba2b5196974b67bc";
+    rev = "26afc40eec023b992329e4487d650997eb3ee77a";
   };
 in {
 
@@ -14,7 +14,6 @@ in {
     ./gtk.nix
     ./fonts.nix
     ./gpg.nix
-    ./terminal
     ./tofi.nix
     ./editors
     ./file-manager.nix
@@ -28,6 +27,7 @@ in {
 
     # terminal
     alacritty
+    bat
     eza
     fzf
     htop
@@ -123,6 +123,8 @@ in {
 
     "bg.jpg".source = dotfiles + "/bg.jpg";
 
+    ".config/alacritty/alacritty.yml".source = dotfiles
+      + "/config/alacritty/alacritty.yml";
     ".config/sway".source = dotfiles + "/config/sway";
     ".config/xkb".source = dotfiles + "/config/xkb";
     ".config/environment.d/envvars.conf".source = dotfiles

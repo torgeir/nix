@@ -19,7 +19,7 @@
         <name>Terminal here</name>
         <submenu></submenu>
         <unique-id>1698005278620489-1</unique-id>
-        <command>foot --working-directory %f</command>
+        <command>alacritty --working-directory %f</command>
         <description>Terminal here</description>
         <range></range>
         <patterns>*</patterns>

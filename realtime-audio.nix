@@ -130,27 +130,6 @@
     alsa.enable = true; # alsa support
     pulse.enable = true; # pipewire pulse emulation
     jack.enable = true; # pipewire jack emulation
-
-    # force pipewire 1.0, its still in nix staging
-    # inspired by
-    #   https://github.com/K900/nixpkgs/commit/32c52236b2d84280395e2115191ed8411a93a049
-    #   https://github.com/K900/nixpkgs/commit/f3ee548e96fae8919ab8ca0944e08fa64f6314d3
-    package = (pkgs.pipewire.override { rocSupport = false; }).overrideAttrs
-      (old: rec {
-        version = "1.0.0";
-        src = pkgs.fetchFromGitLab {
-          domain = "gitlab.freedesktop.org";
-          owner = "pipewire";
-          repo = "pipewire";
-          rev = version;
-          sha256 = "sha256-mfnMluxJAxDbB6JlIM6HJ0zg7e1q3ia3uFbht6zeHCk=";
-        };
-        mesonFlags = old.mesonFlags ++ [ "-Dman=enabled" ];
-        postUnpack = ''
-          patchShebangs source/doc/*.py
-          patchShebangs source/doc/input-filter-h.sh
-        '';
-      });
   };
 
   # jack
