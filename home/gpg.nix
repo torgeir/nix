@@ -3,9 +3,10 @@
 {
 
   #https://github.com/tejing1/nixos-config/blob/master/homeConfigurations/tejing/encryption.nix
+  # https://freerangebits.com/posts/2023/12/gnupg-broke-emacs/
   programs.gpg = {
     enable = true;
-    package = pkgs.gnupg_plus_960877b;
+    package = pkgs.gnupg24;
   };
 
   services.gpg-agent = {
