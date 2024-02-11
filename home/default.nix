@@ -142,6 +142,7 @@ in {
     ".zsh".source = dotfiles + "/zsh/";
     ".zshrc".source = dotfiles + "/zshrc";
     ".zprofile".source = dotfiles + "/profile";
+    ".fzfrc".source = dotfiles + "/fzfrc";
     ".inputrc".source = dotfiles + "/inputrc";
     ".tmux.conf".source = dotfiles + "/tmux.conf";
   };
