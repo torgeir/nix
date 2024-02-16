@@ -16,9 +16,18 @@
 
     # https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/editors/vim/plugins/vim-plugin-names
     plugins = with pkgs.vimPlugins; [
-      gruvbox
-
       editorconfig-vim
+
+      # https://www.google.com/search?client=firefox-b-d&q=nvim-catppuccin
+      # catppuccin-nvim
+
+      {
+        plugin = lightline-vim;
+        config = ''
+          source ${./config/lightline.vim}
+          let g:lightline = {'colorscheme': 't'}
+        '';
+      }
 
       nvim-lspconfig
       nvim-treesitter.withAllGrammars
