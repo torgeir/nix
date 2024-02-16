@@ -26,6 +26,7 @@ in {
   home.packages = with pkgs; [
 
     # terminal
+    fd
     alacritty
     bat
     eza
