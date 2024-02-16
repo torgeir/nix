@@ -70,6 +70,10 @@ in {
     "kthread_cpus=0-15"
     "irqaffinity=0-15"
     "isolcpus=managed_irq,nohz,domain,16-31"
+
+    # https://web.archive.org/web/20171228022907/https://blog.le-vert.net/?p=24
+    # https://askubuntu.com/questions/1272026/acpi-bios-error-bug-could-not-resolve-symbol-sb-pcio-sato-prto-gtf-dssp
+    "libata.noacpi=1"
   ];
 
   # https://github.com/Mic92/sops-nix/blob/master/README.md
