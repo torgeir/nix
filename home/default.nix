@@ -57,6 +57,11 @@ in {
     imagemagick
     gnuplot
 
+    # email
+    mu
+    isync
+    msmtp
+
     # notifications
     mako
     libnotify
