@@ -169,6 +169,10 @@ in {
   networking.firewall.enable = true;
   # networking.firewall.allowedTCPPorts = ...;
   # networking.firewall.allowedUDPPorts = [ ... ];
+  # TODO torgeir
+  # systemd.services.NetworkManager-wait-online.enable = false;
+  # systemd.network.wait-online.anyInterface = false;
+  # systemd.network.wait-online.enable = false;
 
   # locale
   i18n.defaultLocale = "en_US.UTF-8";

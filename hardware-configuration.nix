@@ -50,7 +50,9 @@
   # use zramSwap instead
   swapDevices = [ ];
 
-  # networking.useDHCP = lib.mkDefault true;
+  # prevent boot wait for dhcp
+  networking.dhcpcd.wait = "background";
+  networking.useDHCP = lib.mkDefault false;
   # networking.interfaces.enp37s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp9s0u1u4u5.useDHCP = lib.mkDefault true;
   networking.interfaces.enp9s0u1u2.useDHCP = lib.mkDefault true;
