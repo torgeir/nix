@@ -73,7 +73,11 @@ in {
 
     # https://web.archive.org/web/20171228022907/https://blog.le-vert.net/?p=24
     # https://askubuntu.com/questions/1272026/acpi-bios-error-bug-could-not-resolve-symbol-sb-pcio-sato-prto-gtf-dssp
-    "libata.noacpi=1"
+    # TODO torgeir did not have an effect?
+    # "libata.noacpi=1"
+
+    # fix wierd bus size thunderbolt usb pci rescan not able to hotplug?
+    "pci=assign-busses,hpbussize=0x33,realloc"
   ];
 
   # https://github.com/Mic92/sops-nix/blob/master/README.md
