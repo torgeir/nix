@@ -235,12 +235,18 @@
   # help reaper control cpu latency, when you start it from audio group user
   # control power mgmt from userspace (audio) group
   # https://wiki.linuxaudio.org/wiki/system_configuration#quality_of_service_interface
+  #
+  # Run "udevadm monitor" and do what you want to monitor, e.g. plug something
   services.udev.extraRules = ''
     DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
 
     # set scheduler for nvme
     # cat /sys/block/*/queue/scheduler
     ACTION=="add|change", KERNEL=="nvme[0-9]*", ATTR{queue/scheduler}="none"
+
+    # restart dhcpcd on sleep wake
+    ACTION=="remove", SUBSYSTEM=="usb", DRIVERS=="usb", ATTRS{idVendor}=="1c75", ATTRS{idProduct}=="af02", RUN+="${pkgs.systemd}/bin/systemctl --no-block stop dhcpcd.service"
+    ACTION=="add", SUBSYSTEM=="usb", DRIVERS=="usb", ATTRS{idVendor}=="1c75", ATTRS{idProduct}=="af02", RUN+="${pkgs.systemd}/bin/systemctl --no-block restart dhcpcd.service"
   '';
 
   # force full perf cpu mode
