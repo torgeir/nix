@@ -301,7 +301,7 @@ in {
     '';
   };
 
-  services.getty.autologinUser = lib.mkForce "torgeir";
+  # services.getty.autologinUser = lib.mkForce "torgeir";
 
   # thunderbolt
   # owc 11-port dock
