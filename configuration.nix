@@ -77,6 +77,8 @@ in {
     # "libata.noacpi=1"
 
     # fix wierd bus size thunderbolt usb pci rescan not able to hotplug?
+    # https://forum.level1techs.com/t/asrock-x570-phantom-tb3-itx-and-linux-no-bus-number-available-for-hot-added-bridge/156951/7
+    # https://bbs.archlinux.org/viewtopic.php?id=253050
     "pci=assign-busses,hpbussize=0x33,realloc"
   ];
 
