@@ -16,21 +16,7 @@ in {
     '';
   };
 
-  nixpkgs.overlays = [
-    (import ./overlay.nix)
-    # TODO torgeir not working
-    # https://github.com/musnix/musnix/issues/167
-    # (final: prev: {
-    #   linuxPackages_torgeir = pkgs.linuxPackagesFor
-    #     (pkgs.linuxPackages_6_6_rt.override {
-    #       structuredExtraConfig = with prev.pkgs.lib.kernel; {
-    #         LATENCYTOP = yes;
-    #         SCHEDSTATS = yes;
-    #       };
-    #     });
-    # })
-
-  ];
+  nixpkgs.overlays = [ (import ./overlay.nix) ];
 
   imports = [
     ./hardware-configuration.nix
@@ -233,6 +219,10 @@ in {
     gnumake
     coreutils
     lm_sensors
+
+    qemu
+    samba
+    tigervnc
   ];
 
   programs.thunar.enable = true;
