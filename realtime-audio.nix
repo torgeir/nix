@@ -326,7 +326,35 @@
     sysstat # iostat etc
     iotop # e.g. sudo iotop -d 0.1 -a
     lsof # e.g. lsof -p $(pidof wineserver)
+
+    # piano
+    linuxsampler # add lv2 path /run/current-system/sw/lib/lv2/ to reaper, rescan
+    qsampler # launch this and add channel, select plugin and the .gig piano file
+
+    (writeScriptBin "reaper-pw"
+      "pw-metadata -n settings 0 clock.force-quantum $1")
+    (writeScriptBin "reaper-pw-48"
+      "pw-metadata -n settings 0 clock.force-quantum 48")
+    (writeScriptBin "reaper-pw-144"
+      "pw-metadata -n settings 0 clock.force-quantum 144")
+    (writeScriptBin "reaper-pw-256"
+      "pw-metadata -n settings 0 clock.force-quantum 256")
+    (writeScriptBin "reaper-pw-512"
+      "pw-metadata -n settings 0 clock.force-quantum 512")
   ];
   # https://magazine.odroid.com/article/setting-irq-cpu-affinities-improving-irq-performance-on-the-odroid-xu4/
   # services.irqbalance.enable = true;
+
+  environment.variables = {
+    DSSI_PATH =
+      "$HOME/.dssi:$HOME/.nix-profile/lib/dssi:/run/current-system/sw/lib/dssi";
+    LADSPA_PATH =
+      "$HOME/.ladspa:$HOME/.nix-profile/lib/ladspa:/run/current-system/sw/lib/ladspa";
+    LV2_PATH =
+      "$HOME/.lv2:$HOME/.nix-profile/lib/lv2:/run/current-system/sw/lib/lv2";
+    LXVST_PATH =
+      "$HOME/.lxvst:$HOME/.nix-profile/lib/lxvst:/run/current-system/sw/lib/lxvst";
+    VST_PATH =
+      "$HOME/.vst:$HOME/.nix-profile/lib/vst:/run/current-system/sw/lib/vst";
+  };
 }

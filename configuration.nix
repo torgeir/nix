@@ -205,6 +205,7 @@ in {
       "dropbox"
 
       "reaper"
+      "linuxsampler"
 
       "steam"
       "steam-run"
