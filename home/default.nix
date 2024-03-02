@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "ba5e02a800e7239ea20d6203d5db5314ebe5cae8";
+    rev = "5c4d402acaf4183e90f3b852cad95d41ef11b5bc";
   };
 in {
 
@@ -33,6 +33,8 @@ in {
     fzf
     htop
     tmux
+    delta
+    difftastic
     # TODO configure CONFIG_LATENCYTOP?
     latencytop
 
