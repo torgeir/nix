@@ -149,6 +149,9 @@ in {
   time.timeZone = "Europe/Oslo";
   networking.hostName = "torgnix";
 
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+
   # wireless
   # networking.wireless.enable = true;
   # networking.networkmanager.enable = true;

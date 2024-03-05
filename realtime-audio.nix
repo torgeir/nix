@@ -35,8 +35,8 @@
 
     # https://discourse.nixos.org/t/how-to-disable-bluetooth/9483
     # blacklist bluetooth
-    "bluetooth"
-    "btusb"
+    # "bluetooth"
+    # "btusb"
 
     # blacklist wifi
     "cfg80211"
