@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "5c4d402acaf4183e90f3b852cad95d41ef11b5bc";
+    rev = "4d46ae495e0ba924474c9cbd6b4df46a21ed076d";
   };
 in {
 
@@ -14,6 +14,7 @@ in {
     ./gtk.nix
     ./fonts.nix
     ./gpg.nix
+    ./gaming.nix
     ./tofi.nix
     ./editors
     ./file-manager.nix
@@ -140,6 +141,7 @@ in {
     ".config/mako".source = dotfiles + "/config/mako";
     ".config/dunst".source = dotfiles + "/config/dunst";
     ".config/i3status-rust".source = dotfiles + "/config/i3status-rust";
+    ".config/MangoHud".source = dotfiles + "/config/MangoHud";
     ".config/corectrl/profiles".source = dotfiles + "/config/corectrl/profiles";
     ".config/corectrl/corectrl.ini".source = dotfiles
       + "/config/corectrl/corectrl.ini";

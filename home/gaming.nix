@@ -2,5 +2,5 @@
 
 {
 
-  environment.systemPackages = with pkgs; [ mangohud ];
+  home.packages = with pkgs; [ mangohud ];
 }
