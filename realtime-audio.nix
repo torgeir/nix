@@ -130,6 +130,78 @@
     alsa.enable = true; # alsa support
     pulse.enable = true; # pipewire pulse emulation
     jack.enable = true; # pipewire jack emulation
+    wireplumber.configPackages = [
+      (pkgs.writeTextDir "share/wireplumber/main.lua.d/98-alsa-no-pop.lua" ''
+        table.insert(alsa_monitor.rules, {
+          matches = {
+            {
+              -- run pw-top to see the names
+              { "node.name", "matches", "alsa_input.usb-LINE_6_HELIX*" },
+              { "node.name", "matches", "alsa_output.usb-LINE_6_HELIX*" },
+            },
+          },
+          apply_properties = {
+            -- keep it alive
+            ["session.suspend-timeout-seconds"] = 0,
+            ["suspend-node"] = false,
+            ["node.pause-on-idle"] = false,
+            ["api.alsa.disable-batch"] = false,
+            ["priority.session"] = 3000,
+            ["api.alsa.rate"] = 48000,
+            ["api.alsa.period-size"] = 128,
+          }
+        })
+
+        table.insert(alsa_monitor.rules, {
+          matches = {
+            {
+              -- run pw-top to see the names
+              { "node.name", "matches", "alsa_input.usb-ARTURIA_AudioFuse*" },
+              { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
+            },
+          },
+          apply_properties = {
+
+            -- keep it alive
+            ["session.suspend-timeout-seconds"] = 0,
+            ["suspend-node"] = false,
+            ["node.pause-on-idle"] = false,
+
+            -- pipewire docs: ALSA Buffer Properties:
+            -- It removes the extra delay added of period-size/2 if the device can
+            -- support this. for batch devices it is also a good idea to lower the
+            -- period-size (and increase the IRQ frequency) to get smaller batch
+            -- updates and lower latency.
+            ["api.alsa.disable-batch"] = false,
+
+            -- pipewire docs: Change node priority:
+            -- Device priorities are usually from 0 to 2000.
+            ["priority.session"] = 3000,
+
+            -- pipewire docs: ALSA Buffer Properties
+            -- extra delay between hardware pointers and software pointers
+            ["api.alsa.headroom"] = 64,
+
+            -- Interface: Arturia Audiofuse
+            -- Reaper using alsa only can do this, without any pops;
+            --   Rate 48000
+            --   Size 168
+            --   Periods 3
+
+            -- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
+            ["api.alsa.rate"] = 48000,
+            ["api.alsa.period-num"] = 3,
+            ["api.alsa.period-size"] = 168, -- and run reaper with PIPEWIRE_LATENCY=384/48000 reaper, this gives 8ms latency
+
+            -- experiments
+            --["api.alsa.period-size"] = 128,
+            --["api.alsa.period-size"] = 144,
+            --["api.alsa.period-size"] = 160,
+            --["api.alsa.period-size"] = 256,
+          },
+        })
+      '')
+    ];
   };
 
   # jack
@@ -154,82 +226,6 @@
       # node.force-quantum = 384 # 0.008s
       # node.force-quantum = 480 # 0.01s
     }
-  '';
-
-  environment.etc."wireplumber/main.lua.d/98-alsa-no-pop.lua".text = ''
-    table.insert(alsa_monitor.rules, {
-      matches = {
-        {
-          -- run pw-top to see the names
-          { "node.name", "matches", "alsa_input.usb-LINE_6_HELIX*" },
-          { "node.name", "matches", "alsa_output.usb-LINE_6_HELIX*" },
-        },
-      },
-      apply_properties = {
-        -- keep it alive
-        ["session.suspend-timeout-seconds"] = 0,
-        ["suspend-node"] = false,
-        ["node.pause-on-idle"] = false,
-        ["api.alsa.disable-batch"] = false,
-        ["priority.session"] = 3000,
-        ["api.alsa.rate"] = 48000,
-        ["api.alsa.period-size"] = 128,
-      }
-    })
-
-    table.insert(alsa_monitor.rules, {
-      matches = {
-        {
-          -- run pw-top to see the names
-          { "node.name", "matches", "alsa_input.usb-ARTURIA_AudioFuse*" },
-          { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
-        },
-      },
-      apply_properties = {
-
-        -- keep it alive
-        ["session.suspend-timeout-seconds"] = 0,
-        ["suspend-node"] = false,
-        ["node.pause-on-idle"] = false,
-
-        -- pipewire docs: ALSA Buffer Properties:
-        -- It removes the extra delay added of period-size/2 if the device can
-        -- support this. for batch devices it is also a good idea to lower the
-        -- period-size (and increase the IRQ frequency) to get smaller batch
-        -- updates and lower latency.
-        ["api.alsa.disable-batch"] = false,
-
-        -- pipewire docs: Change node priority:
-        -- Device priorities are usually from 0 to 2000.
-        ["priority.session"] = 3000,
-
-        -- pipewire docs: ALSA Buffer Properties
-        -- extra delay between hardware pointers and software pointers
-        ["api.alsa.headroom"] = 64,
-
-        -- ???
-        -- Interface: Arturia Audiofuse
-        -- Reaper using alsa only can do this, without any pops;
-        --   Rate 48000
-        --   Size 168
-        --   Periods 3
-        -- ???
-
-        -- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
-        ["api.alsa.rate"] = 48000,
-
-        ["api.alsa.period-num"] = 3,
-        --["api.alsa.period-num"] = 2,
-
-        ["api.alsa.period-size"] = 168, -- and run reaper with PIPEWIRE_LATENCY=384/48000 reaper, this gives 8ms latency
-
-        -- experiments
-        --["api.alsa.period-size"] = 128,
-        --["api.alsa.period-size"] = 144,
-        --["api.alsa.period-size"] = 160,
-        --["api.alsa.period-size"] = 256,
-      },
-    })
   '';
 
   # help reaper control cpu latency, when you start it from audio group user
