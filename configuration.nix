@@ -226,6 +226,10 @@ in {
     qemu
     samba
     tigervnc
+
+    # yubikey bio
+    pam_u2f # setup keys: pamu2fcfg > ~/.config/Yubico/u2f_keys
+    yubikey-manager # unlock with: ykman fido access verify-pin
   ];
 
   programs.thunar.enable = true;
@@ -301,6 +305,19 @@ in {
     '';
   };
 
+  # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/security/pam.nix#L163
+  security.pam.u2f = {
+    enable = true;
+    # don't require both pw and biometrics
+    control = "sufficient";
+    # send que when to biometric touch
+    cue = true;
+    # debug to stdout
+    #debug = true;
+    #interactive = true;
+  };
+
+  security.pam.services.torgeir.u2fAuth = true;
   # services.getty.autologinUser = lib.mkForce "torgeir";
 
   # thunderbolt
