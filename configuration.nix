@@ -190,6 +190,7 @@ in {
       "1password"
       "1password-cli"
       "1password-gui"
+      "1password-gui-beta"
 
       "dropbox"
 
@@ -206,6 +207,7 @@ in {
   programs._1password-gui = {
     enable = true;
     polkitPolicyOwners = [ "torgeir" ];
+    # package = pkgs._1password-gui-beta;
   };
 
   environment.systemPackages = with pkgs; [
@@ -231,6 +233,11 @@ in {
     pam_u2f # setup keys: pamu2fcfg > ~/.config/Yubico/u2f_keys
     yubikey-manager # unlock with: ykman fido access verify-pin
   ];
+
+  # 1password save 2fa codes here
+  services.gnome.gnome-keyring.enable = true;
+  # browse with seahorse
+  programs.seahorse.enable = true;
 
   programs.thunar.enable = true;
   programs.thunar.plugins = with pkgs.xfce; [
@@ -273,9 +280,19 @@ in {
 
   # here, and not home-manager, as my own config is in dotfiles/
   programs.sway.enable = true;
+  services.dbus.enable = true;
 
   # sway needs polkit
-  security.polkit.enable = true;
+  security.polkit = {
+    enable = true;
+
+    debug = true;
+    extraConfig = ''
+      polkit.addRule(function(action, subject) {
+        polkit.log("User " +  subject.user + " is attempting action " + action.id + " from PID " + subject.pid);
+      });
+    '';
+  };
 
   # only wheels sudo
   security.sudo = {
@@ -317,8 +334,11 @@ in {
     #interactive = true;
   };
 
-  security.pam.services.torgeir.u2fAuth = true;
+  # auto login torgeir
   # services.getty.autologinUser = lib.mkForce "torgeir";
+
+  # support yubikey for sudo and login
+  security.pam.services.torgeir.u2fAuth = true;
 
   # thunderbolt
   # owc 11-port dock
