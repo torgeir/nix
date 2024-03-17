@@ -45,6 +45,12 @@
       [ "subvol=nix" "noatime" "nodiscard" "space_cache=v2" "compress=lzo" ];
   };
 
+  fileSystems."/backup" = {
+    device = "/dev/disk/by-uuid/40c284d3-35f3-4f19-b7d3-ee66fce8cfeb";
+    fsType = "ext4";
+    options = [ "ro" ];
+  };
+
   # add more lsblk -o PATH,FSTYPE,UUID
 
   # use zramSwap instead
