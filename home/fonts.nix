@@ -17,11 +17,11 @@ in {
     # https://github.com/NixOS/nixpkgs/blob/master/pkgs/data/fonts/iosevka/variants.nix
     font-awesome
     (pkgs.callPackage ./../pkgs/patch-nerd-fonts {
-      font = pkgs.iosevka-bin.override { variant = "sgr-iosevka-etoile"; };
+      font = pkgs.iosevka-bin.override { variant = "Etoile"; };
     })
     (pkgs.callPackage ./../pkgs/patch-nerd-fonts {
       font =
-        pkgs.iosevka-bin.override { variant = "sgr-iosevka-term-curly-slab"; };
+        pkgs.iosevka-bin.override { variant = "SGr-IosevkaTermCurlySlab"; };
     })
   ];
 

@@ -254,8 +254,6 @@ in {
       };
     };
 
-    steam = { enable = true; };
-
     # shell
     zsh.enable = true;
   };
