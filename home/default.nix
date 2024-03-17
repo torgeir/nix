@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "4d46ae495e0ba924474c9cbd6b4df46a21ed076d";
+    rev = "2044af9c0eb2cf9435e38badec5b929538038409";
   };
 in {
 
@@ -156,6 +156,10 @@ in {
     ".inputrc".source = dotfiles + "/inputrc";
     ".tmux.conf".source = dotfiles + "/tmux.conf";
   };
+
+  # sway extras for testing sway configuration
+  # environment.etc."sway/config.d/sway_extra.conf".text = ''
+  # '';
 
   # sops with home manager is a little different, see configuration.nix
   #   imports = [ inputs.sops-nix.homeManagerModules.sops ];

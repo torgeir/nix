@@ -20,10 +20,10 @@ in {
 
   imports = [
     ./hardware-configuration.nix
-
     ./realtime-audio.nix
-
     inputs.nix-gaming.nixosModules.steamCompat
+    ./modules/_1password.nix
+    ./modules/qemu.nix
   ];
 
   boot.loader.systemd-boot = {
@@ -59,8 +59,6 @@ in {
 
     # https://web.archive.org/web/20171228022907/https://blog.le-vert.net/?p=24
     # https://askubuntu.com/questions/1272026/acpi-bios-error-bug-could-not-resolve-symbol-sb-pcio-sato-prto-gtf-dssp
-    # TODO torgeir did not have an effect?
-    # "libata.noacpi=1"
 
     # fix wierd bus size thunderbolt usb pci rescan not able to hotplug?
     # https://forum.level1techs.com/t/asrock-x570-phantom-tb3-itx-and-linux-no-bus-number-available-for-hot-added-bridge/156951/7
@@ -160,10 +158,6 @@ in {
   networking.firewall.enable = true;
   # networking.firewall.allowedTCPPorts = ...;
   # networking.firewall.allowedUDPPorts = [ ... ];
-  # TODO torgeir
-  # systemd.services.NetworkManager-wait-online.enable = false;
-  # systemd.network.wait-online.anyInterface = false;
-  # systemd.network.wait-online.enable = false;
 
   # locale
   i18n.defaultLocale = "en_US.UTF-8";
@@ -202,14 +196,6 @@ in {
       "steam-original"
     ];
 
-  # password manager
-  programs._1password.enable = true;
-  programs._1password-gui = {
-    enable = true;
-    polkitPolicyOwners = [ "torgeir" ];
-    # package = pkgs._1password-gui-beta;
-  };
-
   environment.systemPackages = with pkgs; [
     git
     vim
@@ -224,10 +210,6 @@ in {
     gnumake
     coreutils
     lm_sensors
-
-    qemu
-    samba
-    tigervnc
 
     # yubikey bio
     pam_u2f # setup keys: pamu2fcfg > ~/.config/Yubico/u2f_keys
