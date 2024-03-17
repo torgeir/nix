@@ -259,13 +259,15 @@ in {
   };
 
   # here, and not home-manager, as my own config is in dotfiles/
-  programs.sway.enable = true;
+  programs.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true;
+  };
   services.dbus.enable = true;
 
   # sway needs polkit
   security.polkit = {
     enable = true;
-
     debug = true;
     extraConfig = ''
       polkit.addRule(function(action, subject) {
