@@ -1,8 +1,11 @@
 {
   description = "torgnix flake";
 
+  # https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html#examples
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-locked.url =
+      "github:NixOS/nixpkgs/1042fd8b148a9105f3c0aca3a6177fd1d9360ba5";
 
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-23.05";
 
@@ -25,8 +28,8 @@
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-stable, home-manager
-    , nixpkgs-wayland, musnix, nix-gaming, sops-nix, deploy-rs }: rec {
+  outputs = inputs@{ self, deploy-rs, home-manager, musnix, nix-gaming, nixpkgs
+    , nixpkgs-locked, nixpkgs-stable, nixpkgs-wayland, sops-nix }: rec {
 
       # https://github.com/sebastiant/dotfiles/blob/master/flake.nix
       # https://github.com/wiltaylor/dotfiles

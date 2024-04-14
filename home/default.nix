@@ -41,7 +41,8 @@ in {
 
     # emacs
     nil # nix lsp https://github.com/oxalica/nil
-    nixfmt
+    # TODO torgeir trace: warning: nixfmt was renamed to nixfmt-classic. The nixfmt attribute may be used for the new RFC 166-style formatter i
+    nixfmt-classic
 
     # env
     direnv

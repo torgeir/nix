@@ -16,7 +16,7 @@ in {
     '';
   };
 
-  nixpkgs.overlays = [ (import ./overlay.nix) ];
+  nixpkgs.overlays = [ (import ./overlay.nix { inherit inputs; }) ];
 
   imports = [
     ./hardware-configuration.nix

@@ -14,10 +14,11 @@ in {
     enable = true;
     #  https://www.reddit.com/r/emacs/comments/rj8k32/the_pgtk_pure_gtk_branch_was_merged/
     package = emacs;
-    extraPackages = epkgs: [ epkgs.vterm
-    pkgs.mu # sic
-    epkgs.mu4e
-  ];
+    extraPackages = epkgs: [
+      epkgs.vterm
+      pkgs.mu # sic
+      epkgs.mu4e
+    ];
   };
 
   xdg.enable = true;
