@@ -211,6 +211,9 @@ in {
     coreutils
     lm_sensors
 
+    # rx6800xt
+    amdgpu_top
+
     # yubikey bio
     pam_u2f # setup keys: pamu2fcfg > ~/.config/Yubico/u2f_keys
     yubikey-manager # unlock with: ykman fido access verify-pin
