@@ -332,6 +332,17 @@ in {
   # save ssds
   services.fstrim.enable = true;
 
+  # containers
+  #   systemctl --user start docker
+  virtualisation.docker = {
+    storageDriver = "btrfs";
+    rootless = {
+      enable = true;
+      setSocketVariable = true;
+      daemon.settings = { data-root = "/home/torgeir/data"; };
+    };
+  };
+
   # zram instead of swap
   zramSwap = {
     enable = true;
