@@ -140,9 +140,8 @@ in {
 
   # amd gpu
   boot.initrd.kernelModules = [ "amdgpu" ];
-  hardware.opengl.enable = true;
-  hardware.opengl.driSupport = true;
-  hardware.opengl.extraPackages = with pkgs; [ amdvlk ];
+  hardware.graphics.enable = true;
+  hardware.graphics.extraPackages = with pkgs; [ amdvlk ];
 
   time.timeZone = "Europe/Oslo";
   networking.hostName = "torgnix";
