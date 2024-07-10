@@ -155,7 +155,12 @@ in {
   #
   # firewall
   networking.firewall.enable = true;
-  # networking.firewall.allowedTCPPorts = ...;
+  networking.firewall.allowedTCPPorts = [
+    # 80
+    443
+    7860
+    11434
+  ];
   # networking.firewall.allowedUDPPorts = [ ... ];
 
   # locale
@@ -216,7 +221,11 @@ in {
     # yubikey bio
     pam_u2f # setup keys: pamu2fcfg > ~/.config/Yubico/u2f_keys
     yubikey-manager # unlock with: ykman fido access verify-pin
+
+    tailscale
   ];
+
+  services.tailscale.enable = true;
 
   # 1password save 2fa codes here
   services.gnome.gnome-keyring.enable = true;
@@ -340,6 +349,21 @@ in {
       setSocketVariable = true;
       daemon.settings = { data-root = "/home/torgeir/data"; };
     };
+  };
+
+  # TODO auto start docker compose for torgeir
+
+  # forward https to traefik in docker-compose
+  services.nginx = {
+    enable = true;
+    recommendedProxySettings = true;
+    recommendedTlsSettings = true;
+    streamConfig = ''
+      server {
+        listen 0.0.0.0:443;
+        proxy_pass 127.0.0.1:8443;
+      }
+    '';
   };
 
   # zram instead of swap
