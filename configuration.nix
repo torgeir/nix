@@ -312,7 +312,7 @@ in {
     # don't require both pw and biometrics
     control = "sufficient";
     # send que when to biometric touch
-    cue = true;
+    settings.cue = true;
     # debug to stdout
     #debug = true;
     #interactive = true;
