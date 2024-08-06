@@ -15,6 +15,8 @@ in {
     #  https://www.reddit.com/r/emacs/comments/rj8k32/the_pgtk_pure_gtk_branch_was_merged/
     package = emacs;
     extraPackages = epkgs: [
+      # TODO not nescessary? native compile seems to work fine on linux now
+      #pkgs.libgccjit
       epkgs.vterm
       pkgs.mu # sic
       epkgs.mu4e
@@ -54,7 +56,7 @@ in {
     "emacs" = {
       source = builtins.fetchGit {
         url = "https://github.com/hlissner/doom-emacs";
-        rev = "d6db0312fdf8c3a69d1aac243808b824ec9491e7";
+        rev = "d66dd5593afd45ff932d7263ddf6411104acf60e";
       };
       # rev bumps will make doom sync run
       onChange = "${pkgs.writeShellScript "doom-change" ''
