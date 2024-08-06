@@ -21,7 +21,6 @@ in {
   imports = [
     ./hardware-configuration.nix
     ./realtime-audio.nix
-    inputs.nix-gaming.nixosModules.steamCompat
     ./modules/_1password.nix
     ./modules/qemu.nix
   ];
