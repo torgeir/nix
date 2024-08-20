@@ -222,6 +222,8 @@ in {
     yubikey-manager # unlock with: ykman fido access verify-pin
 
     tailscale
+
+    krita
   ];
 
   services.tailscale.enable = true;
