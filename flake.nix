@@ -2,6 +2,7 @@
   description = "torgnix flake";
 
   # https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html#examples
+  #   nix flake lock --update-input nix-gaming
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-locked.url =
