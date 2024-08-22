@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "ebc55b9f5da86a45eb4b191502d7b5a122911f64";
+    rev = "2c6921c79610318b073fe15525388fde7a04b850";
   };
 in {
 
@@ -133,8 +133,9 @@ in {
 
     "bg.jpg".source = dotfiles + "/bg.jpg";
 
-    ".config/alacritty/alacritty.toml".source = dotfiles
-      + "/config/alacritty/alacritty.toml";
+    ".config/btop/themes/catpuccin-mocha.theme".source = dotfiles
+      + "/config/btop/themes/catpuccin-mocha.theme";
+    ".config/alacritty".source = dotfiles + "/config/alacritty";
     ".config/sway".source = dotfiles + "/config/sway";
     ".config/xkb".source = dotfiles + "/config/xkb";
     ".config/environment.d/envvars.conf".source = dotfiles
