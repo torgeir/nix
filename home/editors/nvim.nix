@@ -19,7 +19,7 @@
       editorconfig-vim
 
       # https://www.google.com/search?client=firefox-b-d&q=nvim-catppuccin
-      # catppuccin-nvim
+      catppuccin-nvim
 
       {
         plugin = lightline-vim;
