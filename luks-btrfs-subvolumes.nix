@@ -14,9 +14,7 @@
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
-                mountOptions = [
-                  "defaults"
-                ];
+                mountOptions = [ "defaults" ];
               };
             };
             luks = {
@@ -28,6 +26,7 @@
 
                 # interactive password prompt on boot
                 # make sure there is no trailing newline, echo -n "password" > /tmp/secret.key`
+                # this sets the password when partitioning the drive on first run, after the file can be removed
                 passwordFile = "/tmp/secret.key";
 
                 content = {

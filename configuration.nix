@@ -91,7 +91,11 @@ in {
   # EOF
   #
   # insert secrets
-  #   nix-shell -p sops --run "sops secrets.yaml"
+  #   SOPS_AGE_KEY_FILE=/etc/nix-sops-smb.key EDITOR=emacsclient nix-shell -p sops --run "sops secrets.yaml"
+  # and put e.g.
+  #   smb: |
+  #     username: <username>
+  #     password: <password>
   #
   # if you don't feel like committing secrets.yaml,
   # check out untrack-secrets.sh
