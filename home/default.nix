@@ -75,7 +75,6 @@ in {
     # sensors
     inxi
     btop
-    psensor
     i3status-rust
 
     #https://nixos.wiki/wiki/Samba
