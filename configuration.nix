@@ -50,11 +50,12 @@ in {
     # rt kernel tuning
     # - https://ubuntu.com/blog/real-time-kernel-tuning
     # - https://lwn.net/Articles/816298/
-    "nohz=on"
-    "nohz_full=24-31"
-    "kthread_cpus=0-23"
-    "irqaffinity=0-23"
-    "isolcpus=managed_irq,nohz,domain,24-31"
+    #TODO fjerna disse noe er funky steam rbuker bare 1 cpu til shader caching?
+    #"nohz=on"
+    #"nohz_full=24-31"
+    #"kthread_cpus=0-23"
+    #"irqaffinity=0-23"
+    #"isolcpus=managed_irq,nohz,domain,24-31"
 
     # https://web.archive.org/web/20171228022907/https://blog.le-vert.net/?p=24
     # https://askubuntu.com/questions/1272026/acpi-bios-error-bug-could-not-resolve-symbol-sb-pcio-sato-prto-gtf-dssp
