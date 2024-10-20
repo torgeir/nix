@@ -247,6 +247,12 @@
     # restart dhcpcd on sleep wake
     ACTION=="remove", SUBSYSTEM=="usb", DRIVERS=="usb", ATTRS{idVendor}=="1c75", ATTRS{idProduct}=="af02", RUN+="${pkgs.systemd}/bin/systemctl --no-block stop dhcpcd.service"
     ACTION=="add", SUBSYSTEM=="usb", DRIVERS=="usb", ATTRS{idVendor}=="1c75", ATTRS{idProduct}=="af02", RUN+="${pkgs.systemd}/bin/systemctl --no-block restart dhcpcd.service"
+
+    # prevent ps4 touchpad acting as mouse
+    # usb
+    #ACTION=="add|change", ATTRS{name}=="Sony Interactive Entertainment Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+    # bluetooth
+    #ACTION=="add|change", ATTRS{name}=="Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
   '';
 
   # force full perf cpu mode
