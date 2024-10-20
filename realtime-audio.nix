@@ -124,6 +124,10 @@
   #   systemctl --user status pipewire wireplumber
   #   systemctl --user restart pipewire wireplumber
   services.pipewire = {
+    # TODO seem to have issues with xruns on pipewire somewhere
+    # between unstable-locked and 1.0.7, didnt investigate
+    # https://github.com/NixOS/nixpkgs/commit/32f795fd19541848743328a1f9dd09242898026b
+    package = pkgs.unstable-locked.pipewire;
     enable = true;
     audio.enable = true;
     wireplumber.enable = true;
