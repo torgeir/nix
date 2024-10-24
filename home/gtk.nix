@@ -10,7 +10,7 @@ in {
     theme = {
       name = theme-name;
       # https://github.com/NixOS/nixpkgs/blob/7ce8e7c4cf90492a631e96bcfe70724104914381/pkgs/data/themes/catppuccin-gtk/default.nix#L16
-      package = pkgs.catppuccin-gtk.override {
+      package = pkgs.unstable-locked.catppuccin-gtk.override {
         accents = [ "sapphire" ];
         size = "compact";
         tweaks = [ "rimless" ];
