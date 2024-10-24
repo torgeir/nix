@@ -202,6 +202,7 @@ in {
       "steam"
       "steam-run"
       "steam-original"
+      "steam-unwrapped"
     ];
 
   environment.systemPackages = with pkgs; [
