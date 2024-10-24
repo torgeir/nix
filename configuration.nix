@@ -276,6 +276,7 @@ in {
     };
 
     steam.enable = true;
+    steam.extraCompatPackages = [ pkgs.proton-ge-bin ];
 
     # shell
     zsh.enable = true;
