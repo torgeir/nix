@@ -165,7 +165,7 @@ in {
     7860
     11434
   ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ 4242 ];
 
   # locale
   i18n.defaultLocale = "en_US.UTF-8";
@@ -230,6 +230,9 @@ in {
     tailscale
 
     krita
+
+    # head tracking
+    # opentrack
   ];
 
   services.tailscale.enable = true;
