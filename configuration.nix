@@ -218,9 +218,7 @@ in {
 
   environment.systemPackages = with pkgs; [
     git
-    vim
     ark
-    fzf
     wget
     unzip
     python3

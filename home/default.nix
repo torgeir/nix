@@ -3,18 +3,17 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "a7a348c4d4918c3faba41d1f5188d0bfe7dae00e";
+    rev = "4d6ffad78640bfe606c24933ba9e58bd330e7cb1";
   };
 
   nix-home-manager = builtins.fetchGit {
     url = "https://github.com/torgeir/nix-home-manager";
-    rev = "a91e91bcb52bb6ecc1537d2052ea0548551f8fac";
+    rev = "cd17b1913312b3bc57a8af5d290082317682a8d8";
   };
 in {
 
   imports = [
     ./audio-production.nix
-    ./autojump.nix
     ./browser.nix
     ./gtk.nix
     ./fonts.nix
@@ -27,6 +26,10 @@ in {
 
   programs.t-doomemacs.enable = true;
   programs.t-nvim.enable = true;
+  programs.t-terminal.alacritty.enable = true;
+  programs.t-zoxide.enable = true;
+  programs.t-shell-tooling.enable = true;
+  programs.t-tmux.enable = true;
 
   # find package paths with nix-env -qaP <pkg>
   #   nix-env -qaP nodejs
@@ -34,14 +37,9 @@ in {
   # the same name is used here
   home.packages = with pkgs; [
 
+    resources
+
     # terminal
-    fd
-    alacritty
-    bat
-    eza
-    fzf
-    htop
-    tmux
     delta
     difftastic
     # TODO configure CONFIG_LATENCYTOP?
@@ -52,13 +50,8 @@ in {
     # TODO torgeir trace: warning: nixfmt was renamed to nixfmt-classic. The nixfmt attribute may be used for the new RFC 166-style formatter i
     nixfmt-classic
 
-    # env
-    direnv
-
     # tools
     killall
-    jq
-    (ripgrep.override { withPCRE2 = true; })
     # screenshots
     grim
     slurp
@@ -69,11 +62,6 @@ in {
     imagemagick
     gnuplot
 
-    # email
-    mu
-    isync
-    msmtp
-
     # notifications
     mako
     libnotify
@@ -82,7 +70,6 @@ in {
 
     # sensors
     inxi
-    btop
     i3status-rust
 
     #https://nixos.wiki/wiki/Samba
@@ -140,9 +127,6 @@ in {
 
     "bg.jpg".source = dotfiles + "/bg.jpg";
 
-    ".config/btop/themes/catpuccin-mocha.theme".source = dotfiles
-      + "/config/btop/themes/catpuccin-mocha.theme";
-    ".config/alacritty".source = dotfiles + "/config/alacritty";
     ".config/sway".source = dotfiles + "/config/sway";
     ".config/xkb".source = dotfiles + "/config/xkb";
     ".config/environment.d/envvars.conf".source = dotfiles
@@ -161,9 +145,7 @@ in {
     ".zsh".source = dotfiles + "/zsh/";
     ".zshrc".source = dotfiles + "/zshrc";
     ".zprofile".source = dotfiles + "/profile";
-    ".fzfrc".source = dotfiles + "/fzfrc";
     ".inputrc".source = dotfiles + "/inputrc";
-    ".tmux.conf".source = dotfiles + "/tmux.conf";
   };
 
   # sway extras for testing sway configuration
