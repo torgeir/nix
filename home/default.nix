@@ -8,7 +8,7 @@ let
 
   nix-home-manager = builtins.fetchGit {
     url = "https://github.com/torgeir/nix-home-manager";
-    rev = "e698b5e22ee002d1d289bfda5b37cedc0ab0ed77";
+    rev = "a91e91bcb52bb6ecc1537d2052ea0548551f8fac";
   };
 in {
 
@@ -21,12 +21,12 @@ in {
     ./gpg.nix
     ./gaming.nix
     ./tofi.nix
-    ./editors
     ./file-manager.nix
     (nix-home-manager + "/modules")
   ];
 
-  programs.doomemacs.enable = true;
+  programs.t-doomemacs.enable = true;
+  programs.t-nvim.enable = true;
 
   # find package paths with nix-env -qaP <pkg>
   #   nix-env -qaP nodejs
