@@ -5,6 +5,11 @@ let
     url = "https://github.com/torgeir/dotfiles";
     rev = "6ec98199d97da9895a9ba8e87758578ae59b7f06";
   };
+
+  nix-home-manager = builtins.fetchGit {
+    url = "https://github.com/torgeir/nix-home-manager";
+    rev = "e698b5e22ee002d1d289bfda5b37cedc0ab0ed77";
+  };
 in {
 
   imports = [
@@ -18,7 +23,10 @@ in {
     ./tofi.nix
     ./editors
     ./file-manager.nix
+    (nix-home-manager + "/modules")
   ];
+
+  programs.doomemacs.enable = true;
 
   # find package paths with nix-env -qaP <pkg>
   #   nix-env -qaP nodejs
