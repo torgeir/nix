@@ -10,7 +10,7 @@ let
     "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh";
 in {
   nix = {
-    package = pkgs.nixFlakes;
+    package = pkgs.nixVersions.stable;
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
@@ -153,6 +153,16 @@ in {
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
 
+  # make xbox controllers able to pair
+  hardware.bluetooth.settings = {
+    General = {
+      # this was already in the config file
+      ControllerMode = "dual";
+      # this was not, the controllers need a private channel to pair
+      Privacy = "device";
+    };
+  };
+
   # wireless
   # networking.wireless.enable = true;
   # networking.networkmanager.enable = true;
@@ -180,6 +190,7 @@ in {
       "corectrl" # adjust gpu fans
       "audio" # realtime audio for user
       "pipewire" # realtime audio for pw
+      "video"
     ];
   };
 
@@ -213,6 +224,7 @@ in {
     wget
     unzip
     python3
+    p7zip
     pciutils # e.g. lspci
     usbutils # e.g. lsusb
     cmake
@@ -233,6 +245,8 @@ in {
 
     # head tracking
     # opentrack
+    # webcam support, v4l2-ctl --list-devices
+    v4l-utils
   ];
 
   services.tailscale.enable = true;
@@ -277,6 +291,7 @@ in {
 
     steam.enable = true;
     steam.extraCompatPackages = [ pkgs.proton-ge-bin ];
+    steam.protontricks.enable = true;
 
     # shell
     zsh.enable = true;
