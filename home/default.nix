@@ -3,7 +3,7 @@
 let
   dotfiles = builtins.fetchGit {
     url = "https://github.com/torgeir/dotfiles";
-    rev = "6ec98199d97da9895a9ba8e87758578ae59b7f06";
+    rev = "a7a348c4d4918c3faba41d1f5188d0bfe7dae00e";
   };
 
   nix-home-manager = builtins.fetchGit {
