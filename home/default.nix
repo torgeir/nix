@@ -8,7 +8,7 @@ let
 
   nix-home-manager = builtins.fetchGit {
     url = "https://github.com/torgeir/nix-home-manager";
-    rev = "cd17b1913312b3bc57a8af5d290082317682a8d8";
+    rev = "d1ce560380948c7f00ab4666e352ca445de5042c";
   };
 in {
 
