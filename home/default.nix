@@ -1,11 +1,6 @@
-{ config, lib, pkgs, inputs, ... }:
+{ dotfiles, config, lib, pkgs, inputs, ... }:
 
 let
-  dotfiles = builtins.fetchGit {
-    url = "https://github.com/torgeir/dotfiles";
-    rev = "0ef8a92523ca9d463d54bcd8d1afacd526a4b6de";
-  };
-
   nix-home-manager = builtins.fetchGit {
     url = "https://github.com/torgeir/nix-home-manager";
     rev = "d1ce560380948c7f00ab4666e352ca445de5042c";

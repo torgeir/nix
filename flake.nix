@@ -58,7 +58,14 @@
             home-manager.useUserPackages = true;
 
             # pass inputs to imported modules for users
-            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.extraSpecialArgs = {
+              inherit inputs;
+              # https://github.com/torgeir/nix-home-manager/tree/main/modules/ .nix files need dotfiles parameter
+              dotfiles = builtins.fetchGit {
+                url = "https://github.com/torgeir/dotfiles";
+                rev = "957bc71445f09fd7ddfb05aca76b9390bb81b9de";
+              };
+            };
             home-manager.users.torgeir = import ./home;
           }
         ];
