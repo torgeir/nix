@@ -22,6 +22,21 @@
         "type": "github"
       }
     },
+    "dotfiles": {
+      "locked": {
+        "lastModified": 1731850033,
+        "narHash": "sha256-XqpUSvhpl9TOKucfu3KOtAuPXNHlwFy8gbCHvAanAB0=",
+        "owner": "torgeir",
+        "repo": "dotfiles",
+        "rev": "8c526e0e88518f7a561d65c78725bd7b2695a09c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "torgeir",
+        "repo": "dotfiles",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -235,6 +250,21 @@
         "type": "github"
       }
     },
+    "nix-home-manager": {
+      "locked": {
+        "lastModified": 1731868968,
+        "narHash": "sha256-M/YfQmy92HV0U59fhKGGUshFzNUPCaXVDIlR/VERWQQ=",
+        "owner": "torgeir",
+        "repo": "nix-home-manager",
+        "rev": "efc0a073ff9355500b05ef85d4373273a43dc71c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "torgeir",
+        "repo": "nix-home-manager",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1730200266,
@@ -368,9 +398,11 @@
     "root": {
       "inputs": {
         "deploy-rs": "deploy-rs",
+        "dotfiles": "dotfiles",
         "home-manager": "home-manager",
         "musnix": "musnix",
         "nix-gaming": "nix-gaming",
+        "nix-home-manager": "nix-home-manager",
         "nixpkgs": "nixpkgs",
         "nixpkgs-locked": "nixpkgs-locked",
         "nixpkgs-stable": "nixpkgs-stable",

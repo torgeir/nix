@@ -10,9 +10,6 @@
 
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-23.05";
 
-    home-manager.url = "github:nix-community/home-manager";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
     nixpkgs-wayland.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -27,10 +24,19 @@
 
     deploy-rs.url = "github:serokell/deploy-rs";
     deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
+
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    # nix flake lock --update-input nix-home-manager
+    nix-home-manager.url = "github:torgeir/nix-home-manager";
+    # nix flake lock --update-input dotfiles
+    dotfiles.url = "github:torgeir/dotfiles";
   };
 
   outputs = inputs@{ self, deploy-rs, home-manager, musnix, nix-gaming, nixpkgs
-    , nixpkgs-locked, nixpkgs-stable, nixpkgs-wayland, sops-nix }: rec {
+    , nixpkgs-locked, nixpkgs-stable, nixpkgs-wayland, sops-nix
+    , nix-home-manager, dotfiles }: rec {
 
       # https://github.com/sebastiant/dotfiles/blob/master/flake.nix
       # https://github.com/wiltaylor/dotfiles
@@ -60,11 +66,12 @@
             # pass inputs to imported modules for users
             home-manager.extraSpecialArgs = {
               inherit inputs;
+
               # https://github.com/torgeir/nix-home-manager/tree/main/modules/ .nix files need dotfiles parameter
-              dotfiles = builtins.fetchGit {
-                url = "https://github.com/torgeir/dotfiles";
-                rev = "957bc71445f09fd7ddfb05aca76b9390bb81b9de";
-              };
+              dotfiles = inputs.dotfiles;
+
+              # hack around infinite recursion with pkgs.stdenv.isLinux in nix-home-manager modules
+              isLinux = true;
             };
             home-manager.users.torgeir = import ./home;
           }
