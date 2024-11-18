@@ -9,7 +9,6 @@ in {
     ./fonts.nix
     ./gpg.nix
     ./gaming.nix
-    ./tofi.nix
     ./file-manager.nix
     (inputs.nix-home-manager + "/modules")
   ];
