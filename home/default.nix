@@ -32,7 +32,7 @@ in {
       client.focused #00aaff #ff00aa #00ffaa
 
       output DP-2 {
-        #bg ~/bg.jpg fill
+        bg ~/.config/bg.jpg fill
         position 0,0
         transform 0
 
@@ -51,7 +51,7 @@ in {
         # torgeir: still not ok, 2023-08
         #position 2560,-1150
         #position 0,0
-        #bg ~/bg.jpg fill
+        bg ~/.config/bg.jpg fill
         transform 270
         mode 2560x1440@59.951Hz
       }
