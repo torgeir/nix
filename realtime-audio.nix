@@ -3,13 +3,13 @@
   imports = [ inputs.musnix.nixosModules.musnix ];
 
   # realtime kernel
-  musnix.kernel.realtime = true;
-  musnix.kernel.packages = pkgs.linuxPackages_6_6_rt;
+  #musnix.kernel.realtime = true;
+  #musnix.kernel.packages = pkgs.linuxPackages_6_11_rt;
   # musnix.rtirq.nameList = "xhci_hcd";
   # musnix.rtirq.enable = true;
   #
   # or, latest kernel has realtime audio improvements
-  # boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_6;
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
 
   # permission denied when creating cpuset.cpus
   # https://www.reddit.com/r/NixOS/comments/158azri/changing_user_slices_cgroup_controllers/
