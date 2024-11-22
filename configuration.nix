@@ -145,7 +145,9 @@ in {
   # amd gpu
   boot.initrd.kernelModules = [ "amdgpu" ];
   hardware.graphics.enable = true;
-  hardware.graphics.extraPackages = with pkgs; [ amdvlk ];
+  environment.variables.AMD_VULKAN_ICD = "RADV";
+  # leave the below out, performs better than with amdvlk?
+  # hardware.graphics.extraPackages = with pkgs; [ amdvlk ];
 
   time.timeZone = "Europe/Oslo";
   networking.hostName = "torgnix";
