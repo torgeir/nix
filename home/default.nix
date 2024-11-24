@@ -236,8 +236,6 @@ in {
 
     "bg.jpg".source = dotfiles + "/bg.jpg";
 
-    ".config/environment.d/envvars.conf".source = dotfiles
-      + "/config/environment.d/envvars.conf";
     ".config/corectrl/profiles".source = dotfiles + "/config/corectrl/profiles";
     ".config/corectrl/corectrl.ini".source = dotfiles
       + "/config/corectrl/corectrl.ini";
