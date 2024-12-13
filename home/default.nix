@@ -171,9 +171,6 @@ in {
 
     resources
 
-    # TODO configure CONFIG_LATENCYTOP?
-    latencytop
-
     # tools
     killall
 
