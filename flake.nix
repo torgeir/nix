@@ -2,7 +2,7 @@
   description = "torgnix flake";
 
   # https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html#examples
-  #   nix flake lock --update-input nix-gaming
+  #   nix flake update nix-gaming
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-locked.url =
@@ -28,9 +28,9 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # nix flake lock --update-input nix-home-manager
+    # nix flake update nix-home-manager
     nix-home-manager.url = "github:torgeir/nix-home-manager";
-    # nix flake lock --update-input dotfiles
+    # nix flake update dotfiles
     dotfiles.url = "github:torgeir/dotfiles";
   };
 
