@@ -146,7 +146,7 @@ in {
   boot.initrd.kernelModules = [ "amdgpu" ];
   hardware.graphics.enable = true;
   environment.variables.AMD_VULKAN_ICD = "RADV";
-  # leave the below out, performs better than with amdvlk?
+  # leaving the below out performs better than with amdvlk
   # hardware.graphics.extraPackages = with pkgs; [ amdvlk ];
 
   time.timeZone = "Europe/Oslo";
@@ -193,6 +193,7 @@ in {
       "audio" # realtime audio for user
       "pipewire" # realtime audio for pw
       "video"
+      "dialout" # arduino, /dev/ttyUSB0
     ];
   };
 
@@ -240,6 +241,9 @@ in {
     yubikey-manager # unlock with: ykman fido access verify-pin
 
     tailscale
+
+    clojure
+    leiningen
 
     krita
 
