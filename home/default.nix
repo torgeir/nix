@@ -23,8 +23,10 @@ in {
   programs.t-sway = {
     enable = true;
     statusCommand = "${pkgs.i3status-rust}/bin/i3status-rs";
-    extraConfig = let term = "alacritty";
-    in ''
+    extraConfig = let
+        term = "alacritty";
+        status_term_font_size = "8";
+      in ''
 
       default_border pixel 5
       default_floating_border normal
@@ -71,10 +73,8 @@ in {
 
       for_window [title="Picture-in-Picture"] floating enable sticky enable border none
 
-      assign [class="Brave-browser"] 1
-      for_window [class="Brave-browser" title="Picture in picture"] floating enable sticky enable border none
-
-      # assign [class="Emacs"] 2
+      assign [app_id="emacs"] 2
+      assign [app_id="org.rncbc.qpwgraph"] 4
 
       assign [class="REAPER"] 3
       for_window [class="REAPER"] floating disable
@@ -98,7 +98,7 @@ in {
       for_window [title="term-journalctl"] resize set height 1560px
       for_window [title="CoreCtrl"] resize set height 1000px
 
-      assign [title="^Resources"] 7
+      assign [app_id="net.nokyan.Resources"] 7
       assign [title="term-top"] 7
       for_window [title="Resources"] resize set height 1660px
       for_window [title="term-top"] resize set height 900px
@@ -106,18 +106,30 @@ in {
       ##
       ## gaming
       ##
-      ## hack to fake disabled vsync
+      assign [class="steam"] 5
+      assign [class="steam_app.*"] 5
+      # assign [instance="steam"] 5
+      # assign [title=".*[sS]team.*"] 5
+      for_window [class="^steam_app.*"] move window to workspace number 5
       for_window [class="steam_app.*"] fullscreen enable
-      for_window [class="steam_app*"] inhibit_idle focus
+      for_window [class="steam_app.*"] inhibit_idle focus
+
+      assign [title="^DCS.*"] 5
+      assign [title="^Digital Combat Simulator.*"] 5
+
+      assign [title="^opentrack.*"] 6
+      assign [title="^Mapping.*"] 6
+      assign [title="^Options.*"] 6
+      for_window [title="^opentrack.*"] fullscreen disable; floating enable; move window to workspace number 6
+      for_window [title="^Mapping.*"] fullscreen disable; floating enable; move window to workspace number 6
+      for_window [title="^Options.*"] fullscreen disable; floating enable; move window to workspace number 6
+
       # FH5: move the black window off screen
       # FH5: keep the one with the game
       assign [class="steam_app_1551360"] 2
       assign [title="Forza Horizon 5"] 1
       for_window [class="steam_app_1551360"] move window to workspace number 2
       for_window [title="Forza Horizon 5"] move window to workspace number 1
-
-      # for_window [app_id="^.*"] floating enable, border none
-      # for_window [app_id="^.*"] fullscreen enable
 
       assign [class="Signal"] 8
       assign [app_id="Slack"] 8
@@ -129,31 +141,20 @@ in {
       #exec "signal-desktop --ozone-platform=wayland"
 
       workspace 6
-      exec "${term} --title term-journalctl -o font.size=$status_term_font_size -e journalctl -f "
+      exec "${term} --title term-journalctl -o font.size=${status_term_font_size} -e journalctl -f "
       exec "corectrl"
 
       workspace 7
-      # don't really need these any longer
-      # exec "${term} --title term-amdgpu-top amdgpu_top"
-      # exec "${term} --title term-htop -o font.size=$status_term_font_size -e htop"
-      exec "${term} --title term-top -o font.size=$status_term_font_size -e btop"
+      exec "${term} --title term-top -o font.size=${status_term_font_size} -e btop"
       exec 'resources'
 
       workspace 8
       exec dropbox
       exec spotify
 
-      workspace 4
       exec qpwgraph -stylesheet ~/.config/dotfiles/config/qpwgraph/style.qss ~/graph-setup.qpwgraph
-
-      workspace 5
-
-      workspace 1
       exec $browser
-
-      workspace 2
       exec emacs ~/nixos-config/configuration.nix
-      # exec 'sleep 2 && swaymsg move container to workspace 2'
     '';
   };
   programs.t-firefox = {
