@@ -239,6 +239,7 @@ in {
     # yubikey bio
     pam_u2f # setup keys: pamu2fcfg > ~/.config/Yubico/u2f_keys
     yubikey-manager # unlock with: ykman fido access verify-pin
+    yubioath-flutter # gui to set fingerprints
 
     tailscale
 
