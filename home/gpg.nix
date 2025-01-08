@@ -18,9 +18,7 @@
     defaultCacheTtlSsh = 28800;
     extraConfig = ''
       allow-preset-passphrase
-      pinentry-program ${
-        inputs.nixpkgs-wayland.packages.${pkgs.system}.wayprompt
-      }/bin/pinentry-wayprompt
+      pinentry-program ${pkgs.pinentry-qt}/bin/pinentry-qt
     '';
   };
 }

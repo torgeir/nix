@@ -10,9 +10,6 @@
 
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-23.05";
 
-    nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
-    nixpkgs-wayland.inputs.nixpkgs.follows = "nixpkgs";
-
     musnix.url = "github:musnix/musnix";
     musnix.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -35,7 +32,7 @@
   };
 
   outputs = inputs@{ self, deploy-rs, home-manager, musnix, nix-gaming, nixpkgs
-    , nixpkgs-locked, nixpkgs-stable, nixpkgs-wayland, sops-nix
+    , nixpkgs-locked, nixpkgs-stable, sops-nix
     , nix-home-manager, dotfiles }: rec {
 
       # https://github.com/sebastiant/dotfiles/blob/master/flake.nix

@@ -178,9 +178,6 @@ in {
     imagemagick
     gnuplot
 
-    # https://discourse.nixos.org/t/cant-get-gnupg-to-work-no-pinentry/15373/28?page=2
-    inputs.nixpkgs-wayland.packages.${system}.wayprompt
-
     #https://nixos.wiki/wiki/Samba
 
     # formats
