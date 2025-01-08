@@ -27,8 +27,9 @@ in {
   # https://github.com/quickemu-project/quickemu/issues/722
   qemu = prev.qemu.override { smbdSupport = true; };
 
+  # unstable is default now
   # pkgs.unstable.<something>
-  unstable = import inputs.nixpkgs-unstable { system = prev.system; };
+  #unstable = import inputs.nixpkgs-unstable { system = prev.system; };
 
   # pkgs.unstable-locked.<something>
   unstable-locked = import inputs.nixpkgs-locked { system = prev.system; };
