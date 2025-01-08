@@ -177,7 +177,7 @@ in {
     7860
     11434
   ];
-  # networking.firewall.allowedUDPPorts = [ 4242 ];
+  networking.firewall.allowedUDPPorts = [ 4242 ];
 
   # locale
   i18n.defaultLocale = "en_US.UTF-8";
@@ -249,7 +249,7 @@ in {
     krita
 
     # head tracking
-    # opentrack
+    opentrack
     # webcam support, v4l2-ctl --list-devices
     v4l-utils
   ];
