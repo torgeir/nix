@@ -25,7 +25,7 @@ in {
     statusCommand = "${pkgs.i3status-rust}/bin/i3status-rs";
     extraConfig = let
         term = "alacritty";
-        status_term_font_size = "9";
+        status_term_font_size = "10";
       in ''
 
       default_border pixel 5
