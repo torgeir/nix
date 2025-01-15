@@ -169,6 +169,9 @@ in {
   # the same name is used here
   home.packages = with pkgs; [
 
+    nerd-fonts.iosevka
+    nerd-fonts.iosevka-term
+
     resources
 
     # tools
