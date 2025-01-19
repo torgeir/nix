@@ -71,7 +71,7 @@ in {
       # Lookup windows: https://gist.github.com/dshoreman/278091a17c08e30c46c7e7988b7c2f7d
       # What goes where
 
-      for_window [title="Picture-in-Picture"] floating enable sticky enable border none
+      for_window [title="Picture-in-Picture"] floating enable; sticky enable; border none; move window to workspace number 9; resize set height 405px; resize set width 720px; move position 600px 2000px;
 
       assign [app_id="emacs"] 2
       assign [app_id="org.rncbc.qpwgraph"] 4
