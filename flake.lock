@@ -120,15 +120,15 @@
         "umu": "umu"
       },
       "locked": {
-        "lastModified": 1736818546,
-        "narHash": "sha256-rehuAIJzjQ5/vBar7xvPzHzqrxcHHDBHqqhsDZHu55M=",
-        "owner": "fufexan",
+        "lastModified": 1737730313,
+        "narHash": "sha256-geiEl7RACdYAF9XyU00q/53b6XquH9+fPX7h+Aq5hX0=",
+        "owner": "torgeir",
         "repo": "nix-gaming",
-        "rev": "1a9c52cd7517137c9cc74d4b73dfd63678e17c5f",
+        "rev": "7235717e35062c7944f7389875a074d13fe9bce5",
         "type": "github"
       },
       "original": {
-        "owner": "fufexan",
+        "owner": "torgeir",
         "repo": "nix-gaming",
         "type": "github"
       }
