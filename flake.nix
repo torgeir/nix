@@ -85,14 +85,27 @@
         name = "torgcam2";
       };
 
+      nixosConfigurations.torgpi4 = import ./modules/torgpi4.nix {
+        nixpkgs = nixpkgs-stable;
+        name = "torgpi4";
+      };
+
       # build it with
       #   nix build .#images.torgcam1 .#images.torgcam2
       # burn it with
+      #   watch -n1 lsblk
       #   sudo dd if=results/sd-image/torgcam1.img of=/dev/sdb bs=4M status=progress oflag=direct
       images.torgcam1 =
         nixosConfigurations.torgcam1.config.system.build.sdImage;
       images.torgcam2 =
         nixosConfigurations.torgcam2.config.system.build.sdImage;
+      # build it with
+      #   nix build .#images.torgpi4
+      # burn it with
+      #   watch -n1 lsblk
+      #   sudo dd if=/home/torgeir/nixos-config/result/sd-image/torgpi4.img of=/dev/sdb bs=1M status=progress
+      images.torgpi4 =
+        nixosConfigurations.torgpi4.config.system.build.sdImage;
 
       deploy.nodes.torgcam1 = {
         profiles.system = {
