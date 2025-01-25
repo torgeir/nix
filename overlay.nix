@@ -27,6 +27,12 @@ in {
   # https://github.com/quickemu-project/quickemu/issues/722
   qemu = prev.qemu.override { smbdSupport = true; };
 
+  # pkgs.stable.<something>
+  stable = import inputs.nixpkgs-stable {
+    system = prev.system;
+    config.allowUnfree = true; # "linuxsampler"
+  };
+
   # unstable is default now
   # pkgs.unstable.<something>
   #unstable = import inputs.nixpkgs-unstable { system = prev.system; };

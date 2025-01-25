@@ -334,7 +334,10 @@
     lsof # e.g. lsof -p $(pidof wineserver)
 
     # piano
-    linuxsampler # add lv2 path /run/current-system/sw/lib/lv2/ to reaper, rescan
+    # 2025 funker ikke med siste nix-unstable
+    # 20250115 ingen av disse to virker
+    # 20250125 stable funker
+    pkgs.stable.linuxsampler # add lv2 path /run/current-system/sw/lib/lv2/ to reaper, rescan
     qsampler # launch this and add channel, select plugin and the .gig piano file
 
     (writeScriptBin "reaper-pw"
