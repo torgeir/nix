@@ -78,7 +78,6 @@ in {
 
       assign [class="REAPER"] 3
       for_window [class="REAPER"] floating disable
-      for_window [class="REAPER" title=".*Helix.*"] floating disable
       for_window [class="REAPER" title="REAPER Query"] floating enable
       for_window [class="REAPER" title="REAPER \(loading\)"] floating enable
       for_window [class="REAPER" title="REAPER \(initializing\)"] floating enable
@@ -92,6 +91,8 @@ in {
       for_window [class="REAPER" title="^LV2.*"] floating enable
       for_window [class="REAPER" title=".*JS.*"] floating enable
       for_window [class="REAPER" title="^VST.*"] floating enable
+      for_window [class="REAPER" title="^VST.*"] floating enable
+      for_window [class="REAPER" title=".*Helix.*"] floating disable
 
       assign [title="term-journalctl"] 6
       assign [title="^CoreCtrl"] 6
@@ -240,10 +241,6 @@ in {
     ".config/corectrl/corectrl.ini".source = dotfiles
       + "/config/corectrl/corectrl.ini";
   };
-
-  # sway extras for testing sway configuration
-  # environment.etc."sway/config.d/sway_extra.conf".text = ''
-  # '';
 
   # sops with home manager is a little different, see configuration.nix
   #   imports = [ inputs.sops-nix.homeManagerModules.sops ];
