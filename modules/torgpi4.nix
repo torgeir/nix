@@ -1,5 +1,5 @@
 
-{ name, nixpkgs }:
+{ name, nixpkgs, inputs }:
 
 nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
   imports = [
@@ -50,9 +50,9 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
       };
 
       nixpkgs.overlays = [
-        (final: super: {
+        (self: prev: {
           makeModulesClosure = x:
-            super.makeModulesClosure (x // { allowMissing = true; });
+            prev.makeModulesClosure (x // { allowMissing = true; });
         })
       ];
 
@@ -60,7 +60,36 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
         neofetch
         vim
         htop
+
+        jalv
+        neural-amp-modeler-lv2
+
+
+        #pavucontrol
+        #pa_applet
+        alsa-lib
+        # qjackctl
+        # jack2
       ];
+
+      # services.jack = {
+      #   jackd = {
+      #     enable = true;
+      #     extraOptions = [
+      #       "-dalsa"
+      #       #--device" "hw:Microphone"
+      #     ];
+      #   };
+      #   # support ALSA only programs via ALSA JACK PCM plugin
+      #   alsa.enable = false;
+      #   loopback = {
+      #     enable = true;
+      #     # buffering parameters for dmix device to work with ALSA only semi-professional sound programs
+      #     dmixConfig = ''
+      #       period_size 2048
+      #     '';
+      #   };
+      # };
 
       sdImage.compressImage = false;
       sdImage.imageName = "${name}.img";
@@ -92,7 +121,7 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
         isNormalUser = true;
         home = "/home/nam";
         description = "nam";
-        extraGroups = [ "wheel" "networkmanager" "video" ];
+        extraGroups = [ "wheel" "networkmanager" "video" "audio" "jackaudio"];
         openssh.authorizedKeys.keys = [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIITJ5UIW0lXbeFfyOrdCXAfBtZsq/NycSzIADDZDi3TL"
         ];
@@ -104,6 +133,72 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
       };
 
       services.getty.autologinUser = lib.mkForce "nam";
+
+      # TODO fin rpi config
+      # https://github.com/fursman/NixOS/blob/9015ecc18ddafecdadb5549ae3aff09afc8e2331/config/pi4.nix#L22
+
+      # services.xserver = {
+      #   enable = true;
+      #   autorun = true;
+      #   displayManager = {
+      #     lightdm.enable = true;
+      #   };
+      #   windowManager = {
+      #     dwm.enable = true;
+      #   };
+      # };
+      # services.displayManager.enable = true;
+      # services.displayManager.autoLogin.user = "nam";
+      # services.displayManager.autoLogin.enable = true;
+      # services.displayManager.defaultSession = "none+dwm";
+
+
+      # displayManager.gdm.enable = true;
+      # desktopManager.gnome.enable = true;
+      #
+      # services.xserver = { # X11
+      #   enable = true;
+      #   xkb = {
+      #     layout = "us";
+      #     options = "caps:escape";
+      #     variant = "";
+      #   };
+      # };
+      # services.displayManager.gdm.enable = true;
+      # services.xserver.desktopManager.gnome.enable = true;
+
+      # services.xserver = {
+      #   enable = true;
+      #   displayManager.lightdm.enable = true;
+      #   desktopManager.xfce.enable = true;
+      # };
+
+      # sound.enable = true;
+      # # hardware.pulseaudio.enable = true;
+      # services.pipewire = {
+      #   enable = true;
+      #   alsa.enable = true;
+      #   alsa.support32Bit = true;
+      #   pulse.enable = true;
+      #   # If you want to use JACK applications, uncomment this
+      #   jack.enable = true;
+      #   # use the example session manager (no others are packaged yet so this is enabled by default,
+      #   # no need to redefine it in your config for now)
+      #   #media-session.enable = true;
+      # };
+
+      sound.enable = true;
+      hardware.pulseaudio.enable = false;
+      security.rtkit.enable = true;
+      services.pipewire = {
+        enable = true;
+        alsa.enable = true;
+        alsa.support32Bit = true;
+        pulse.enable = true;
+        # use JACK applications
+        jack.enable = true;
+      };
+
 
     })
 

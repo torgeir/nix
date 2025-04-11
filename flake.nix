@@ -87,6 +87,7 @@
 
       nixosConfigurations.torgpi4 = import ./modules/torgpi4.nix {
         nixpkgs = nixpkgs-stable;
+        inherit inputs;
         name = "torgpi4";
       };
 
