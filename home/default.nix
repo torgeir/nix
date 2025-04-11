@@ -134,6 +134,8 @@ in {
       for_window [class="steam_app_1551360"] move window to workspace number 2
       for_window [title="Forza Horizon 5"] move window to workspace number 1
 
+      for_window [title="EFB"] move window to workspace number 9; resize set height 405px; resize set width 320px; move position 800px 2000px
+
       assign [class="Signal"] 8
       assign [app_id="Slack"] 8
       assign [title="Spotify Premium"] 8
@@ -231,6 +233,13 @@ in {
         # make firefox play nice, not to hinder realtime audio
         pgrep -f -w firefox | xargs renice --relative 5 {}
         PIPEWIRE_QUANTUM=48/48000 ${pkgs.reaper}/bin/reaper
+      '';
+
+    ".local/bin/sway-refresh-displays".source =
+      pkgs.writeShellScript "sway-refresh-displays" ''
+        swaymsg "output * dpms off"
+        sleep 2
+        swaymsg "output * dpms on"
       '';
 
     ".config/dotfiles".source = dotfiles;
