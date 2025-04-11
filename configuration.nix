@@ -221,7 +221,7 @@ in {
 
   environment.systemPackages = with pkgs; [
     git
-    ark
+    kdePackages.ark
     wget
     unzip
     python3
