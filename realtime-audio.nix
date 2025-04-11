@@ -333,6 +333,9 @@
     iotop # e.g. sudo iotop -d 0.1 -a
     lsof # e.g. lsof -p $(pidof wineserver)
 
+    jalv
+    lilv # provides tools like lv2ls
+
     # piano
     # 2025 funker ikke med siste nix-unstable
     # 20250115 ingen av disse to virker
