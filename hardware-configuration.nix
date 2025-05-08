@@ -12,6 +12,10 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
+  # import zfs pool on boot, use this instead of fileSystems."path" as it uses
+  # legacy mounting method using mount.
+  boot.zfs.extraPools = [ "fast" ];
+
   boot.initrd.luks.devices."crypted".device =
     "/dev/disk/by-uuid/01afee33-4f30-40d7-8f36-6de4b9064756";
 
