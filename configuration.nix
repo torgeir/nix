@@ -105,7 +105,8 @@ in {
 
   # mounts
   # https://discourse.nixos.org/t/systemd-mounts-and-systemd-automounts-options-causing-an-error/13796/5
-  boot.supportedFilesystems = [ "cifs" ];
+  boot.supportedFilesystems = [ "cifs" "zfs" ];
+
   systemd.mounts = map (mount: {
     description = "Mount ${mount}";
     what = "//fileserver/${mount}";
@@ -151,6 +152,9 @@ in {
 
   time.timeZone = "Europe/Oslo";
   networking.hostName = "torgnix";
+
+  # TODO zfs debug
+  networking.hostId = "61433039";
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
@@ -222,6 +226,9 @@ in {
   hardware.keyboard.qmk.enable = true;
 
   environment.systemPackages = with pkgs; [
+    zfs
+    zstd
+
     git
     kdePackages.ark
     wget
