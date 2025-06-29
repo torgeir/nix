@@ -231,6 +231,8 @@ in {
     zfs
     zstd
 
+    deno
+
     git
     kdePackages.ark
     wget
