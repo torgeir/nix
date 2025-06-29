@@ -206,6 +206,8 @@ in {
     builtins.elem (lib.getName pkg) [
       "spotify"
       "slack"
+      "firefox-bin"
+      "firefox-bin-unwrapped"
 
       "1password"
       "1password-cli"
