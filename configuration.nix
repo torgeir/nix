@@ -309,6 +309,9 @@ in {
   # https://nixos.wiki/wiki/Slack
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
+  hardware.amdgpu.overdrive.ppfeaturemask = "0xffffffff";
+  hardware.amdgpu.overdrive.enable = true;
+
   # add .local/bin/ to front of path
   environment.localBinInPath = true;
 
@@ -317,13 +320,8 @@ in {
     # amd gpu
     # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/hardware/corectrl.nix
     # https://gitlab.com/corectrl/corectrl/-/wikis/Setup#full-amd-gpu-controls
-    corectrl = {
-      enable = true;
-      gpuOverclock = {
-        enable = true;
-        ppfeaturemask = "0xffffffff";
-      };
-    };
+
+    corectrl.enable = true;
 
     steam.enable = true;
     steam.extraCompatPackages = [ pkgs.proton-ge-bin ];
