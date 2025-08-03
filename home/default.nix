@@ -213,11 +213,12 @@ in {
 
     # vst/audio-production
     reaper
-    inputs.nix-gaming.packages.${pkgs.system}.wine-tkg # helix native needs wine with fsync patches
-    (yabridge.override {
+    # helix native needs wine with fsync patches
+    inputs.nix-gaming.packages.${pkgs.system}.wine-tkg
+    (pkgs.stable.yabridge.override {
       wine = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
     })
-    (yabridgectl.override {
+    (pkgs.stable.yabridgectl.override {
       wine = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
     })
     winetricks
