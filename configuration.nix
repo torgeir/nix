@@ -233,6 +233,8 @@ in {
 
     deno
 
+    nixd
+
     git
     kdePackages.ark
     wget
