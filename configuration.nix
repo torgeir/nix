@@ -5,7 +5,8 @@
 { config, lib, pkgs, inputs, ... }:
 
 let
-  automounts = [ "torgeir" "music" "delt" "cam" ];
+  # automounts = [ "torgeir" "music" "delt" "cam" ];
+  automounts = [];
   homeManagerSessionVars =
     "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh";
 in {
@@ -71,35 +72,42 @@ in {
   #   https://sr.ht/~bwolf/dotfiles/
   #
   # create private key
-  #   nix-shell -p age --run "age-keygen -o /etc/nix-sops-smb.key"
+  #   nix-shell -p age --run "age-keygen -o /etc/nix-sops.key"
   # echo public key
-  #   nix-shell -p age --run "age-keygen -y /etc/nix-sops-smb.key"
+  #   nix-shell -p age --run "age-keygen -y /etc/nix-sops.key"
   #
   # https://github.com/Mic92/sops-nix/issues/149
   # needs to live where it is available during boot
-  sops.age.keyFile = "/etc/nix-sops-smb.key";
+  sops.age.keyFile = "/etc/nix-sops.key";
 
   # put public key in .sops.yml
   #
   # cat <<EOF > .sops.yml
   # keys:
-  #   - &torgeir $(nix-shell -p age --run "age-keygen -y /etc/nix-sops-smb.key")
+  #   - &torgeir $(nix-shell -p age --run "age-keygen -y /etc/nix-sops.key")
   # creation_rules:
   #   - path_regex: .*
   #     key_groups:
-  #     - ace:
+  #     - age:
   #         - *torgeir
   # EOF
   #
+  # works around sops issue
+  #   mkdir /tmp/nohome
   # insert secrets
-  #   SOPS_AGE_KEY_FILE=/etc/nix-sops-smb.key EDITOR=emacsclient nix-shell -p sops --run "sops secrets.yaml"
+  #   HOME=/tmp/nohome SOPS_AGE_KEY_FILE=/etc/nix-sops.key EDITOR=emacsclient nix-shell -p sops --run "sops secrets.yaml"
   # and put e.g.
   #   smb: |
   #     username: <username>
   #     password: <password>
   #
+  # to change keys, add new key to .sops.yaml like above (cat <<EOF..)
+  # > HOME=/tmp/nohome SOPS_AGE_KEY_FILE=/etc/nix-sops-smb.key EDITOR=vim nix-shell -p sops --run "sops updatekeys secrets.yaml"
+  # then edit with the other key
+  # > HOME=/tmp/nohome SOPS_AGE_KEY_FILE=/etc/nix-sops.key EDITOR=vim nix-shell -p sops --run "sops updatekeys secrets.yaml"
+  #
   # if you don't feel like committing secrets.yaml,
-  # check out untrack-secrets.sh
+  # check out ./untrack-secrets.sh
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets."smb".owner = "torgeir";
 

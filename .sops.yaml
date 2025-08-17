@@ -1,7 +1,7 @@
 keys:
-  - &torgeir age1lfy3trmzed9z0ca77k9rjf8cq0zn87jyxh277dtyek4h2acpdfns6t8rgh
+  - &torgeir age132452p0jtjcg0suzu8dak4pww90ht9u6c62ln38tsae85cygkemq0cyelk
 creation_rules:
   - path_regex: .*
     key_groups:
-      - age:
-          - *torgeir
+    - age:
+      - *torgeir
