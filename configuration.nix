@@ -210,8 +210,18 @@ in {
       "pipewire" # realtime audio for pw
       "video"
       "dialout" # arduino, /dev/ttyUSB0
+      "plugdev"
     ];
   };
+
+  system.activationScripts.rp2040-mountpoint = ''
+    ${pkgs.lib.getExe' pkgs.coreutils "mkdir"} -pv /media/RPI-RP2
+  '';
+
+  services.udev.extraRules = let in ''
+    # qmk nyquist keyboard RP2040, devnode is the udev node path, e.g. /dev/sde1
+    ACTION=="add|change", SUBSYSTEMS=="usb", SUBSYSTEM=="block", ENV{ID_FS_USAGE}=="filesystem", ENV{ID_FS_LABEL}=="RPI-RP2", RUN+="${pkgs.lib.getExe' pkgs.systemd "systemd-mount"} --owner=1000 --no-block --collect $devnode /media/RPI-RP2"
+  '';
 
   # sorry stallman, can't live without them
   nixpkgs.config.allowUnfreePredicate = pkg:
@@ -301,7 +311,10 @@ in {
 
     # webcam support, v4l2-ctl --list-devices
     v4l-utils
+
+    qmk
   ];
+  services.udev.packages = [ pkgs.qmk-udev-rules ];
 
   services.tailscale.enable = true;
 
