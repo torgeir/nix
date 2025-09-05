@@ -124,6 +124,7 @@ in {
       assign [title="^Options.*"] 6
       for_window [app_id="opentrack"] floating enable
       for_window [app_id="qv4l2"] floating enable
+      for_window [title="^V4L2"] floating enable
       for_window [title="^opentrack.*"] fullscreen disable; floating enable; move window to workspace number 6
       for_window [title="^Mapping.*"] fullscreen disable; floating enable; move window to workspace number 6
       for_window [title="^Options.*"] fullscreen disable; floating enable; move window to workspace number 6
