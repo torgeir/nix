@@ -26,6 +26,7 @@ in {
     ./modules/qemu.nix
     ./modules/acme.nix
     ./modules/nginx.nix
+    ./modules/immich.nix
   ];
 
   boot.loader.systemd-boot = {
