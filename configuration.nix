@@ -290,22 +290,21 @@ in {
     (writeScriptBin "opentrack-xwayland" ''
       # get the logitech c920s (with IR filter removed) ready for opentrack with Input PointTracker 1.1.
       v4l2-ctl -d /dev/video0 -c brightness=0
-      # v4l2-ctl -d /dev/video0 -c brightness=255
       v4l2-ctl -d /dev/video0 -c contrast=0
       v4l2-ctl -d /dev/video0 -c saturation=0
-      v4l2-ctl -d /dev/video0 -c white_balance_automatic=0
-      v4l2-ctl -d /dev/video0 -c gain=39 # must be <60 for logitech c920s to manage ~60fps
-      v4l2-ctl -d /dev/video0 -c white_balance_temperature=2000
       v4l2-ctl -d /dev/video0 -c sharpness=0
+      v4l2-ctl -d /dev/video0 -c white_balance_automatic=0
       v4l2-ctl -d /dev/video0 -c backlight_compensation=0
-      v4l2-ctl -d /dev/video0 -c auto_exposure=1 # manual mode
       v4l2-ctl -d /dev/video0 -c exposure_dynamic_framerate=0
-      v4l2-ctl -d /dev/video0 -c exposure_time_absolute=156
+      v4l2-ctl -d /dev/video0 -c auto_exposure=1 # manual mode
       v4l2-ctl -d /dev/video0 -c pan_absolute=0
       v4l2-ctl -d /dev/video0 -c tilt_absolute=0
       v4l2-ctl -d /dev/video0 -c focus_automatic_continuous=0
       v4l2-ctl -d /dev/video0 -c focus_absolute=40
-      v4l2-ctl -d /dev/video0 -c zoom_absolute=100
+      v4l2-ctl -d /dev/video0 -c zoom_absolute=195
+      v4l2-ctl -d /dev/video0 -c gain=39 # must be <60 for logitech c920s to manage ~60fps
+      v4l2-ctl -d /dev/video0 -c white_balance_temperature=2000
+      v4l2-ctl -d /dev/video0 -c exposure_time_absolute=9
       env -u WAYLAND_DISPLAY opentrack
     '')
 
