@@ -48,6 +48,8 @@
           # os config
           ./configuration.nix
 
+          # ./modules/openrgb.nix
+
           #https://github.com/Mic92/sops-nix
           sops-nix.nixosModules.sops
 

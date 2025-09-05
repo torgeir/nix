@@ -166,6 +166,7 @@ in {
     enable = true;
     package = pkgs.firefox-bin;
     #package = pkgs.firefox-devedition-bin;
+    legacyExtensions = false;
   };
 
   # find package paths with nix-env -qaP <pkg>

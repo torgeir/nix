@@ -92,7 +92,7 @@ in {
   #         - *torgeir
   # EOF
   #
-  # works around sops issue
+  # works around sops issue https://github.com/getsops/sops/pull/1898
   #   mkdir /tmp/nohome
   # insert secrets
   #   HOME=/tmp/nohome SOPS_AGE_KEY_FILE=/etc/nix-sops.key EDITOR=emacsclient nix-shell -p sops --run "sops secrets.yaml"
@@ -184,7 +184,7 @@ in {
   # firewall
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [
-    # 80
+    80
     443
     7860
     11434
@@ -423,7 +423,11 @@ in {
     rootless = {
       enable = true;
       setSocketVariable = true;
-      daemon.settings = { data-root = "/home/torgeir/data"; };
+      daemon.settings = {
+        data-root = "/home/torgeir/data";
+        # dette rotet til ollama docker-compose.yml
+        # dns = ["192.168.2.1" "1.1.1.1"];
+      };
     };
   };
 

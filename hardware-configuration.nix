@@ -65,7 +65,8 @@
   networking.useDHCP = lib.mkDefault false;
   # networking.interfaces.enp37s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp9s0u1u4u5.useDHCP = lib.mkDefault true;
-  networking.interfaces.enp9s0u1u2.useDHCP = lib.mkDefault true;
+  networking.interfaces.enp165s0.useDHCP = lib.mkDefault true; # motherboard
+  networking.interfaces.enp9s0u1u2.useDHCP = lib.mkDefault true; # 2.5G dongle
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode =
