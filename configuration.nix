@@ -24,6 +24,7 @@ in {
     ./realtime-audio.nix
     ./modules/_1password.nix
     ./modules/qemu.nix
+    ./modules/acme.nix
   ];
 
   boot.loader.systemd-boot = {
