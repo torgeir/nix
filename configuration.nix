@@ -187,10 +187,11 @@ in {
   # firewall
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [
-    80
+    # 80
     443
-    7860
-    11434
+    # 7860
+    8080
+    # 11434
   ];
   networking.firewall.allowedUDPPorts = [ 4242 ];
 
