@@ -285,6 +285,9 @@ in {
 
     krita
 
+    # docker rootless
+    slirp4netns
+
     # head tracking
     opentrack
     (writeScriptBin "opentrack-xwayland" ''
