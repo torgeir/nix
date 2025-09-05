@@ -55,7 +55,7 @@
   # increase frequencies for how often userspace applications can read from timekeeping devices
   # also prioritize the pid and interrupts of the sound card
   boot.postBootCommands = ''
-    #!/bin/bash
+    #!/usr/bin/env bash
     echo 2048 > /sys/class/rtc/rtc0/max_user_freq
     echo 2048 > /proc/sys/dev/hpet/max-user-freq
 
@@ -85,7 +85,7 @@
     logger -p user.info "[realtime audio]: setting priority to $priority for $pid, thread $thread."
     chrt -f -p $priority $pid
 
-    cpu=16
+    cpu=24
     # pin to single cpu
     logger -p user.info "[realtime audio]: pinning $pid on thread $thread to cpu $cpu."
     taskset -cp $cpu $pid
@@ -124,10 +124,7 @@
   #   systemctl --user status pipewire wireplumber
   #   systemctl --user restart pipewire wireplumber
   services.pipewire = {
-    # TODO seem to have issues with xruns on pipewire somewhere
-    # between unstable-locked and 1.0.7, didnt investigate
-    # https://github.com/NixOS/nixpkgs/commit/32f795fd19541848743328a1f9dd09242898026b
-    package = pkgs.unstable-locked.pipewire;
+    package = pkgs.pipewire;
     enable = true;
     audio.enable = true;
     wireplumber.enable = true;
