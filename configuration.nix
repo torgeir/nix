@@ -25,6 +25,7 @@ in {
     ./modules/_1password.nix
     ./modules/qemu.nix
     ./modules/acme.nix
+    ./modules/nginx.nix
   ];
 
   boot.loader.systemd-boot = {
@@ -452,19 +453,6 @@ in {
   };
 
   # TODO auto start docker compose for torgeir
-
-  # forward https to traefik in docker-compose
-  services.nginx = {
-    enable = true;
-    recommendedProxySettings = true;
-    recommendedTlsSettings = true;
-    streamConfig = ''
-      server {
-        listen 0.0.0.0:443;
-        proxy_pass 127.0.0.1:8443;
-      }
-    '';
-  };
 
   # zram instead of swap
   zramSwap = {
