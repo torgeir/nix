@@ -51,17 +51,6 @@ in {
     "video=DP-1:1920x1080@60Hz"
     "video=DP-2:1920x1080@60Hz"
 
-    # rt kernel tuning
-    # - https://ubuntu.com/blog/real-time-kernel-tuning
-    # - https://lwn.net/Articles/816298/
-    #TODO fjerna disse noe er funky steam rbuker bare 1 cpu til shader caching?
-    #"nohz=on"
-    # "nohz_full=24-31"
-    #"kthread_cpus=0-23"
-    "irqaffinity=0-23" # keep all irqs on cpu 0-23
-    # "isolcpus=managed_irq,nohz,domain,24-31"
-    # "rcu_nocbs=24-31"
-
     # "cgroup_enable=cpuset"
 
     # https://web.archive.org/web/20171228022907/https://blog.le-vert.net/?p=24

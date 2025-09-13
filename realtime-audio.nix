@@ -56,20 +56,11 @@
   # also prioritize the pid and interrupts of the sound card
   boot.postBootCommands = ''
     #!/usr/bin/env bash
-    echo 2048 > /sys/class/rtc/rtc0/max_user_freq
-    echo 2048 > /proc/sys/dev/hpet/max-user-freq
-
-    # let realtime processes dominate cpu indefinitely
-    echo -1 > /proc/sys/kernel/sched_rt_runtime_us
 
     # fix nix paths
     export PATH=/run/current-system/sw/bin/:$PATH
 
-    # https://rigtorp.se/low-latency-guide/
-    # sudo sh -c "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
-    echo never > /sys/kernel/mm/transparent_hugepage/enabled
-
-    # poor mans rtirqs
+    # poor mans rtirqs for the soundcard
     # the irq number below is the fastest increasing counter when running
     #   watch -n0.1 'cat /proc/interrupts'
     #
@@ -77,17 +68,17 @@
     ## needs to be higher than reaper
     ## reaper+yabridge-host needs to be higher than pipewire+wireplumber
     priority=94
-    irq=85
+    irq=$(cat /proc/interrupts | grep "xhci_hcd" | awk '{sum=0; for(i=2;i<=NF-3;i++) sum+=$i; print sum, $1}' | sort -nr | head -1 | awk '{gsub(/:/, "", $2); print $2}')
     pid=$(pgrep irq/$irq-)
     thread=$(ps -eo comm | grep irq/$irq-)
 
     # increase the pids realtime priority
-    logger -p user.info "[realtime audio]: setting priority to $priority for $pid, thread $thread."
+    logger -p user.info "[realtime audio]: setting priority to $priority for soundcard irqs pid $pid, thread $thread."
     chrt -f -p $priority $pid
 
-    cpu=24
-    # pin to single cpu
-    logger -p user.info "[realtime audio]: pinning $pid on thread $thread to cpu $cpu."
+    # pin to single cpu, see boot.kernelParams
+    cpu=27
+    logger -p user.info "[realtime audio]: pinning soundcard irqs $pid on thread $thread to cpu $cpu."
     taskset -cp $cpu $pid
 
     echo $cpu > /proc/irq/$irq/smp_affinity
@@ -108,6 +99,16 @@
     "threadirqs"
     # not needed for rt kernels
     "preemt=full"
+
+    # rt kernel tuning
+    # - https://ubuntu.com/blog/real-time-kernel-tuning
+    # - https://lwn.net/Articles/816298/
+    "irqaffinity=0-26,31" # keep all irqs on some cpus
+    # keep some cpus for audio only
+    "isolcpus=27-30"
+    "nohz_full=27-30"
+    "rcu_nocbs=27-30"
+
   ];
 
   # limit swappiness, but really i use zram instead
@@ -186,16 +187,16 @@
             -- Interface: Arturia Audiofuse
             -- Reaper using alsa only can do this, without any pops;
             --   Rate 48000
-            --   Size 168
+            --   Size 64
             --   Periods 3
 
             -- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
             ["api.alsa.rate"] = 48000,
             ["api.alsa.period-num"] = 3,
-            ["api.alsa.period-size"] = 168, -- and run reaper with PIPEWIRE_LATENCY=384/48000 reaper, this gives 8ms latency
-
             -- experiments
-            --["api.alsa.period-size"] = 128,
+            --["api.alsa.period-size"] = 48, -- and run reaper with PIPEWIRE_LATENCY=48/48000 reaper, this gives 1ms latency
+            ["api.alsa.period-size"] = 128,
+            --["api.alsa.period-size"] = 168,
             --["api.alsa.period-size"] = 144,
             --["api.alsa.period-size"] = 160,
             --["api.alsa.period-size"] = 256,
@@ -254,6 +255,7 @@
 
   # force full perf cpu mode
   # cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+  # obs: corecontrol also controls this
   powerManagement.cpuFreqGovernor = "performance";
 
   # These settings go well with reaper
