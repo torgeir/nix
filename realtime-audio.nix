@@ -99,16 +99,6 @@
     "threadirqs"
     # not needed for rt kernels
     "preemt=full"
-
-    # rt kernel tuning
-    # - https://ubuntu.com/blog/real-time-kernel-tuning
-    # - https://lwn.net/Articles/816298/
-    "irqaffinity=0-26,31" # keep all irqs on some cpus
-    # keep some cpus for audio only
-    "isolcpus=27-30"
-    "nohz_full=27-30"
-    "rcu_nocbs=27-30"
-
   ];
 
   # limit swappiness, but really i use zram instead
