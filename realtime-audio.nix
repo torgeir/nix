@@ -8,15 +8,9 @@
   # musnix.rtirq.nameList = "xhci_hcd";
   # musnix.rtirq.enable = true;
   #
-  # or, latest kernel has realtime audio improvements
-  boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
+  # or, latest kernels has realtime audio improvements
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
 
-  # permission denied when creating cpuset.cpus
-  # https://www.reddit.com/r/NixOS/comments/158azri/changing_user_slices_cgroup_controllers/
-  # TODO gjør at cset shield --cpu 7 -kthread=on ikke virker?
-  # systemd.services."user@".serviceConfig.Delegate = "memory pids cpu cpuset";
-
-  # TODO does this work?
   # make helix native activation happy
   environment.etc.machine-id.source = ./machine-id;
   # Chatgpt suggests this instead
@@ -99,6 +93,16 @@
     "threadirqs"
     # not needed for rt kernels
     "preemt=full"
+
+    # # rt kernel tuning
+    # # - https://ubuntu.com/blog/real-time-kernel-tuning
+    # # - https://lwn.net/Articles/816298/
+    # "irqaffinity=0-26,31" # keep all irqs on some cpus
+    # # keep some cpus for audio only
+    # "isolcpus=27-30"
+    # "nohz_full=27-30"
+    # "rcu_nocbs=27-30"
+
   ];
 
   # limit swappiness, but really i use zram instead
