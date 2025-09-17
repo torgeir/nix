@@ -27,6 +27,7 @@ in {
     ./modules/acme.nix
     ./modules/nginx.nix
     ./modules/immich.nix
+    ./modules/printer.nix
   ];
 
   boot.loader.systemd-boot = {
@@ -222,6 +223,9 @@ in {
       "slack"
       "firefox-bin"
       "firefox-bin-unwrapped"
+
+      # "cnijfilter2"     # canon pixma printer drivers
+      # "canon-cups-ufr2" # canon pixma printer drivers
 
       "1password"
       "1password-cli"
