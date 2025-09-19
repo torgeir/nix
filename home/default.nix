@@ -93,7 +93,9 @@ in {
       for_window [class="REAPER" title=".*JS.*"] floating enable
       for_window [class="REAPER" title="^VST.*"] floating enable
       for_window [class="REAPER" title="^VST.*"] floating enable
-      for_window [class="REAPER" title=".*Helix.*"] floating disable
+      for_window [class="REAPER" title="^VST.*Kontakt.*"] floating disable; move window to workspace number 9
+      for_window [class="REAPER" title=".*Helix.*"] floating disable; move window to workspace number 9
+      for_window [class="REAPER" title="Mixer"] floating disable; move window to workspace number 9
 
       assign [title="term-journalctl"] 6
       assign [title="^CoreCtrl"] 6
