@@ -189,9 +189,9 @@
             ["api.alsa.period-num"] = 3,
             -- experiments
             --["api.alsa.period-size"] = 48, -- and run reaper with PIPEWIRE_LATENCY=48/48000 reaper, this gives 1ms latency
-            ["api.alsa.period-size"] = 128,
+            --["api.alsa.period-size"] = 128,
             --["api.alsa.period-size"] = 168,
-            --["api.alsa.period-size"] = 144,
+            ["api.alsa.period-size"] = 144,
             --["api.alsa.period-size"] = 160,
             --["api.alsa.period-size"] = 256,
           },
@@ -215,8 +215,8 @@
   #   systemctl --user restart pipewire wireplumber
   environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
     jack.properties = {
-      node.force-quantum = 48 # 0.001s, given alsa rate 48000
-      # node.force-quantum = 144 # 0.003s
+      # node.force-quantum = 48 # 0.001s, given alsa rate 48000
+      node.force-quantum = 144 # 0.003s
       # node.force-quantum = 240 # 0.005s
       # node.force-quantum = 288 # 0.006s
       # node.force-quantum = 384 # 0.008s

@@ -238,7 +238,8 @@ in {
       pkgs.writeShellScript "launch-reaper-low-latency" ''
         # make firefox play nice, not to hinder realtime audio
         pgrep -f -w firefox | xargs renice --relative 5 {}
-        PIPEWIRE_QUANTUM=48/48000 ${pkgs.reaper}/bin/reaper
+        pw-metadata -n settings 0 clock.force-quantum 144
+        PIPEWIRE_QUANTUM=144/48000 ${pkgs.reaper}/bin/reaper
       '';
 
     ".local/bin/sway-refresh-displays".source =
