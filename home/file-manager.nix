@@ -26,6 +26,22 @@
         <startup-notify/>
         <directories/>
       </action>
+      <action>
+        <icon>folder</icon>
+        <name>Create folder here</name>
+        <submenu></submenu>
+        <unique-id>1758474871726653-1</unique-id>
+        <command>mkdir %d/New\ Folder</command>
+        <description></description>
+        <range>*</range>
+        <patterns>*</patterns>
+        <directories/>
+        <audio-files/>
+        <image-files/>
+        <other-files/>
+        <text-files/>
+        <video-files/>
+      </action>
       </actions>
     '';
 
