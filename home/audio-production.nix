@@ -8,6 +8,7 @@
 
     "yabridgectl/config.toml".text = ''
        plugin_dirs = [
+         "/home/torgeir/.wine/drive_c/Program Files/Common Files/Helix Native/",
          "/home/torgeir/.wine/drive_c/Program Files/Common Files/VST3",
          "/home/torgeir/Dropbox/Music/Plugins/vst"
       ]
