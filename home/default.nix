@@ -79,10 +79,12 @@ in {
 
       assign [class="REAPER"] 3
       for_window [class="REAPER"] floating disable
+      for_window [class="REAPER" window_type="dialog"] floating enable
       for_window [class="REAPER" title="REAPER Query"] floating enable
       for_window [class="REAPER" title="REAPER \(loading\)"] floating enable
       for_window [class="REAPER" title="REAPER \(initializing\)"] floating enable
       for_window [class="REAPER" title="Project Load Warning"] floating enable
+      for_window [class="REAPER" title="^Save.*"] floating enable
       for_window [class="REAPER" title="^Routing.*"] floating enable
       for_window [class="REAPER" title="^Build.*"] floating enable
       for_window [class="REAPER" title="^Controls.*"] floating enable
@@ -218,17 +220,17 @@ in {
 
     # vst/audio-production
     reaper
-    # helix native needs wine with fsync patches
-    inputs.nix-gaming.packages.${pkgs.system}.wine-tkg
-    (pkgs.stable.yabridge.override {
-      wine = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
-    })
-    (pkgs.stable.yabridgectl.override {
-      wine = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
-    })
     winetricks
     dxvk_2
-  ];
+  ] ++ (let
+    w = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
+  in [
+    # helix native needs wine with fsync patches
+    w
+    (pkgs.yabridge.override { wine = w; })
+    (pkgs.yabridgectl.override { wine = w; })
+  ]);
+
 
   # this puts files in the needed locations, but does however not make them
   # editable allows interop with torgeir/dotfiles.git without moving all this
