@@ -5,8 +5,7 @@
   # realtime kernel
   #musnix.kernel.realtime = true;
   #musnix.kernel.packages = pkgs.linuxPackages_6_11_rt;
-  # musnix.rtirq.nameList = "xhci_hcd";
-  # musnix.rtirq.enable = true;
+  # torgeir: removed musnix rtirq, postcommandscript does the same better
   #
   # or, latest kernels has realtime audio improvements
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
@@ -36,17 +35,7 @@
     "cfg80211"
   ];
 
-  # shield processes on certain cpus
-  #   for p in $(ps -eo pid,comm | grep -E '(yabridge|reaper)' | grep -v grep |awk '{print $1}'); do sudo chrt -f -p 92 $p; done
-  #   sudo cset shield --cpu 16-31 --kthread=on
-  #   sudo cset shield --force --shield --pid $(ps xa | grep -E '(reaper|yabridge)' | grep -v "oom" | grep -v grep |awk '{print $1}' | cut -d" " -f1 | paste -s -d,)
-  #
-  # https://linuxmusicians.com/viewtopic.php?f=27&t=20419
-  # cgroups https://developers.redhat.com/blog/2015/09/21/controlling-resources-with-cgroups-for-performance-testing#rhel_7
-  # https://discuss.linuxcontainers.org/t/what-is-the-best-way-to-use-numactl-or-taskset-and-chrt-in-lxd-which-cpus-are-isolated-from-the-host/7641/7
-
   # minimize latency
-  # increase frequencies for how often userspace applications can read from timekeeping devices
   # also prioritize the pid and interrupts of the sound card
   boot.postBootCommands = ''
     #!/usr/bin/env bash
@@ -54,36 +43,20 @@
     # fix nix paths
     export PATH=/run/current-system/sw/bin/:$PATH
 
-    # poor mans rtirqs for the soundcard
-    # the irq number below is the fastest increasing counter when running
-    #   watch -n0.1 'cat /proc/interrupts'
-    #
-    ## ends up as -95
-    ## needs to be higher than reaper
-    ## reaper+yabridge-host needs to be higher than pipewire+wireplumber
     priority=94
     irq=$(cat /proc/interrupts | grep "xhci_hcd" | awk '{sum=0; for(i=2;i<=NF-3;i++) sum+=$i; print sum, $1}' | sort -nr | head -1 | awk '{gsub(/:/, "", $2); print $2}')
     pid=$(pgrep irq/$irq-)
     thread=$(ps -eo comm | grep irq/$irq-)
 
-    # increase the pids realtime priority
     logger -p user.info "[realtime audio]: setting priority to $priority for soundcard irqs pid $pid, thread $thread."
     chrt -f -p $priority $pid
 
-    # pin to single cpu, see boot.kernelParams
-    cpu=27
-    logger -p user.info "[realtime audio]: pinning soundcard irqs $pid on thread $thread to cpu $cpu."
-    taskset -cp $cpu $pid
+    # Spread across CPUs 24-31 (last CCD on 5950X)
+    cpus="24-27"
+    logger -p user.info "[realtime audio]: spreading soundcard irqs $pid on thread $thread to cpus $cpus."
 
-    echo $cpu > /proc/irq/$irq/smp_affinity
-    logger -p user.info "[realtime audio] smp_affinity for irq $irq is now $(cat /proc/irq/$irq/smp_affinity)"
-
-    echo $cpu > /proc/irq/$irq/smp_affinity_list
+    echo $cpus > /proc/irq/$irq/smp_affinity_list
     logger -p user.info "[realtime audio] smp_affinity_list for irq $irq is now $(cat /proc/irq/$irq/smp_affinity_list)"
-
-    # unused, for irqbalance:
-    #   one bit per cpu: 0000 0000 1100 0000 => 00c0 in hex
-    #export IRQBALANCE_BANNED_CPUS="00c0"
   '';
 
   # check what is set with
@@ -94,14 +67,10 @@
     # not needed for rt kernels
     "preemt=full"
 
-    # # rt kernel tuning
-    # # - https://ubuntu.com/blog/real-time-kernel-tuning
-    # # - https://lwn.net/Articles/816298/
-    # "irqaffinity=0-26,31" # keep all irqs on some cpus
-    # # keep some cpus for audio only
-    # "isolcpus=27-30"
-    # "nohz_full=27-30"
-    # "rcu_nocbs=27-30"
+    "isolcpus=24-27"     # Isolate 4 CPUs for audio IRQs
+    "nohz_full=24-27"
+    "rcu_nocbs=24-27"
+    "irqaffinity=0-23"   # Keep other IRQs on otther cpus
 
   ];
 
@@ -141,7 +110,7 @@
             ["session.suspend-timeout-seconds"] = 0,
             ["suspend-node"] = false,
             ["node.pause-on-idle"] = false,
-            ["api.alsa.disable-batch"] = false,
+            ["api.alsa.disable-batch"] = true,
             ["priority.session"] = 3000,
             ["api.alsa.rate"] = 48000,
             ["api.alsa.period-size"] = 128,
@@ -168,7 +137,7 @@
             -- support this. for batch devices it is also a good idea to lower the
             -- period-size (and increase the IRQ frequency) to get smaller batch
             -- updates and lower latency.
-            ["api.alsa.disable-batch"] = false,
+            ["api.alsa.disable-batch"] = true,
 
             -- pipewire docs: Change node priority:
             -- Device priorities are usually from 0 to 2000.
@@ -176,7 +145,7 @@
 
             -- pipewire docs: ALSA Buffer Properties
             -- extra delay between hardware pointers and software pointers
-            ["api.alsa.headroom"] = 64,
+            ["api.alsa.headroom"] = 32,
 
             -- Interface: Arturia Audiofuse
             -- Reaper using alsa only can do this, without any pops;
@@ -189,9 +158,9 @@
             ["api.alsa.period-num"] = 3,
             -- experiments
             --["api.alsa.period-size"] = 48, -- and run reaper with PIPEWIRE_LATENCY=48/48000 reaper, this gives 1ms latency
-            --["api.alsa.period-size"] = 128,
+            ["api.alsa.period-size"] = 128,
             --["api.alsa.period-size"] = 168,
-            ["api.alsa.period-size"] = 144,
+            --["api.alsa.period-size"] = 144,
             --["api.alsa.period-size"] = 160,
             --["api.alsa.period-size"] = 256,
           },
@@ -215,8 +184,9 @@
   #   systemctl --user restart pipewire wireplumber
   environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
     jack.properties = {
-      # node.force-quantum = 48 # 0.001s, given alsa rate 48000
-      node.force-quantum = 144 # 0.003s
+      node.force-quantum = 48 # 0.001s, given alsa rate 48000
+      # node.force-quantum = 128 # 0.0026s
+      # node.force-quantum = 144 # 0.003s
       # node.force-quantum = 240 # 0.005s
       # node.force-quantum = 288 # 0.006s
       # node.force-quantum = 384 # 0.008s
@@ -258,22 +228,14 @@
   #   Anticipate FX processing [x]
   #   Allow live FX processing off (5950x)
   #
-  # Thread priorities needs to be
-  #   1. xhci_hcd (e.g. 95)
-  #   2. reaper + yabridge (e.g. 92)
-  #   3. pipewire + wireplumber (e.g. 89)
-  #
-  # bump their priority
-  #   for p in $(ps -eo pid,comm | grep -E '(yabridge|reaper)' | awk '{print $1}'); do sudo chrt -f -p 91 $p; done
-  # bring them to the same cpu
-  #   for p in $(ps -eo pid,comm | grep -E '(yabridge|reaper)' | awk '{print $1}'); do sudo taskset -cp 3 $p; done
-  #
   # enable realtime kit, so that pipewire's realtime priority can be adjusted automatically
   # https://gitlab.freedesktop.org/pipewire/pipewire/-/wikis/Performance-tuning#rtkit
+  # rtkit != rtirq
   security.rtkit.enable = true;
   systemd.services.rtkit-daemon.serviceConfig.ExecStart = [
     ""
-    "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=89 --max-realtime-priority=88 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
+    # claude raised max-realtime-priority from 88 to 94
+    "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=89 --max-realtime-priority=94 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
   ];
 
   # allow realtime for pipewire and user audio group
@@ -317,8 +279,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    # don't really need this?
-    # irqbalance
+    perf
 
     cpuset
 
