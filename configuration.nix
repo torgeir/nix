@@ -224,8 +224,7 @@ in {
       "firefox-bin"
       "firefox-bin-unwrapped"
 
-      # "cnijfilter2"     # canon pixma printer drivers
-      # "canon-cups-ufr2" # canon pixma printer drivers
+      "cnijfilter2"     # canon pixma ink printer drivers
 
       "1password"
       "1password-cli"
