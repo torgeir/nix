@@ -72,10 +72,22 @@
     "rcu_nocbs=24-27"
     "irqaffinity=0-23"   # Keep other IRQs on otther cpus
 
+    # TODO torgeir
+    "usbhid.mousepoll=0"  # Reduce USB polling overhead
+    "usbcore.autosuspend=-1"
+    "printk.devkmsg=on"  # Disable message rate limiting
   ];
 
   # limit swappiness, but really i use zram instead
-  boot.kernel.sysctl = { "vm.swappiness" = 10; };
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 10;
+    # This tells the kernel: "Don't delay USB processing to throttle log messages."
+    "kernel.printk_ratelimit" = 0;  # Disable printk rate limiting
+    "kernel.printk_ratelimit_burst" = 0;
+
+    "vm.dirty_ratio" = 10;          # Default 20
+    "vm.dirty_background_ratio" = 3; # Default 10
+  };
 
   # disable wifi
   networking.wireless.enable = false;
@@ -155,14 +167,16 @@
 
             -- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
             ["api.alsa.rate"] = 48000,
-            ["api.alsa.period-num"] = 3,
+            ["api.alsa.period-num"] = 4,
             -- experiments
-            --["api.alsa.period-size"] = 48, -- and run reaper with PIPEWIRE_LATENCY=48/48000 reaper, this gives 1ms latency
-            ["api.alsa.period-size"] = 128,
-            --["api.alsa.period-size"] = 168,
-            --["api.alsa.period-size"] = 144,
-            --["api.alsa.period-size"] = 160,
-            --["api.alsa.period-size"] = 256,
+            ["api.alsa.period-size"] = 48 -- and run reaper with PIPEWIRE_LATENCY=48/48000 reaper, this gives 1ms latency
+            --["api.alsa.period-size"] = 64
+            --["api.alsa.period-size"] = 96
+            --["api.alsa.period-size"] = 128
+            --["api.alsa.period-size"] = 168
+            --["api.alsa.period-size"] = 144
+            --["api.alsa.period-size"] = 160
+            --["api.alsa.period-size"] = 256
           },
         })
       '')
@@ -185,6 +199,8 @@
   environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
     jack.properties = {
       node.force-quantum = 48 # 0.001s, given alsa rate 48000
+      #node.force-quantum = 64 # 0.00xs
+      # node.force-quantum = 96 # 0.002s
       # node.force-quantum = 128 # 0.0026s
       # node.force-quantum = 144 # 0.003s
       # node.force-quantum = 240 # 0.005s
@@ -193,6 +209,30 @@
       # node.force-quantum = 480 # 0.01s
     }
   '';
+
+  environment.etc."/pipewire/pipewire.conf".text =
+    builtins.replaceStrings
+      ["rt.prio       = 88"]
+      ["rt.prio       = 94"]
+      (builtins.readFile "${pkgs.pipewire}/share/pipewire/pipewire.conf");
+
+  # environment.etc."/pipewire/pipewire.conf.d/00-rtprio.conf".text = builtins.toJSON {
+  #   "context.properties" = {
+  #     # makes pipewire not load the default libpipewire-module-rt first
+  #   };
+  #   "context.modules" = [
+  #     {
+  #       name = "libpipewire-module-rt";
+  #       args = {
+  #         "nice.level" = -11;
+  #         "rt.prio" = 94;
+  #         "rt.time.soft" = 2000000;
+  #         "rt.time.hard" = 2000000;
+  #       };
+  #       flags = ["ifexists" "nofail"];
+  #     }
+  #   ];
+  # };
 
   # help reaper control cpu latency, when you start it from audio group user
   # control power mgmt from userspace (audio) group
@@ -235,47 +275,39 @@
   systemd.services.rtkit-daemon.serviceConfig.ExecStart = [
     ""
     # claude raised max-realtime-priority from 88 to 94
-    "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=89 --max-realtime-priority=94 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
+    "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=95 --max-realtime-priority=94 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
   ];
+
+  systemd.user.services.pipewire-affinity = {
+    description = "Pin Pipewire to isolated CPUs";
+    after = [ "pipewire.service" ];
+    requires = [ "pipewire.service" ];
+    wantedBy = [ "pipewire.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'sleep 2; for p in $(${pkgs.procps}/bin/pgrep pipewire); do ${pkgs.util-linux}/bin/taskset -cp 24-27 $p; done; for tid in $(ps -eLo tid,comm | grep data-loop | awk '{print $1}'); do sudo taskset -cp 24-27 $tid; done;'";
+    };
+  };
+
+  systemd.user.services.reaper-rt = {
+    description = "Set REAPER/yabridge RT priority";
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'while true; do for p in $(${pkgs.procps}/bin/pgrep -f \"reaper|yabridge|wineserver\"); do ${pkgs.util-linux}/bin/chrt -f -p 90 $p 2>/dev/null; done; sleep 10; done'";
+      Restart = "always";
+    };
+    wantedBy = [ "default.target" ];
+  };
 
   # allow realtime for pipewire and user audio group
   security.pam.loginLimits = [
-    {
-      domain = "@audio";
-      item = "memlock";
-      type = "-";
-      value = "unlimited";
-    }
-    {
-      domain = "@audio";
-      item = "rtprio";
-      type = "-";
-      value = "98";
-    }
-    {
-      domain = "@audio";
-      item = "nice";
-      type = "-";
-      value = "-11";
-    }
-    {
-      domain = "@pipewire";
-      item = "memlock";
-      type = "-";
-      value = "unlimited";
-    }
-    {
-      domain = "@pipewire";
-      item = "rtprio";
-      type = "-";
-      value = "98";
-    }
-    {
-      domain = "@pipewire";
-      item = "nice";
-      type = "-";
-      value = "-11";
-    }
+    # TODO torgeir unødvendig?
+    # {domain = "@pipewire"; item = "memlock"; type = "-"; value = "unlimited";}
+    # {domain = "@pipewire"; item = "rtprio"; type = "-"; value = "98";}
+    # {domain = "@pipewire"; item = "nice"; type = "-"; value = "-11";}
+    {domain = "@audio"; item = "memlock"; type = "-"; value = "unlimited";}
+    {domain = "@audio"; item = "rtprio"; type = "-"; value = "98";}
+    {domain = "@audio"; item = "nice"; type = "-"; value = "-11";}
   ];
 
   environment.systemPackages = with pkgs; [
@@ -301,6 +333,8 @@
       "pw-metadata -n settings 0 clock.force-quantum $1")
     (writeScriptBin "reaper-pw-48"
       "pw-metadata -n settings 0 clock.force-quantum 48")
+    (writeScriptBin "reaper-pw-96"
+      "pw-metadata -n settings 0 clock.force-quantum 96")
     (writeScriptBin "reaper-pw-144"
       "pw-metadata -n settings 0 clock.force-quantum 144")
     (writeScriptBin "reaper-pw-256"
@@ -323,4 +357,21 @@
     VST_PATH =
       "$HOME/.vst:$HOME/.nix-profile/lib/vst:/run/current-system/sw/lib/vst";
   };
+
+# pw-top with this setup gives, after playing a while in helix native with pipewire period set to 48
+# S   ID  QUANT   RATE    WAIT    BUSY   W/Q   B/Q  ERR FORMAT           NAME
+# I   30      0      0   0.0us   0.0us  ???   ???     0                  Dummy-Driver
+# S   31      0      0    ---     ---   ---   ---     0                  Freewheel-Driver
+# S   59      0      0    ---     ---   ---   ---     0                  bluez_midi.server
+# S   62      0      0    ---     ---   ---   ---     0                  alsa_output.usb-LINE_6_HELIX_2929049-01.pro-output-0
+# S   63      0      0    ---     ---   ---   ---     0                  alsa_input.usb-LINE_6_HELIX_2929049-01.pro-input-0
+# R   65     48  48000 332.3us   0.7us  0.33  0.00    4    S32LE 8 48000 alsa_input.usb-ARTURIA_AudioFuse-00.pro-input-0
+# R   49      0      0   1.9us   2.6us  0.00  0.00    0                   + Midi-Bridge
+# R   64      0      0   5.0us   4.5us  0.00  0.00    0    S32LE 8 48000  + alsa_output.usb-ARTURIA_AudioFuse-00.pro-output-0
+# R  133     48      0   7.0us 309.8us  0.01  0.31    9                   + REAPER
+# S   70      0      0    ---     ---   ---   ---     0                  alsa_input.usb-046d_HD_Pro_Webcam_C920_4928B4EF-02.analog-stereo
+# S   73      0      0    ---     ---   ---   ---     0                  alsa_input.usb-Elgato_Cam_Link_4K_00051EF253000-03.analog-stereo
+# S  126      0      0    ---     ---   ---   ---     0                  v4l2_input.pci-0000_09_00.0-usb-0_1.4.3.4_1.0
+# S  128      0      0    ---     ---   ---   ---     0                  v4l2_input.pci-0000_a6_00.1-usb-0_3_1.0
+
 }
