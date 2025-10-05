@@ -167,7 +167,7 @@
 
             -- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
             ["api.alsa.rate"] = 48000,
-            ["api.alsa.period-num"] = 4,
+            ["api.alsa.period-num"] = 3,
             -- experiments
             ["api.alsa.period-size"] = 48 -- and run reaper with PIPEWIRE_LATENCY=48/48000 reaper, this gives 1ms latency
             --["api.alsa.period-size"] = 64
@@ -278,14 +278,41 @@
     "${pkgs.rtkit}/libexec/rtkit-daemon --scheduling-policy=FIFO --our-realtime-priority=95 --max-realtime-priority=94 --min-nice-level=-19 --rttime-usec-max=2000000 --users-max=100 --processes-per-user-max=1000 --threads-per-user-max=10000 --actions-burst-sec=10 --actions-per-burst-max=1000 --canary-cheep-msec=30000 --canary-watchdog-msec=60000"
   ];
 
-  systemd.user.services.pipewire-affinity = {
-    description = "Pin Pipewire to isolated CPUs";
-    after = [ "pipewire.service" ];
-    requires = [ "pipewire.service" ];
-    wantedBy = [ "pipewire.service" ];
+  systemd.services.pipewire-affinity = {
+    description = "Pin user Pipewire to isolated CPUs";
+    after = [ "user@1000.service" ];
+    wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash -c 'sleep 2; for p in $(${pkgs.procps}/bin/pgrep pipewire); do ${pkgs.util-linux}/bin/taskset -cp 24-27 $p; done; for tid in $(ps -eLo tid,comm | grep data-loop | awk '{print $1}'); do sudo taskset -cp 24-27 $tid; done;'";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.writeShellScript "pipewire-affinity" ''
+        #!/usr/bin/env bash
+        sleep 5
+
+        # Get your username dynamically
+        USER_NAME="${config.users.users.torgeir.name}"
+        USER_ID=$(${pkgs.coreutils}/bin/id -u $USER_NAME)
+
+        # Pin main pipewire process
+        for p in $(${pkgs.procps}/bin/pgrep -u $USER_ID -x pipewire); do
+          ${pkgs.util-linux}/bin/taskset -cp 24-27 $p && \
+            ${pkgs.util-linux}/bin/chrt -f -p 89 $p && \
+            echo "Pinned pipewire PID $p to CPUs 24-27 with priority 94"
+        done
+
+        # Pin all data-loop threads
+        for tid in $(${pkgs.procps}/bin/ps -eLo tid,euser,comm | ${pkgs.gawk}/bin/awk -v user="$USER_NAME" '$2==user && $3=="data-loop" {print $1}'); do
+          ${pkgs.util-linux}/bin/taskset -cp 24-27 $tid && \
+            ${pkgs.util-linux}/bin/chrt -f -p 89 $tid && \
+            echo "Pinned data-loop TID $tid to CPUs 24-27 with priority 94"
+        done
+
+        # Pin pipewire-pulse if running
+        for p in $(${pkgs.procps}/bin/pgrep -u $USER_ID -x pipewire-pulse); do
+          ${pkgs.util-linux}/bin/taskset -cp 24-27 $p && \
+            echo "Pinned pipewire-pulse PID $p to CPUs 24-27"
+        done
+      ''}";
     };
   };
 
@@ -293,10 +320,51 @@
     description = "Set REAPER/yabridge RT priority";
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.bash}/bin/bash -c 'while true; do for p in $(${pkgs.procps}/bin/pgrep -f \"reaper|yabridge|wineserver\"); do ${pkgs.util-linux}/bin/chrt -f -p 90 $p 2>/dev/null; done; sleep 10; done'";
+      ExecStart = "${pkgs.writeShellScript "reaper-rt" ''
+        while true; do
+          # Check if REAPER is running
+          if ! ${pkgs.procps}/bin/pgrep -x reaper > /dev/null 2>&1; then
+            sleep 30
+            continue
+          fi
+
+          # REAPER main process
+          for p in $(${pkgs.procps}/bin/pgrep -x reaper); do
+            if ${pkgs.util-linux}/bin/chrt -f -p 92 $p 2>/dev/null; then
+              echo "Set REAPER PID $p to priority 92"
+            fi
+            if ${pkgs.util-linux}/bin/taskset -cp 26 $p 2>/dev/null; then
+              echo "Pinned REAPER PID $p to CPU 26"
+            fi
+          done
+
+          # Yabridge processes
+          for p in $(${pkgs.procps}/bin/pgrep -f yabridge-host); do
+            if ${pkgs.util-linux}/bin/chrt -f -p 92 $p 2>/dev/null; then
+              echo "Set yabridge-host PID $p to priority 92"
+            fi
+          done
+
+          # Wineserver
+          for p in $(${pkgs.procps}/bin/pgrep -x wineserver); do
+            if ${pkgs.util-linux}/bin/chrt -f -p 92 $p 2>/dev/null; then
+              echo "Set wineserver PID $p to priority 92"
+            fi
+          done
+
+          sleep 30
+        done
+      ''}";
       Restart = "always";
+      RestartSec = 5;
     };
     wantedBy = [ "default.target" ];
+  };
+
+  # logrotate less
+  systemd.timers.logrotate.timerConfig = {
+    OnCalendar = lib.mkForce "weekly";
+    Persistent = true;
   };
 
   # allow realtime for pipewire and user audio group

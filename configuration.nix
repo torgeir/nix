@@ -365,6 +365,7 @@ in {
     wrapperFeatures.gtk = true;
   };
   services.dbus.enable = true;
+  services.dbus.packages = [ pkgs.rtkit ];
 
   # sway needs polkit
   security.polkit = {
