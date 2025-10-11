@@ -12,6 +12,7 @@ in {
     ./file-manager.nix
     (inputs.nix-home-manager + "/modules")
     inputs.nix-home-manager.homeManagerModules.emacs
+    ./cradle-hub.nix
   ];
 
   programs.t-doomemacs.enable = true;
