@@ -10,4 +10,9 @@
     # package = pkgs._1password-gui-beta;
   };
 
+  # 1password save 2fa codes here
+  services.gnome.gnome-keyring.enable = true;
+  # browse them with seahorse
+  programs.seahorse.enable = true;
+
 }

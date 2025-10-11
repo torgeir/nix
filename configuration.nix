@@ -301,11 +301,6 @@ in {
 
   services.tailscale.enable = true;
 
-  # 1password save 2fa codes here
-  services.gnome.gnome-keyring.enable = true;
-  # browse with seahorse
-  programs.seahorse.enable = true;
-
   programs.thunar.enable = true;
   programs.thunar.plugins = with pkgs.xfce; [
     thunar-archive-plugin
