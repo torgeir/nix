@@ -153,6 +153,11 @@ in {
       #assign [app_id="signal*"] 6
       #exec "signal-desktop --ozone-platform=wayland"
 
+      # make systemd and dbus know were under wayland
+      exec "systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK"
+      exec "hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK";
+  }
+
       workspace 6
       exec "${term} --title term-journalctl -o font.size=${status_term_font_size} -e journalctl -f "
       exec "corectrl"
