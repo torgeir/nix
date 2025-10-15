@@ -168,8 +168,9 @@
             -- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
             ["api.alsa.rate"] = 48000,
             ["api.alsa.period-num"] = 3,
+            ["api.alsa.period-size"] = 168,
             -- experiments
-            ["api.alsa.period-size"] = 48 -- and run reaper with PIPEWIRE_LATENCY=48/48000 reaper, this gives 1ms latency
+            --["api.alsa.period-size"] = 48 -- and run reaper with PIPEWIRE_LATENCY=48/48000 reaper, this gives 1ms latency
             --["api.alsa.period-size"] = 64
             --["api.alsa.period-size"] = 96
             --["api.alsa.period-size"] = 128
