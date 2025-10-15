@@ -8,7 +8,9 @@
   # torgeir: removed musnix rtirq, postcommandscript does the same better
   #
   # or, latest kernels has realtime audio improvements
-  boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
+  # boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
+  # is realtime nescessary?
+  boot.kernelPackages = pkgs.linuxPackages_6_16;
 
   # make helix native activation happy
   environment.etc.machine-id.source = ./machine-id;
