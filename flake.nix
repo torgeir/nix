@@ -14,6 +14,7 @@
     musnix.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-gaming.url = "github:torgeir/nix-gaming";
+    # nix-gaming.url = "github:fufexan/nix-gaming";
     nix-gaming.inputs.nixpkgs.follows = "nixpkgs-stable";
 
     sops-nix.url = "github:Mic92/sops-nix";
