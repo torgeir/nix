@@ -230,9 +230,10 @@ in {
     winetricks
     dxvk_2
   ] ++ (let
+    # helix native needs wine with fsync patches
+    # w = wineWowPackages.staging;
     w = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
   in [
-    # helix native needs wine with fsync patches
     w
     (pkgs.yabridge.override { wine = w; })
     (pkgs.yabridgectl.override { wine = w; })
