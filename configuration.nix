@@ -23,6 +23,7 @@ in {
     ./hardware-configuration.nix
     ./realtime-audio.nix
     ./modules/_1password.nix
+    ./modules/qmk.nix
     ./modules/qemu.nix
     ./modules/acme.nix
     ./modules/nginx.nix
