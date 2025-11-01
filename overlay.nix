@@ -3,6 +3,15 @@ final: prev:
 
 let inherit (prev) lib callPackage;
 in {
+  # yabridge = prev.yabridge.overrideAttrs (old: rec {
+  #   src = prev.fetchFromGitHub {
+  #     owner = "robbert-vdh";
+  #     repo = "yabridge";
+  #     rev = "refs/heads/new-wine10-embedding";
+  #     hash = "sha256-FaFFoVNJeh/y/3MGZ+pWZrHI+du44GExhZRNZBuUtio=";
+  #   };
+  #   patches = prev.lib.drop 1 old.patches;
+  # });
 
   # opentrack with neural-net tracker support
   opentrack = prev.opentrack.overrideAttrs (old: rec {
