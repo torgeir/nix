@@ -26,7 +26,7 @@ in {
     ./modules/qemu.nix
     ./modules/acme.nix
     ./modules/nginx.nix
-    ./modules/immich.nix
+    # ./modules/immich.nix
     #./modules/printer.nix
   ];
 
@@ -157,7 +157,6 @@ in {
   time.timeZone = "Europe/Oslo";
   networking.hostName = "torgnix";
 
-  # TODO zfs debug
   networking.hostId = "61433039";
 
   hardware.bluetooth.enable = true;

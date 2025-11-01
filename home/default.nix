@@ -220,7 +220,7 @@ in {
     qpwgraph
 
     # sudo -EH rpi-imager
-    rpi-imager
+    pkgs.stable.rpi-imager
 
     # wallpapers
     # https://github.com/natpen/awesome-wayland#wallpaper

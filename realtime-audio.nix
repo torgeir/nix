@@ -10,7 +10,21 @@
   # or, latest kernels has realtime audio improvements
   # boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   # is realtime nescessary?
-  boot.kernelPackages = pkgs.linuxPackages_6_16;
+  
+  # latest supported zfs kernel
+  boot.kernelPackages = let
+    zfsCompatibleKernelPackages = lib.filterAttrs (
+      name: kernelPackages:
+    (builtins.match "linux_[0-9]+_[0-9]+" name) != null
+    && (builtins.tryEval kernelPackages).success
+    && (!kernelPackages.${config.boot.zfs.package.kernelModuleAttribute}.meta.broken)
+    ) pkgs.linuxKernel.packages;
+    latestKernelPackage = lib.last (
+      lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (
+        builtins.attrValues zfsCompatibleKernelPackages
+      )
+    );
+  in latestKernelPackage;
 
   # make helix native activation happy
   environment.etc.machine-id.source = ./machine-id;
