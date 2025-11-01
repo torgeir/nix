@@ -20,7 +20,15 @@
     name = "Cradle Hub";
     genericName = "Plugin handler";
     # if this fails, put it in a shellscript, use chmod u+x <file>, and put /home/torgeir/bin/test.sh "%u" here instead
-    exec = "env WINEPREFIX=\\$HOME/.wine wine \"C:\\Program Files\\Cradle\\Cradle Hub.exe\" \"%u\"";
+    # exec = "env WINEPREFIX=\\$HOME/.wine wine \"C:\\Program Files\\Cradle\\Cradle Hub.exe\" \"%u\"";
+    # exec = "/home/torgeir/bin/test.sh \"%u\"";
+    exec = "${pkgs.writeShellScript "launch-cradle-hub-with-oauth-code" ''
+      #!/usr/bin/env bash
+      export WINEPREFIX="$HOME/.wine"
+      logger -p user.info "[Cradle hub]: Running wine cmd with URL: $1"
+      wine "C:\\Program Files\\Cradle\\Cradle Hub.exe" "$1"
+      logger -p user.info "[Cradle hub]: Done"
+    ''} %u";
     terminal = false;
     categories = [];
     mimeType = [ "x-scheme-handler/app.cradle" ];
