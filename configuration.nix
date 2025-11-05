@@ -369,6 +369,11 @@ in {
       });
     '';
   };
+  # silence polkit errors about missing directories
+  systemd.tmpfiles.rules = [
+    "d /run/polkit-1/rules.d 0755 root root -"
+    "d /usr/local/share/polkit-1/rules.d 0755 root root -"
+  ];
 
   # only wheels sudo
   security.sudo = {
