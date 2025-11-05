@@ -27,7 +27,7 @@ in {
     ./modules/qemu.nix
     ./modules/acme.nix
     ./modules/nginx.nix
-    # ./modules/immich.nix
+    ./modules/immich.nix
     #./modules/printer.nix
   ];
 
