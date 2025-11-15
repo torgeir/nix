@@ -77,7 +77,7 @@ in {
       for_window [title="Picture-in-Picture"] floating disable; sticky enable; move window to workspace number 9; resize set height 1600px;
       #border none; resize set width 720px; move position 600px 2000px;
 
-      assign [app_id="emacs"] 2
+      for_window [app_id="emacs"] 2
       assign [app_id="org.rncbc.qpwgraph"] 4
 
       assign [class="REAPER"] 3
@@ -173,6 +173,7 @@ in {
 
       exec qpwgraph -stylesheet ~/.config/dotfiles/config/qpwgraph/style.qss ~/graph-setup.qpwgraph
       exec $browser
+      workspace 2
       exec emacs ~/nixos-config/configuration.nix
     '';
   };
