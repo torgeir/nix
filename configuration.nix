@@ -247,8 +247,9 @@ in {
     unzip
     python3
     p7zip
-    pciutils # e.g. lspci
-    usbutils # e.g. lsusb
+    pciutils  # e.g. lspci
+    usbutils  # e.g. lsusb
+    dig
     cmake
     gnumake
     coreutils
