@@ -197,6 +197,7 @@ in {
     isNormalUser = true;
     extraGroups = [
       "torgeir"
+      # "disk" # e.g. access to /dev/sdc via rpi-imager app image, needs logout+login
       "wheel" # enable sudo
       "corectrl" # adjust gpu fans
       "audio" # realtime audio for user
