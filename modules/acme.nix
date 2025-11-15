@@ -11,6 +11,7 @@
     # TODO does this setup work with dns over 853? might need to turn of that NAT rule in the router
     dnsProvider = "cloudflare";
     dnsResolver = "1.1.1.1:53"; # nescessary
+    # TODO is this nescessary?
     # dnsPropagationCheck = true;
     dnsPropagationCheck = false;
 
