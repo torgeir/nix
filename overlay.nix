@@ -4,20 +4,22 @@ final: prev:
 let inherit (prev) lib callPackage;
 in {
 
-  # proton-ge-bin = let v = "GE-Proton10-15"; in prev.lib.overrideDerivation prev.proton-ge-bin (old: {
-  #   name = "proton-ge-bin";
-  #   version = v;
-  #   src = final.fetchzip {
-  #     url = "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/${v}/${v}.tar.gz";
-  #     # hash = "sha256-GMwAAKuaBhDv1TvAuW9DVcXSYPRM87NP6NnJfk8O8ZU=";
-  #     hash = "sha256-VS9oFut8Wz2sbMwtX5tZkeusLDcZP3FOLUsQRabaZ0c=";
-  #   };
-  #   # fix reference to finalAttrs.version in preFix in proton-ge-bin derivation
-  #   preFixup = ''
-  #     substituteInPlace "$steamcompattool/compatibilitytool.vdf" \
-  #     --replace-fail "${v}" "Proton-GE-locked"
-  #   '';
-  # });
+  proton-ge-bin = let v = "GE-Proton10-25"; in prev.lib.overrideDerivation prev.proton-ge-bin (old: {
+    name = "proton-ge-bin";
+    version = v;
+    src = final.fetchzip {
+      url = "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/${v}/${v}.tar.gz";
+      # hash = "sha256-GMwAAKuaBhDv1TvAuW9DVcXSYPRM87NP6NnJfk8O8ZU=";
+      # hash = "sha256-VS9oFut8Wz2sbMwtX5tZkeusLDcZP3FOLUsQRabaZ0c=";
+      # GE-Proton10-25
+      hash = "sha256-RKko4QMxtnuC1SAHTSEQGBzVyl3ywnirFSYJ1WKSY0k=";
+    };
+    # fix reference to finalAttrs.version in preFix in proton-ge-bin derivation
+    preFixup = ''
+      substituteInPlace "$steamcompattool/compatibilitytool.vdf" \
+      --replace-fail "${v}" "${v}"
+    '';
+  });
 
   # yabridge = prev.yabridge.overrideAttrs (old: rec {
   #   src = prev.fetchFromGitHub {
