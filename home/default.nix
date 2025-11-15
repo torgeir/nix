@@ -221,8 +221,12 @@ in {
     pavucontrol
     qpwgraph
 
+    # RPI imager does not seem to work any longer from nixpkgs
     # sudo -EH rpi-imager
-    pkgs.stable.rpi-imager
+    #pkgs.stable.rpi-imager
+    #
+    # This works better
+    #nix-shell -p appimage-run --run "wget https://downloads.raspberrypi.org/imager/imager_latest_amd64.AppImage; chmod +x imager_latest_amd64.AppImage; appimage-run imager_latest_amd64.AppImage; rm imager_latest_amd64.AppImage"
 
     # wallpapers
     # https://github.com/natpen/awesome-wayland#wallpaper
