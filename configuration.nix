@@ -28,7 +28,8 @@ in {
     ./modules/acme.nix
     ./modules/nginx.nix
     ./modules/immich.nix
-    #./modules/printer.nix
+    # TODO nix profile
+    # ./modules/printer.nix
   ];
 
   boot.loader.systemd-boot = {
