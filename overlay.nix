@@ -4,15 +4,14 @@ final: prev:
 let inherit (prev) lib callPackage;
 in {
 
-  proton-ge-bin = let v = "GE-Proton10-25"; in prev.lib.overrideDerivation prev.proton-ge-bin (old: {
+  # latest version known to work with DCS
+  # https://github.com/ValveSoftware/Proton/issues/1722#issuecomment-3563401892
+  proton-ge-bin = let v = "GE-Proton10-17"; in prev.lib.overrideDerivation prev.proton-ge-bin (old: {
     name = "proton-ge-bin";
     version = v;
     src = final.fetchzip {
       url = "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/${v}/${v}.tar.gz";
-      # hash = "sha256-GMwAAKuaBhDv1TvAuW9DVcXSYPRM87NP6NnJfk8O8ZU=";
-      # hash = "sha256-VS9oFut8Wz2sbMwtX5tZkeusLDcZP3FOLUsQRabaZ0c=";
-      # GE-Proton10-25
-      hash = "sha256-RKko4QMxtnuC1SAHTSEQGBzVyl3ywnirFSYJ1WKSY0k=";
+      hash = "sha256-GMwAAKuaBhDv1TvAuW9DVcXSYPRM87NP6NnJfk8O8ZU=";
     };
     # fix reference to finalAttrs.version in preFix in proton-ge-bin derivation
     preFixup = ''
