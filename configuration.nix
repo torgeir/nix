@@ -347,7 +347,10 @@ in {
     # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/hardware/corectrl.nix
     # https://gitlab.com/corectrl/corectrl/-/wikis/Setup#full-amd-gpu-controls
 
-    corectrl.enable = true;
+    corectrl = {
+      enable = true;
+      package = pkgs.stable.corectrl;
+    };
 
     steam.enable = true;
     steam.extraCompatPackages = [ pkgs.proton-ge-bin ];
