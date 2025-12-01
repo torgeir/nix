@@ -4,6 +4,8 @@ final: prev:
 let inherit (prev) lib callPackage;
 in {
 
+  kotlin-lsp-official = prev.callPackage (inputs.nix-home-manager + "/pkgs/kotlin-lsp.nix") {};
+
   # latest version known to work with DCS
   # https://github.com/ValveSoftware/Proton/issues/1722#issuecomment-3563401892
   proton-ge-bin = let v = "GE-Proton10-17"; in prev.lib.overrideDerivation prev.proton-ge-bin (old: {

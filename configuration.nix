@@ -311,6 +311,9 @@ in {
 
     # webcam support, v4l2-ctl --list-devices
     v4l-utils
+
+    # kotlin-lsp from overlay.nix
+    kotlin-lsp-official
   ];
 
   services.tailscale.enable = true;
