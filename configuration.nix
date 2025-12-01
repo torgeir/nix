@@ -287,7 +287,7 @@ in {
       env -u WAYLAND_DISPLAY opentrack &
       # must use <60 gain for logitech c920s to manage ~60fps;
       # why u say? it needs to happen a little later. i have no idea.
-      { while pgrep -x "opentrack" > /dev/null; do
+      { while pgrep -x "opentrack.exe" > /dev/null; do
         v4l2-ctl -d $d -c brightness=0;
         v4l2-ctl -d $d -c contrast=0;
         v4l2-ctl -d $d -c saturation=0;
