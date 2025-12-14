@@ -287,7 +287,8 @@ in {
       env -u WAYLAND_DISPLAY opentrack &
       # must use <60 gain for logitech c920s to manage ~60fps;
       # why u say? it needs to happen a little later. i have no idea.
-      { while pgrep -x "opentrack.exe" > /dev/null; do
+      opentrack_pid=$!
+      { while kill -0 $opentrack_pid 2>/dev/null; do
         v4l2-ctl -d $d -c brightness=0;
         v4l2-ctl -d $d -c contrast=0;
         v4l2-ctl -d $d -c saturation=0;
@@ -300,7 +301,8 @@ in {
         v4l2-ctl -d $d -c tilt_absolute=0;
         v4l2-ctl -d $d -c focus_automatic_continuous=0;
         v4l2-ctl -d $d -c focus_absolute=40;
-        v4l2-ctl -d $d -c zoom_absolute=195;
+        #v4l2-ctl -d $d -c zoom_absolute=195;
+        v4l2-ctl -d $d -c zoom_absolute=310;
         v4l2-ctl -d $d -c gain=39;
         v4l2-ctl -d $d -c white_balance_temperature=2000;
         v4l2-ctl -d $d -c exposure_time_absolute=9;
