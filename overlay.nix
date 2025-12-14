@@ -8,12 +8,12 @@ in {
 
   # latest version known to work with DCS
   # https://github.com/ValveSoftware/Proton/issues/1722#issuecomment-3563401892
-  proton-ge-bin = let v = "GE-Proton10-17"; in prev.lib.overrideDerivation prev.proton-ge-bin (old: {
+  proton-ge-bin = let v = "GE-Proton10-26"; in prev.lib.overrideDerivation prev.proton-ge-bin (old: {
     name = "proton-ge-bin";
     version = v;
     src = final.fetchzip {
       url = "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/${v}/${v}.tar.gz";
-      hash = "sha256-GMwAAKuaBhDv1TvAuW9DVcXSYPRM87NP6NnJfk8O8ZU=";
+      hash = "sha256-Q5bKTDn3sTgp4mbsevOdN3kcdRsyKylghXqM2I2cYq8=";
     };
     # fix reference to finalAttrs.version in preFix in proton-ge-bin derivation
     preFixup = ''
