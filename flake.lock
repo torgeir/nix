@@ -136,11 +136,11 @@
         "umu": "umu"
       },
       "locked": {
-        "lastModified": 1737730313,
-        "narHash": "sha256-geiEl7RACdYAF9XyU00q/53b6XquH9+fPX7h+Aq5hX0=",
+        "lastModified": 1765744292,
+        "narHash": "sha256-QYUHhamSx5htWUe7D5ZRRueWtBcjB6NxYTo2G6MjdNA=",
         "owner": "torgeir",
         "repo": "nix-gaming",
-        "rev": "7235717e35062c7944f7389875a074d13fe9bce5",
+        "rev": "8594f93946b5994eb0071e9a806b5e4fca7b8f12",
         "type": "github"
       },
       "original": {
