@@ -92,6 +92,8 @@
     "usbhid.mousepoll=0"  # Reduce USB polling overhead
     "usbcore.autosuspend=-1"
     "printk.devkmsg=on"  # Disable message rate limiting
+    #vkb, http://forum.vkb-sim.pro/viewtopic.php?f=25&t=7381&p=61644&hilit=linux#p61644
+    "usbhid.quirks=0x231d:0x012c:0x040,0x231d:0x0125:0x040"
   ];
 
   # limit swappiness, but really i use zram instead
@@ -123,82 +125,80 @@
     alsa.enable = true; # alsa support
     pulse.enable = true; # pipewire pulse emulation
     jack.enable = true; # pipewire jack emulation
-    wireplumber.configPackages = [
-      (pkgs.writeTextDir "share/wireplumber/main.lua.d/98-alsa-no-pop.lua" ''
-        table.insert(alsa_monitor.rules, {
-          matches = {
-            {
-              -- run pw-top to see the names
-              { "node.name", "matches", "alsa_input.usb-LINE_6_HELIX*" },
-              { "node.name", "matches", "alsa_output.usb-LINE_6_HELIX*" },
-            },
-          },
-          apply_properties = {
-            -- keep it alive
-            ["session.suspend-timeout-seconds"] = 0,
-            ["suspend-node"] = false,
-            ["node.pause-on-idle"] = false,
-            ["api.alsa.disable-batch"] = true,
-            ["priority.session"] = 3000,
-            ["api.alsa.rate"] = 48000,
-            ["api.alsa.period-size"] = 128,
-          }
-        })
-
-        table.insert(alsa_monitor.rules, {
-          matches = {
-            {
-              -- run pw-top to see the names
-              { "node.name", "matches", "alsa_input.usb-ARTURIA_AudioFuse*" },
-              { "node.name", "matches", "alsa_output.usb-ARTURIA_AudioFuse*" },
-            },
-          },
-          apply_properties = {
-
-            -- keep it alive
-            ["session.suspend-timeout-seconds"] = 0,
-            ["suspend-node"] = false,
-            ["node.pause-on-idle"] = false,
-
-            -- pipewire docs: ALSA Buffer Properties:
-            -- It removes the extra delay added of period-size/2 if the device can
-            -- support this. for batch devices it is also a good idea to lower the
-            -- period-size (and increase the IRQ frequency) to get smaller batch
-            -- updates and lower latency.
-            ["api.alsa.disable-batch"] = true,
-
-            -- pipewire docs: Change node priority:
-            -- Device priorities are usually from 0 to 2000.
-            ["priority.session"] = 3000,
-
-            -- pipewire docs: ALSA Buffer Properties
-            -- extra delay between hardware pointers and software pointers
-            ["api.alsa.headroom"] = 32,
-
-            -- Interface: Arturia Audiofuse
-            -- Reaper using alsa only can do this, without any pops;
-            --   Rate 48000
-            --   Size 64
-            --   Periods 3
-
-            -- https://wiki.linuxaudio.org/wiki/list_of_jack_frame_period_settings_ideal_for_usb_interface
-            ["api.alsa.rate"] = 48000,
-            ["api.alsa.period-num"] = 3,
-            ["api.alsa.period-size"] = 168,
-            -- experiments
-            --["api.alsa.period-size"] = 48 -- and run reaper with PIPEWIRE_LATENCY=48/48000 reaper, this gives 1ms latency
-            --["api.alsa.period-size"] = 64
-            --["api.alsa.period-size"] = 96
-            --["api.alsa.period-size"] = 128
-            --["api.alsa.period-size"] = 168
-            --["api.alsa.period-size"] = 144
-            --["api.alsa.period-size"] = 160
-            --["api.alsa.period-size"] = 256
-          },
-        })
-      '')
-    ];
+    # TODO usb device se gptchat
+    wireplumber.extraConfig."98-alsa-no-pop" = {
+      "monitor.alsa.rules" = [
+        {
+          matches = [
+            { "device.name" = "~alsa_card.usb-Neural_DSP_Quad_Cortex.*"; }
+          ];
+          actions = {
+            update-props = {
+              "device.profile" = "pro-audio";
+              "api.alsa.rate" = 48000;
+              # "api.alsa.period-size" = 1024;
+              "api.alsa.period-size" = 128;
+              "api.alsa.period-num" = 3;
+              "api.alsa.headroom" = 32;
+              "api.alsa.disable-mmap" = true;
+              "audio.channels" = 8;
+              "audio.position" = "AUX0,AUX1,AUX2,AUX3,AUX4,AUX5,AUX6,AUX7";
+            };
+          };
+        }
+        {
+          matches = [
+            { "device.name" = "~alsa_card.usb-ARTURIA_AudioFuse.*"; }
+          ];
+          actions = {
+            update-props = {
+              "device.profile" = "pro-audio";
+              "api.alsa.rate" = 48000;
+              "api.alsa.period-size" = 128;
+              "api.alsa.period-num" = 3;
+              "api.alsa.headroom" = 32;
+            };
+          };
+        }
+        {
+          matches = [
+            { "node.name" = "~alsa_input.usb-Neural_DSP_Quad_Cortex.*"; }
+            { "node.name" = "~alsa_output.usb-Neural_DSP_Quad_Cortex.*"; }
+          ];
+          actions = {
+            update-props = {
+              "node.driver" = false;
+              "node.pause-on-idle" = false;
+              # qc need these 3?
+              "api.alsa.disable-mmap" = true;
+              "resample.disable" = true;
+              "channelmix.disable" = true;
+            };
+          };
+        }
+        {
+          matches = [
+            { "node.name" = "~alsa_input.usb-ARTURIA_AudioFuse.*"; }
+            { "node.name" = "~alsa_output.usb-ARTURIA_AudioFuse.*"; }
+          ];
+          actions = {
+            update-props = {
+              "node.driver" = true;
+              "priority.driver" = 10000;
+            };
+          };
+        }
+      ];
+    };
   };
+  
+# services.pipewire.extraConfig.pipewire."10-clock" = {
+#   "context.properties" = {
+#     "default.clock.quantum" = 2048;
+#     "default.clock.min-quantum" = 2048;
+#     "default.clock.max-quantum" = 2048;
+#   };
+# };
 
   # jack
   #
@@ -215,12 +215,13 @@
   #   systemctl --user restart pipewire wireplumber
   environment.etc."/pipewire/jack.conf.d/override.conf".text = ''
     jack.properties = {
-      node.force-quantum = 48 # 0.001s, given alsa rate 48000
-      #node.force-quantum = 64 # 0.00xs
+      # node.force-quantum = 48 # 0.001s, given alsa rate 48000
+      # node.force-quantum = 64 # 0.00xs
       # node.force-quantum = 96 # 0.002s
       # node.force-quantum = 128 # 0.0026s
       # node.force-quantum = 144 # 0.003s
       # node.force-quantum = 240 # 0.005s
+      # node.force-quantum = 256 # 0.005s
       # node.force-quantum = 288 # 0.006s
       # node.force-quantum = 384 # 0.008s
       # node.force-quantum = 480 # 0.01s
@@ -257,6 +258,10 @@
   #
   # Run "udevadm monitor" and do what you want to monitor, e.g. plug something
   services.udev.extraRules = ''
+    # TODO vkb device cfg
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="231d", ATTRS{idProduct}=="012c", MODE="0666"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="231d", ATTRS{idProduct}=="0125", MODE="0666"
+
     DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="audio", MODE="0660"
 
     # set scheduler for nvme
