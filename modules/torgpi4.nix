@@ -91,25 +91,21 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
       #   };
       # };
 
-      sdImage.compressImage = false;
       sdImage.imageName = "${name}.img";
+      sdImage.compressImage = false;
 
       # make sure wifi works
       hardware.enableRedistributableFirmware = lib.mkForce false;
       hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
 
-      time.timeZone = "Europe/Oslo";
-
       services.openssh.enable = true;
       services.timesyncd.enable = true;
-
-      system.stateVersion = "24.11";
 
       networking = {
         hostName = name;
         wireless = {
           enable = true;
-          networks."znort-guest".psk = "";
+          networks."znort-guest".psk = "asdfasdf";
           interfaces = [ "wlan0" ];
         };
         interfaces."wlan0".useDHCP = true;
@@ -173,7 +169,6 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
       #   desktopManager.xfce.enable = true;
       # };
 
-      # sound.enable = true;
       # # hardware.pulseaudio.enable = true;
       # services.pipewire = {
       #   enable = true;
@@ -187,7 +182,6 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
       #   #media-session.enable = true;
       # };
 
-      sound.enable = true;
       hardware.pulseaudio.enable = false;
       security.rtkit.enable = true;
       services.pipewire = {
@@ -203,4 +197,6 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
     })
 
   ];
+
+  system.stateVersion = "24.11";
 }

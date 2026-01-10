@@ -10,12 +10,6 @@ let
   homeManagerSessionVars =
     "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh";
 in {
-  nix = {
-    package = pkgs.nixVersions.stable;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-  };
 
   nixpkgs.overlays = [ (import ./overlay.nix { inherit inputs; }) ];
 
@@ -38,16 +32,6 @@ in {
     configurationLimit = 20;
   };
   boot.loader.efi.canTouchEfiVariables = true;
-
-  # clean up every once in a while
-  #   sudo nix-collect-garbage
-  #   sudo nix profile wipe-history --older-than 7d --profile /nix/var/nix/profiles/system
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 21d";
-  };
-  nix.settings.auto-optimise-store = true;
 
   boot.kernelParams = [
     # resolution during boot
@@ -156,7 +140,6 @@ in {
   # leaving the below out performs better than with amdvlk
   # hardware.graphics.extraPackages = with pkgs; [ amdvlk ];
 
-  time.timeZone = "Europe/Oslo";
   networking.hostName = "torgnix";
 
   networking.hostId = "61433039";
@@ -188,26 +171,6 @@ in {
     # 11434
   ];
   networking.firewall.allowedUDPPorts = [ 4242 ];
-
-  # locale
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  # set a password with passwd
-  users.users.torgeir = {
-    shell = pkgs.zsh;
-    isNormalUser = true;
-    extraGroups = [
-      "torgeir"
-      # "disk" # e.g. access to /dev/sdc via rpi-imager app image, needs logout+login
-      "wheel" # enable sudo
-      "corectrl" # adjust gpu fans
-      "audio" # realtime audio for user
-      "pipewire" # realtime audio for pw
-      "video"
-      "dialout" # arduino, /dev/ttyUSB0
-      "plugdev"
-    ];
-  };
 
   # sorry stallman, can't live without them
   nixpkgs.config.allowUnfreePredicate = pkg:
@@ -357,9 +320,6 @@ in {
     steam.enable = true;
     steam.extraCompatPackages = [ pkgs.proton-ge-bin ];
     steam.protontricks.enable = true;
-
-    # shell
-    zsh.enable = true;
   };
 
   # here, and not home-manager, as my own config is in dotfiles/

@@ -227,6 +227,9 @@ in {
     #
     # This works better
     #nix-shell -p appimage-run --run "wget https://downloads.raspberrypi.org/imager/imager_latest_amd64.AppImage; chmod +x imager_latest_amd64.AppImage; appimage-run imager_latest_amd64.AppImage; rm imager_latest_amd64.AppImage"
+    #
+    # Actually, this works again. Yes it uses sudo - life is too short
+    # nix-shell -p rpi-imager --run "sudo -EH rpi-imager"
 
     # wallpapers
     # https://github.com/natpen/awesome-wayland#wallpaper

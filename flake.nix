@@ -39,15 +39,13 @@
       # https://github.com/sebastiant/dotfiles/blob/master/flake.nix
       # https://github.com/wiltaylor/dotfiles
       nixosConfigurations.torgnix = nixpkgs.lib.nixosSystem {
-        pkgs = nixpkgs.legacyPackages."x86_64-linux";
         # pass inputs to configuration.nix
         specialArgs = { inherit inputs; };
 
         modules = [
-          { nixpkgs.hostPlatform = "x86_64-linux"; }
-          # os config
           ./configuration.nix
 
+          ./hosts/common
           # ./modules/openrgb.nix
 
           #https://github.com/Mic92/sops-nix
@@ -74,6 +72,14 @@
             };
             home-manager.users.torgeir = import ./home;
           }
+        ];
+      };
+
+      # nixos-rebuild switch --flake .#tank --target-host tank --use-remote-sudo --ask-sudo-password
+      nixosConfigurations.tank = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./hosts/tank
         ];
       };
 

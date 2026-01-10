@@ -69,8 +69,8 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
         (v4l-utils.override { withGUI = false; }) # mismatched qt dependencies
       ];
 
+      image.fileName = "${name}.img";
       sdImage.compressImage = false;
-      sdImage.imageName = "${name}.img";
       sdImage.extraFirmwareConfig = {
         # camera setup
         gpu_mem = 128;
@@ -86,19 +86,17 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
       hardware.enableRedistributableFirmware = lib.mkForce false;
       hardware.firmware = [ pkgs.raspberrypiWirelessFirmware ];
 
-      time.timeZone = "Europe/Oslo";
-
       services.openssh.enable = true;
       services.timesyncd.enable = true;
 
-      system.stateVersion = "23.11";
-
+      # cannot be used with networking.wireless
+      networking.networkmanager.enable = lib.mkForce false;
       # TODO disable ipv6
       networking = {
         hostName = name;
         wireless = {
           enable = true;
-          networks."ssid".psk = "pw";
+          networks."ssid".psk = "asdfasdf";
           interfaces = [ "wlan0" ];
         };
         interfaces."wlan0".useDHCP = true;
@@ -149,4 +147,6 @@ nixpkgs.legacyPackages.x86_64-linux.pkgsCross.aarch64-multiplatform.nixos {
     })
 
   ];
+
+  system.stateVersion = "23.11";
 }
