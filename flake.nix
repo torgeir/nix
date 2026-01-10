@@ -41,37 +41,13 @@
       nixosConfigurations.torgnix = nixpkgs.lib.nixosSystem {
         # pass inputs to configuration.nix
         specialArgs = { inherit inputs; };
-
         modules = [
           ./configuration.nix
-
           ./hosts/common
+          ./hosts/common/torgeir.nix
           # ./modules/openrgb.nix
-
           #https://github.com/Mic92/sops-nix
           sops-nix.nixosModules.sops
-
-          home-manager.nixosModules.home-manager
-          {
-
-            # globally installed packages should be user available
-            home-manager.useGlobalPkgs = true;
-
-            # user packages can be installed without admin privileges
-            home-manager.useUserPackages = true;
-
-            # pass inputs to imported modules for users
-            home-manager.extraSpecialArgs = {
-              inherit inputs;
-
-              # https://github.com/torgeir/nix-home-manager/tree/main/modules/ .nix files need dotfiles parameter
-              dotfiles = inputs.dotfiles;
-
-              # hack around infinite recursion with pkgs.stdenv.isLinux in nix-home-manager modules
-              isLinux = true;
-            };
-            home-manager.users.torgeir = import ./home;
-          }
         ];
       };
 

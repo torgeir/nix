@@ -16,10 +16,10 @@ in {
     # https://github.com/NixOS/nixpkgs/blob/master/pkgs/data/fonts/iosevka/default.nix
     # https://github.com/NixOS/nixpkgs/blob/master/pkgs/data/fonts/iosevka/variants.nix
     font-awesome
-    (callPackage ./../pkgs/patch-nerd-fonts {
+    (callPackage ../../pkgs/patch-nerd-fonts {
       font = iosevka-bin.override { variant = "Etoile"; };
     })
-    (callPackage ./../pkgs/patch-nerd-fonts {
+    (callPackage ../../pkgs/patch-nerd-fonts {
       font = iosevka-bin.override { variant = "SGr-IosevkaTermCurlySlab"; };
     })
   ];

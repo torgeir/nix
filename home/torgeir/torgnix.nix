@@ -4,16 +4,16 @@ let
 in {
 
   imports = [
-    ./audio-production.nix
-    ./gtk.nix
-    ./fonts.nix
-    ./gpg.nix
-    ./gaming.nix
-    ./file-manager.nix
+    ../common/audio-production.nix
+    ../common/cradle-hub.nix
+    ../common/file-manager.nix
+    ../common/fonts.nix
+    ../common/gaming.nix
+    ../common/gpg.nix
+    ../common/gtk.nix
+    ../common/mime-types.nix
     (inputs.nix-home-manager + "/modules")
     inputs.nix-home-manager.homeManagerModules.emacs
-    ./cradle-hub.nix
-    ./mime-types.nix
   ];
 
   programs.t-doomemacs.enable = true;
@@ -74,7 +74,7 @@ in {
       # Lookup windows: https://gist.github.com/dshoreman/278091a17c08e30c46c7e7988b7c2f7d
       # What goes where
 
-      for_window [title="Picture-in-Picture"] floating disable; sticky enable; move window to workspace number 9; resize set height 1600px;
+      for_window [title="Picture-in-Picture"] floating disable; sticky enable; move window to workspace number 9; resize set height 1600px; gaps horizontal 0; workspace 9; 
       #border none; resize set width 720px; move position 600px 2000px;
 
       for_window [app_id="emacs"] 2
@@ -99,8 +99,9 @@ in {
       for_window [class="REAPER" title="^VST.*"] floating enable
       for_window [class="REAPER" title="^VST.*"] floating enable
       for_window [class="REAPER" title="^VST.*Kontakt.*"] floating disable; move window to workspace number 9
-      for_window [class="REAPER" title=".*Helix.*"] floating disable; move window to workspace number 9
+      for_window [class="REAPER" title="^VST: Helix.*"] floating disable; move window to workspace number 9
       for_window [class="REAPER" title="Mixer"] floating disable; move window to workspace number 9
+      for_window [class="REAPER" title="Helix Native"] floating enable
 
       assign [title="term-journalctl"] 6
       assign [title="^CoreCtrl"] 6
@@ -144,6 +145,23 @@ in {
       for_window [title="Forza Horizon 5"] move window to workspace number 1
 
       for_window [title="EFB"] move window to workspace number 9; resize set height 405px; resize set width 320px; move position 800px 2000px
+      assign [app_id="1password"] 10
+      for_window [app_id="1password" floating="auto_off"] move window to workspace number 10
+
+      gaps outer 0
+      workspace 1 gaps horizontal 400
+      workspace 2 gaps horizontal 500
+      workspace 3 gaps outer 0
+      workspace 4 gaps outer 0
+      workspace 5 gaps outer 0
+      workspace 6 gaps outer 0
+      workspace 7 gaps outer 0
+      workspace 8 gaps outer 0
+      workspace 9 gaps outer 0
+      workspace 10 gaps outer 0
+      for_window [app_id="(firefox)"] gaps horizontal 400
+      for_window [app_id="(emacs)"] gaps horizontal 500
+      smart_gaps inverse_outer
 
       assign [class="Signal"] 8
       assign [app_id="Slack"] 8
@@ -157,7 +175,6 @@ in {
       # make systemd and dbus know were under wayland
       exec "systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK"
       exec "hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK";
-  }
 
       workspace 6
       exec "${term} --title term-journalctl -o font.size=${status_term_font_size} -e journalctl -f "

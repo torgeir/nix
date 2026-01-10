@@ -26,6 +26,9 @@ in {
     # ./modules/printer.nix
   ];
 
+  networking.hostName = "torgnix";
+  networking.hostId = "61433039";
+
   boot.loader.systemd-boot = {
     enable = true;
     # number of generations to keep
@@ -139,10 +142,6 @@ in {
   environment.variables.AMD_VULKAN_ICD = "RADV";
   # leaving the below out performs better than with amdvlk
   # hardware.graphics.extraPackages = with pkgs; [ amdvlk ];
-
-  networking.hostName = "torgnix";
-
-  networking.hostId = "61433039";
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;

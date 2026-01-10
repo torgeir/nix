@@ -31,4 +31,6 @@
   environment.systemPackages = with pkgs; [
 
   ];
+
+  home-manager.users.torgeir = import ../../home/torgeir/${config.networking.hostName}.nix;
 }
