@@ -39,13 +39,12 @@
       # https://github.com/sebastiant/dotfiles/blob/master/flake.nix
       # https://github.com/wiltaylor/dotfiles
       nixosConfigurations.torgnix = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-
+        pkgs = nixpkgs.legacyPackages."x86_64-linux";
         # pass inputs to configuration.nix
         specialArgs = { inherit inputs; };
 
         modules = [
-
+          { nixpkgs.hostPlatform = "x86_64-linux"; }
           # os config
           ./configuration.nix
 
