@@ -31,6 +31,7 @@ in
     #./modules/printer.nix
     ./modules/noson.nix
     ./modules/headtracking.nix
+    ./modules/bluetooth.nix
   ];
 
   networking.hostName = "torgnix";
@@ -157,19 +158,6 @@ in
   environment.variables.AMD_VULKAN_ICD = "RADV";
   # leaving the below out performs better than with amdvlk
   # hardware.graphics.extraPackages = with pkgs; [ amdvlk ];
-
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
-
-  # make xbox controllers able to pair
-  hardware.bluetooth.settings = {
-    General = {
-      # this was already in the config file
-      ControllerMode = "dual";
-      # this was not, the controllers need a private channel to pair
-      Privacy = "device";
-    };
-  };
 
   # wireless
   # networking.wireless.enable = true;
