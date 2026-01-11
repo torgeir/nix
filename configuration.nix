@@ -1,19 +1,24 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running `nixos-help`).
-
-{ config, lib, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 
 let
   # automounts = [ "torgeir" "music" "delt" "cam" ];
-  automounts = [];
-  homeManagerSessionVars =
-    "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh";
-in {
+  automounts = [ ];
+  homeManagerSessionVars = "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh";
+in
+{
 
   nixpkgs.overlays = [ (import ./overlay.nix { inherit inputs; }) ];
 
   imports = [
+    #https://github.com/Mic92/sops-nix
+    sops-nix.nixosModules.sops
+    # ./modules/openrgb.nix
     ./hardware-configuration.nix
     ./realtime-audio.nix
     ./modules/_1password.nix
@@ -23,7 +28,8 @@ in {
     ./modules/nginx.nix
     ./modules/immich.nix
     # TODO nix profile
-    # ./modules/printer.nix
+    #./modules/printer.nix
+    ./modules/noson.nix
     ./modules/headtracking.nix
   ];
 
@@ -99,16 +105,17 @@ in {
 
   # mounts
   # https://discourse.nixos.org/t/systemd-mounts-and-systemd-automounts-options-causing-an-error/13796/5
-  boot.supportedFilesystems = [ "cifs" "zfs" ];
+  boot.supportedFilesystems = [
+    "cifs"
+    "zfs"
+  ];
 
   systemd.mounts = map (mount: {
     description = "Mount ${mount}";
     what = "//fileserver/${mount}";
     where = "/run/mount/${mount}";
     type = "cifs";
-    options = "_netdev,credentials=${
-        config.sops.secrets."smb".path
-      },uid=1000,gid=100,iocharset=utf8,rw,vers=3.0";
+    options = "_netdev,credentials=${config.sops.secrets."smb".path},uid=1000,gid=100,iocharset=utf8,rw,vers=3.0";
   }) automounts;
 
   systemd.automounts = map (mount: {
@@ -123,19 +130,26 @@ in {
   services.mpd = {
     enable = true;
     user = "torgeir";
-    musicDirectory = "/run/mount/music";
-    extraConfig = ''
-      audio_output {
-        type "pipewire"
-        name "My PipeWire Output"
-      }
-    '';
+    settings.music_directory = "/run/mount/music";
+    # TODO torgeir no longer effect
+    #extraConfig = ''
+    #  audio_output {
+    #    type "pipewire"
+    #    name "My PipeWire Output"
+    #  }
+    #'';
   };
   systemd.services.mpd.environment = {
     # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
     # MPD will look inside this directory for the PipeWire socket.
     XDG_RUNTIME_DIR = "/run/user/1000";
   };
+
+  # # TODO # dummy video device
+  # boot.kernelModules = [ "v4l2loopback" ];
+  # boot.extraModprobeConfig = ''
+  #   options v4l2loopback devices=1 video_nr=100 card_label="GStreamer_to_OBS" exclusive_caps=1
+  # '';
 
   # amd gpu
   boot.initrd.kernelModules = [ "amdgpu" ];
@@ -173,14 +187,15 @@ in {
   networking.firewall.allowedUDPPorts = [ 4242 ];
 
   # sorry stallman, can't live without them
-  nixpkgs.config.allowUnfreePredicate = pkg:
+  nixpkgs.config.allowUnfreePredicate =
+    pkg:
     builtins.elem (lib.getName pkg) [
       "spotify"
       "slack"
       "firefox-bin"
       "firefox-bin-unwrapped"
 
-      "cnijfilter2"     # canon pixma ink printer drivers
+      "cnijfilter2" # canon pixma ink printer drivers
 
       "1password"
       "1password-cli"
@@ -205,6 +220,7 @@ in {
     deno
 
     nixd
+    nixfmt
 
     git
     kdePackages.ark
@@ -212,8 +228,8 @@ in {
     unzip
     python3
     p7zip
-    pciutils  # e.g. lspci
-    usbutils  # e.g. lsusb
+    pciutils # e.g. lspci
+    usbutils # e.g. lsusb
     dig
     cmake
     gnumake
@@ -238,6 +254,7 @@ in {
     # docker rootless
     slirp4netns
 
+    wooz
 
     # kotlin-lsp from overlay.nix
     kotlin-lsp-official
@@ -279,6 +296,7 @@ in {
       package = pkgs.stable.corectrl;
     };
 
+    #gamemode.enable = true;
     steam.enable = true;
     steam.extraCompatPackages = [ pkgs.proton-ge-bin ];
     steam.protontricks.enable = true;
@@ -397,4 +415,3 @@ in {
   system.stateVersion = "23.05";
 
 }
-
