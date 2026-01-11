@@ -5,8 +5,7 @@
   #   nix flake update nix-gaming
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-locked.url =
-      "github:NixOS/nixpkgs/1042fd8b148a9105f3c0aca3a6177fd1d9360ba5";
+    nixpkgs-locked.url = "github:NixOS/nixpkgs/1042fd8b148a9105f3c0aca3a6177fd1d9360ba5";
 
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
 
@@ -32,9 +31,21 @@
     dotfiles.url = "github:torgeir/dotfiles";
   };
 
-  outputs = inputs@{ self, deploy-rs, home-manager, musnix, nix-gaming, nixpkgs
-    , nixpkgs-locked, nixpkgs-stable, sops-nix
-    , nix-home-manager, dotfiles }: rec {
+  outputs =
+    inputs@{
+      self,
+      deploy-rs,
+      home-manager,
+      musnix,
+      nix-gaming,
+      nixpkgs,
+      nixpkgs-locked,
+      nixpkgs-stable,
+      sops-nix,
+      nix-home-manager,
+      dotfiles,
+    }:
+    rec {
 
       # https://github.com/sebastiant/dotfiles/blob/master/flake.nix
       # https://github.com/wiltaylor/dotfiles
@@ -72,23 +83,19 @@
       # burn it with
       #   watch -n1 lsblk
       #   sudo dd if=results/sd-image/torgcam1.img of=/dev/sdb bs=4M status=progress oflag=direct
-      images.torgcam1 =
-        nixosConfigurations.torgcam1.config.system.build.sdImage;
-      images.torgcam2 =
-        nixosConfigurations.torgcam2.config.system.build.sdImage;
+      images.torgcam1 = nixosConfigurations.torgcam1.config.system.build.sdImage;
+      images.torgcam2 = nixosConfigurations.torgcam2.config.system.build.sdImage;
       # build it with
       #   nix build .#images.torgpi4
       # burn it with
       #   watch -n1 lsblk
       #   sudo dd if=/home/torgeir/nixos-config/result/sd-image/torgpi4.img of=/dev/sdb bs=1M status=progress
-      images.torgpi4 =
-        nixosConfigurations.torgpi4.config.system.build.sdImage;
+      images.torgpi4 = nixosConfigurations.torgpi4.config.system.build.sdImage;
 
       deploy.nodes.torgcam1 = {
         profiles.system = {
           user = "root";
-          path = deploy-rs.lib.x86_64-linux.activate.nixos
-            nixosConfigurations.torgcam1;
+          path = deploy-rs.lib.x86_64-linux.activate.nixos nixosConfigurations.torgcam1;
         };
 
         # this is how it ssh's into the target system to send packages/configs over.
@@ -99,8 +106,7 @@
       deploy.nodes.torgcam2 = {
         profiles.system = {
           user = "root";
-          path = deploy-rs.lib.x86_64-linux.activate.nixos
-            nixosConfigurations.torgcam2;
+          path = deploy-rs.lib.x86_64-linux.activate.nixos nixosConfigurations.torgcam2;
         };
 
         # this is how it ssh's into the target system to send packages/configs over.
