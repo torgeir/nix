@@ -33,6 +33,7 @@ in
     ./modules/headtracking.nix
     ./modules/bluetooth.nix
     ./modules/allow-unfree.nix
+    ./modules/yubikey.nix
   ];
 
   networking.hostName = "torgnix";
