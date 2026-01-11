@@ -102,8 +102,9 @@
     "usbhid.mousepoll=0" # Reduce USB polling overhead
     "usbcore.autosuspend=-1"
     "printk.devkmsg=on" # Disable message rate limiting
+    # TODO torgeir this was not needed, still does not work with vkbdcfg
     #vkb, http://forum.vkb-sim.pro/viewtopic.php?f=25&t=7381&p=61644&hilit=linux#p61644
-    "usbhid.quirks=0x231d:0x012c:0x040,0x231d:0x0125:0x040"
+    #"usbhid.quirks=0x231d:0x012c:0x040,0x231d:0x0125:0x040"
   ];
 
   # limit swappiness, but really i use zram instead
