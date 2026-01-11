@@ -32,6 +32,7 @@ in
     ./modules/noson.nix
     ./modules/headtracking.nix
     ./modules/bluetooth.nix
+    ./modules/allow-unfree.nix
   ];
 
   networking.hostName = "torgnix";
@@ -173,33 +174,6 @@ in
     # 11434
   ];
   networking.firewall.allowedUDPPorts = [ 4242 ];
-
-  # sorry stallman, can't live without them
-  nixpkgs.config.allowUnfreePredicate =
-    pkg:
-    builtins.elem (lib.getName pkg) [
-      "spotify"
-      "slack"
-      "firefox-bin"
-      "firefox-bin-unwrapped"
-
-      "cnijfilter2" # canon pixma ink printer drivers
-
-      "1password"
-      "1password-cli"
-      "1password-gui"
-      "1password-gui-beta"
-
-      "dropbox"
-
-      "reaper"
-      "linuxsampler"
-
-      "steam"
-      "steam-run"
-      "steam-original"
-      "steam-unwrapped"
-    ];
 
   environment.systemPackages = with pkgs; [
     zfs
