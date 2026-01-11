@@ -11,4 +11,6 @@
     ../common
     ../common/torgeir.nix
   ];
+
+  extraServices.podman.enable = true;
 }

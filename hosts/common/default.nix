@@ -9,6 +9,7 @@
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
+    ./extraServices
   ];
 
   # globally installed packages should be user available
