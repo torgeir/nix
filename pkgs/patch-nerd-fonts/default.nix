@@ -1,4 +1,10 @@
-{ lib, stdenvNoCC, fetchFromGitHub, font, pkgs }:
+{
+  lib,
+  stdenvNoCC,
+  fetchFromGitHub,
+  font,
+  pkgs,
+}:
 # stdenv no c compiler
 stdenvNoCC.mkDerivation rec {
   pname = "${font}-patched-nerd-font";

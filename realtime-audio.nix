@@ -1,4 +1,12 @@
-{ config, lib, inputs, pkgs, nixpkgs, ... }: {
+{
+  config,
+  lib,
+  inputs,
+  pkgs,
+  nixpkgs,
+  ...
+}:
+{
 
   imports = [ inputs.musnix.nixosModules.musnix ];
 
@@ -10,21 +18,23 @@
   # or, latest kernels has realtime audio improvements
   # boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   # is realtime nescessary?
-  
+
   # latest supported zfs kernel
-  boot.kernelPackages = let
-    zfsCompatibleKernelPackages = lib.filterAttrs (
-      name: kernelPackages:
-    (builtins.match "linux_[0-9]+_[0-9]+" name) != null
-    && (builtins.tryEval kernelPackages).success
-    && (!kernelPackages.${config.boot.zfs.package.kernelModuleAttribute}.meta.broken)
-    ) pkgs.linuxKernel.packages;
-    latestKernelPackage = lib.last (
-      lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (
-        builtins.attrValues zfsCompatibleKernelPackages
-      )
-    );
-  in latestKernelPackage;
+  boot.kernelPackages =
+    let
+      zfsCompatibleKernelPackages = lib.filterAttrs (
+        name: kernelPackages:
+        (builtins.match "linux_[0-9]+_[0-9]+" name) != null
+        && (builtins.tryEval kernelPackages).success
+        && (!kernelPackages.${config.boot.zfs.package.kernelModuleAttribute}.meta.broken)
+      ) pkgs.linuxKernel.packages;
+      latestKernelPackage = lib.last (
+        lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (
+          builtins.attrValues zfsCompatibleKernelPackages
+        )
+      );
+    in
+    latestKernelPackage;
 
   # make helix native activation happy
   environment.etc.machine-id.source = ./machine-id;
@@ -83,15 +93,15 @@
     # not needed for rt kernels
     "preemt=full"
 
-    "isolcpus=24-27"     # Isolate 4 CPUs for audio IRQs
+    "isolcpus=24-27" # Isolate 4 CPUs for audio IRQs
     "nohz_full=24-27"
     "rcu_nocbs=24-27"
-    "irqaffinity=0-23"   # Keep other IRQs on otther cpus
+    "irqaffinity=0-23" # Keep other IRQs on otther cpus
 
     # TODO torgeir
-    "usbhid.mousepoll=0"  # Reduce USB polling overhead
+    "usbhid.mousepoll=0" # Reduce USB polling overhead
     "usbcore.autosuspend=-1"
-    "printk.devkmsg=on"  # Disable message rate limiting
+    "printk.devkmsg=on" # Disable message rate limiting
     #vkb, http://forum.vkb-sim.pro/viewtopic.php?f=25&t=7381&p=61644&hilit=linux#p61644
     "usbhid.quirks=0x231d:0x012c:0x040,0x231d:0x0125:0x040"
   ];
@@ -100,10 +110,10 @@
   boot.kernel.sysctl = {
     "vm.swappiness" = 10;
     # This tells the kernel: "Don't delay USB processing to throttle log messages."
-    "kernel.printk_ratelimit" = 0;  # Disable printk rate limiting
+    "kernel.printk_ratelimit" = 0; # Disable printk rate limiting
     "kernel.printk_ratelimit_burst" = 0;
 
-    "vm.dirty_ratio" = 10;          # Default 20
+    "vm.dirty_ratio" = 10; # Default 20
     "vm.dirty_background_ratio" = 3; # Default 10
   };
 
@@ -191,14 +201,14 @@
       ];
     };
   };
-  
-# services.pipewire.extraConfig.pipewire."10-clock" = {
-#   "context.properties" = {
-#     "default.clock.quantum" = 2048;
-#     "default.clock.min-quantum" = 2048;
-#     "default.clock.max-quantum" = 2048;
-#   };
-# };
+
+  # services.pipewire.extraConfig.pipewire."10-clock" = {
+  #   "context.properties" = {
+  #     "default.clock.quantum" = 2048;
+  #     "default.clock.min-quantum" = 2048;
+  #     "default.clock.max-quantum" = 2048;
+  #   };
+  # };
 
   # jack
   #
@@ -229,9 +239,7 @@
   '';
 
   environment.etc."/pipewire/pipewire.conf".text =
-    builtins.replaceStrings
-      ["rt.prio       = 88"]
-      ["rt.prio       = 94"]
+    builtins.replaceStrings [ "rt.prio       = 88" ] [ "rt.prio       = 94" ]
       (builtins.readFile "${pkgs.pipewire}/share/pipewire/pipewire.conf");
 
   # environment.etc."/pipewire/pipewire.conf.d/00-rtprio.conf".text = builtins.toJSON {
@@ -395,9 +403,24 @@
     # {domain = "@pipewire"; item = "memlock"; type = "-"; value = "unlimited";}
     # {domain = "@pipewire"; item = "rtprio"; type = "-"; value = "98";}
     # {domain = "@pipewire"; item = "nice"; type = "-"; value = "-11";}
-    {domain = "@audio"; item = "memlock"; type = "-"; value = "unlimited";}
-    {domain = "@audio"; item = "rtprio"; type = "-"; value = "98";}
-    {domain = "@audio"; item = "nice"; type = "-"; value = "-11";}
+    {
+      domain = "@audio";
+      item = "memlock";
+      type = "-";
+      value = "unlimited";
+    }
+    {
+      domain = "@audio";
+      item = "rtprio";
+      type = "-";
+      value = "98";
+    }
+    {
+      domain = "@audio";
+      item = "nice";
+      type = "-";
+      value = "-11";
+    }
   ];
 
   environment.systemPackages = with pkgs; [
@@ -419,49 +442,38 @@
     pkgs.stable.linuxsampler # add lv2 path /run/current-system/sw/lib/lv2/ to reaper, rescan
     qsampler # launch this and add channel, select plugin and the .gig piano file
 
-    (writeScriptBin "reaper-pw"
-      "pw-metadata -n settings 0 clock.force-quantum $1")
-    (writeScriptBin "reaper-pw-48"
-      "pw-metadata -n settings 0 clock.force-quantum 48")
-    (writeScriptBin "reaper-pw-96"
-      "pw-metadata -n settings 0 clock.force-quantum 96")
-    (writeScriptBin "reaper-pw-144"
-      "pw-metadata -n settings 0 clock.force-quantum 144")
-    (writeScriptBin "reaper-pw-256"
-      "pw-metadata -n settings 0 clock.force-quantum 256")
-    (writeScriptBin "reaper-pw-512"
-      "pw-metadata -n settings 0 clock.force-quantum 512")
+    (writeScriptBin "reaper-pw" "pw-metadata -n settings 0 clock.force-quantum $1")
+    (writeScriptBin "reaper-pw-48" "pw-metadata -n settings 0 clock.force-quantum 48")
+    (writeScriptBin "reaper-pw-96" "pw-metadata -n settings 0 clock.force-quantum 96")
+    (writeScriptBin "reaper-pw-144" "pw-metadata -n settings 0 clock.force-quantum 144")
+    (writeScriptBin "reaper-pw-256" "pw-metadata -n settings 0 clock.force-quantum 256")
+    (writeScriptBin "reaper-pw-512" "pw-metadata -n settings 0 clock.force-quantum 512")
   ];
   # https://magazine.odroid.com/article/setting-irq-cpu-affinities-improving-irq-performance-on-the-odroid-xu4/
   # services.irqbalance.enable = true;
 
   environment.variables = {
-    DSSI_PATH =
-      "$HOME/.dssi:$HOME/.nix-profile/lib/dssi:/run/current-system/sw/lib/dssi";
-    LADSPA_PATH =
-      "$HOME/.ladspa:$HOME/.nix-profile/lib/ladspa:/run/current-system/sw/lib/ladspa";
-    LV2_PATH =
-      "$HOME/.lv2:$HOME/.nix-profile/lib/lv2:/run/current-system/sw/lib/lv2";
-    LXVST_PATH =
-      "$HOME/.lxvst:$HOME/.nix-profile/lib/lxvst:/run/current-system/sw/lib/lxvst";
-    VST_PATH =
-      "$HOME/.vst:$HOME/.nix-profile/lib/vst:/run/current-system/sw/lib/vst";
+    DSSI_PATH = "$HOME/.dssi:$HOME/.nix-profile/lib/dssi:/run/current-system/sw/lib/dssi";
+    LADSPA_PATH = "$HOME/.ladspa:$HOME/.nix-profile/lib/ladspa:/run/current-system/sw/lib/ladspa";
+    LV2_PATH = "$HOME/.lv2:$HOME/.nix-profile/lib/lv2:/run/current-system/sw/lib/lv2";
+    LXVST_PATH = "$HOME/.lxvst:$HOME/.nix-profile/lib/lxvst:/run/current-system/sw/lib/lxvst";
+    VST_PATH = "$HOME/.vst:$HOME/.nix-profile/lib/vst:/run/current-system/sw/lib/vst";
   };
 
-# pw-top with this setup gives, after playing a while in helix native with pipewire period set to 48
-# S   ID  QUANT   RATE    WAIT    BUSY   W/Q   B/Q  ERR FORMAT           NAME
-# I   30      0      0   0.0us   0.0us  ???   ???     0                  Dummy-Driver
-# S   31      0      0    ---     ---   ---   ---     0                  Freewheel-Driver
-# S   59      0      0    ---     ---   ---   ---     0                  bluez_midi.server
-# S   62      0      0    ---     ---   ---   ---     0                  alsa_output.usb-LINE_6_HELIX_2929049-01.pro-output-0
-# S   63      0      0    ---     ---   ---   ---     0                  alsa_input.usb-LINE_6_HELIX_2929049-01.pro-input-0
-# R   65     48  48000 332.3us   0.7us  0.33  0.00    4    S32LE 8 48000 alsa_input.usb-ARTURIA_AudioFuse-00.pro-input-0
-# R   49      0      0   1.9us   2.6us  0.00  0.00    0                   + Midi-Bridge
-# R   64      0      0   5.0us   4.5us  0.00  0.00    0    S32LE 8 48000  + alsa_output.usb-ARTURIA_AudioFuse-00.pro-output-0
-# R  133     48      0   7.0us 309.8us  0.01  0.31    9                   + REAPER
-# S   70      0      0    ---     ---   ---   ---     0                  alsa_input.usb-046d_HD_Pro_Webcam_C920_4928B4EF-02.analog-stereo
-# S   73      0      0    ---     ---   ---   ---     0                  alsa_input.usb-Elgato_Cam_Link_4K_00051EF253000-03.analog-stereo
-# S  126      0      0    ---     ---   ---   ---     0                  v4l2_input.pci-0000_09_00.0-usb-0_1.4.3.4_1.0
-# S  128      0      0    ---     ---   ---   ---     0                  v4l2_input.pci-0000_a6_00.1-usb-0_3_1.0
+  # pw-top with this setup gives, after playing a while in helix native with pipewire period set to 48
+  # S   ID  QUANT   RATE    WAIT    BUSY   W/Q   B/Q  ERR FORMAT           NAME
+  # I   30      0      0   0.0us   0.0us  ???   ???     0                  Dummy-Driver
+  # S   31      0      0    ---     ---   ---   ---     0                  Freewheel-Driver
+  # S   59      0      0    ---     ---   ---   ---     0                  bluez_midi.server
+  # S   62      0      0    ---     ---   ---   ---     0                  alsa_output.usb-LINE_6_HELIX_2929049-01.pro-output-0
+  # S   63      0      0    ---     ---   ---   ---     0                  alsa_input.usb-LINE_6_HELIX_2929049-01.pro-input-0
+  # R   65     48  48000 332.3us   0.7us  0.33  0.00    4    S32LE 8 48000 alsa_input.usb-ARTURIA_AudioFuse-00.pro-input-0
+  # R   49      0      0   1.9us   2.6us  0.00  0.00    0                   + Midi-Bridge
+  # R   64      0      0   5.0us   4.5us  0.00  0.00    0    S32LE 8 48000  + alsa_output.usb-ARTURIA_AudioFuse-00.pro-output-0
+  # R  133     48      0   7.0us 309.8us  0.01  0.31    9                   + REAPER
+  # S   70      0      0    ---     ---   ---   ---     0                  alsa_input.usb-046d_HD_Pro_Webcam_C920_4928B4EF-02.analog-stereo
+  # S   73      0      0    ---     ---   ---   ---     0                  alsa_input.usb-Elgato_Cam_Link_4K_00051EF253000-03.analog-stereo
+  # S  126      0      0    ---     ---   ---   ---     0                  v4l2_input.pci-0000_09_00.0-usb-0_1.4.3.4_1.0
+  # S  128      0      0    ---     ---   ---   ---     0                  v4l2_input.pci-0000_a6_00.1-usb-0_3_1.0
 
 }

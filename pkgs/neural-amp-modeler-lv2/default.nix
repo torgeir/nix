@@ -1,4 +1,11 @@
-{ lib, stdenv, fetchgit, fetchFromGitHub, cmake, makeWrapper }:
+{
+  lib,
+  stdenv,
+  fetchgit,
+  fetchFromGitHub,
+  cmake,
+  makeWrapper,
+}:
 
 stdenv.mkDerivation rec {
   name = "neural_amp_modeler.lv2";

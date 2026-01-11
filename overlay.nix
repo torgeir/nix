@@ -1,26 +1,32 @@
 { inputs }:
 final: prev:
 
-let inherit (prev) lib callPackage;
-in {
+let
+  inherit (prev) lib callPackage;
+in
+{
 
-  kotlin-lsp-official = prev.callPackage (inputs.nix-home-manager + "/pkgs/kotlin-lsp.nix") {};
+  kotlin-lsp-official = prev.callPackage (inputs.nix-home-manager + "/pkgs/kotlin-lsp.nix") { };
 
   # latest version known to work with DCS
   # https://github.com/ValveSoftware/Proton/issues/1722#issuecomment-3563401892
-  proton-ge-bin = let v = "GE-Proton10-26"; in prev.lib.overrideDerivation prev.proton-ge-bin (old: {
-    name = "proton-ge-bin";
-    version = v;
-    src = final.fetchzip {
-      url = "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/${v}/${v}.tar.gz";
-      hash = "sha256-Q5bKTDn3sTgp4mbsevOdN3kcdRsyKylghXqM2I2cYq8=";
-    };
-    # fix reference to finalAttrs.version in preFix in proton-ge-bin derivation
-    preFixup = ''
-      substituteInPlace "$steamcompattool/compatibilitytool.vdf" \
-      --replace-fail "${v}" "${v}"
-    '';
-  });
+  proton-ge-bin =
+    let
+      v = "GE-Proton10-26";
+    in
+    prev.lib.overrideDerivation prev.proton-ge-bin (old: {
+      name = "proton-ge-bin";
+      version = v;
+      src = final.fetchzip {
+        url = "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/${v}/${v}.tar.gz";
+        hash = "sha256-Q5bKTDn3sTgp4mbsevOdN3kcdRsyKylghXqM2I2cYq8=";
+      };
+      # fix reference to finalAttrs.version in preFix in proton-ge-bin derivation
+      preFixup = ''
+        substituteInPlace "$steamcompattool/compatibilitytool.vdf" \
+        --replace-fail "${v}" "${v}"
+      '';
+    });
 
   # yabridge = prev.yabridge.overrideAttrs (old: rec {
   #   src = prev.fetchFromGitHub {
@@ -42,9 +48,19 @@ in {
       rev = "766808196cf63ddf9ceb102fba193582daceb9de";
       hash = "sha256-xS87LFAbnRg7uBbN7ARoGts3bNYkcpOm3xhojBepgIo=";
     };
-    nativeBuildInputs = old.nativeBuildInputs
-      ++ (with final; [ wine64Packages.base pkgsi686Linux.glibc onnxruntime ]);
-    buildInputs = old.buildInputs ++ (with final; [ qt6.qtbase qt6.qttools ]);
+    nativeBuildInputs =
+      old.nativeBuildInputs
+      ++ (with final; [
+        wine64Packages.base
+        pkgsi686Linux.glibc
+        onnxruntime
+      ]);
+    buildInputs =
+      old.buildInputs
+      ++ (with final; [
+        qt6.qtbase
+        qt6.qttools
+      ]);
     cmakeFlags = old.cmakeFlags ++ [
       "-DSDK_WINE=ON"
       "-DONNXRuntime_INCLUDE_DIR=${final.onnxruntime.dev}/include"

@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
 
   # https://nixos.wiki/wiki/Printing
 
@@ -6,10 +7,10 @@
 
   environment.systemPackages = with pkgs; [ cups ];
 
-  services.printing =  {
-   logLevel = "warning";
-   enable = true;
-   drivers = with pkgs; [ gutenprint ];
+  services.printing = {
+    logLevel = "warning";
+    enable = true;
+    drivers = with pkgs; [ gutenprint ];
   };
 
   hardware.printers.ensurePrinters = [

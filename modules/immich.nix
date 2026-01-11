@@ -1,10 +1,13 @@
+{ config, ... }:
+{
 
-{ config, ... }: {
-
-  users.groups.immich = {};
+  users.groups.immich = { };
   users.users.immich = {
     group = "immich";
-    extraGroups = [ "video" "render" ];
+    extraGroups = [
+      "video"
+      "render"
+    ];
     isSystemUser = true;
     createHome = false;
   };
@@ -24,7 +27,7 @@
     enable = true;
     mediaLocation = "/fast/shared/apps/immich/";
     # hardware acceleration, needs hardware.graphics.enable = true;
-    accelerationDevices = ["/dev/dri/renderD128"];
+    accelerationDevices = [ "/dev/dri/renderD128" ];
     machine-learning.environment = {
       MPLCONFIGDIR = "/var/cache/immich/matplotlib";
       # https://github.com/NixOS/nixpkgs/issues/418799

@@ -1,7 +1,12 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  
+
   environment.systemPackages = with pkgs; [
 
     # webcam support, v4l2-ctl --list-devices
@@ -18,7 +23,7 @@
       d=$(v4l2-ctl --list-devices | grep -A1 "HD Pro Webcam" | tail -1 | tr -d '\t')
       echo video device: $d
       env -u WAYLAND_DISPLAY opentrack &
-      
+
       # must use <60 gain for logitech c920s to manage ~60fps;
       # why u say? it needs to happen a little later. i have no idea.
       opentrack_pid=$!

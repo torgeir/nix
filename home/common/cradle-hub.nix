@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   # the following allows logging in from the Cradle Hub.exe app on wine
@@ -10,7 +15,7 @@
 
     # also, firefox needs about:config -> network.protocol-handler.external."app.cradle": false and
     # then the first time it pops up a dialog asking to allow permission, say always allow
-    "x-scheme-handler/app.cradle" = "cradle.desktop"; 
+    "x-scheme-handler/app.cradle" = "cradle.desktop";
   };
 
   # this will be the cradle.desktop file contents,
@@ -30,7 +35,7 @@
       logger -p user.info "[Cradle hub]: Done"
     ''} %u";
     terminal = false;
-    categories = [];
+    categories = [ ];
     mimeType = [ "x-scheme-handler/app.cradle" ];
   };
 }

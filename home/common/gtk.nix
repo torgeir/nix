@@ -1,9 +1,18 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
-let theme-name = "Catppuccin-Macchiato-Compact-Sapphire-Dark";
-in {
+let
+  theme-name = "Catppuccin-Macchiato-Compact-Sapphire-Dark";
+in
+{
 
-  home.sessionVariables = { GTK_THEME = theme-name; };
+  home.sessionVariables = {
+    GTK_THEME = theme-name;
+  };
 
   gtk = {
     enable = true;

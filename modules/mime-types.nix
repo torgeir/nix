@@ -1,7 +1,12 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  
+
   xdg.enable = true;
   xdg.mimeApps.enable = true;
 

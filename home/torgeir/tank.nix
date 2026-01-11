@@ -1,7 +1,14 @@
-{ config, lib, inputs, dotfiles, pkgs, ... }:
+{
+  config,
+  lib,
+  inputs,
+  dotfiles,
+  pkgs,
+  ...
+}:
 
 {
- 
+
   imports = [
     (inputs.nix-home-manager + "/modules")
   ];

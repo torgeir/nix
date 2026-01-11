@@ -1,4 +1,5 @@
-{ config, ... }: {
+{ config, ... }:
+{
 
   sops.secrets."acme_cf".owner = "acme";
   users.users.nginx.extraGroups = [ "acme" ];

@@ -1,4 +1,10 @@
-{ config, lib, inputs, pkgs, ... }:
+{
+  config,
+  lib,
+  inputs,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -38,7 +44,10 @@
 
     settings = {
       auto-optimise-store = true;
-      trusted-users = ["root" "torgeir"];
+      trusted-users = [
+        "root"
+        "torgeir"
+      ];
     };
   };
 
