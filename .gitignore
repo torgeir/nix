@@ -2,5 +2,6 @@
 .idea
 *.log
 tmp/
-/secrets.yaml
 /smb.key
+/secrets.yaml*
+/.sops.yaml*
