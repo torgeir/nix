@@ -38,25 +38,17 @@
 
       # https://github.com/sebastiant/dotfiles/blob/master/flake.nix
       # https://github.com/wiltaylor/dotfiles
+      # nixos-rebuild switch --flake .#torgnix
       nixosConfigurations.torgnix = nixpkgs.lib.nixosSystem {
         # pass inputs to configuration.nix
         specialArgs = { inherit inputs; };
-        modules = [
-          ./configuration.nix
-          ./hosts/common
-          ./hosts/common/torgeir.nix
-          # ./modules/openrgb.nix
-          #https://github.com/Mic92/sops-nix
-          sops-nix.nixosModules.sops
-        ];
+        modules = [ ./hosts/torgnix ];
       };
 
       # nixos-rebuild switch --flake .#tank --target-host tank --use-remote-sudo --ask-sudo-password
       nixosConfigurations.tank = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
-        modules = [
-          ./hosts/tank
-        ];
+        modules = [ ./hosts/tank ];
       };
 
       # or pkgs.callPackage?
