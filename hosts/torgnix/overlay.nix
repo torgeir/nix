@@ -6,6 +6,8 @@ let
 in
 {
 
+  wooz = inputs.wooz.packages.${prev.system}.default;
+
   kotlin-lsp-official = prev.callPackage (inputs.nix-home-manager + "/pkgs/kotlin-lsp.nix") { };
 
   # latest version known to work with DCS

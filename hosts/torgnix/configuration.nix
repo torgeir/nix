@@ -17,23 +17,23 @@ in
 
   imports = [
     #https://github.com/Mic92/sops-nix
-    sops-nix.nixosModules.sops
+    inputs.sops-nix.nixosModules.sops
     # ./modules/openrgb.nix
     ./hardware-configuration.nix
     ./realtime-audio.nix
-    ./modules/_1password.nix
-    ./modules/qmk.nix
-    ./modules/qemu.nix
-    ./modules/acme.nix
-    ./modules/nginx.nix
-    ./modules/immich.nix
+    ../../modules/_1password.nix
+    ../../modules/qmk.nix
+    ../../modules/qemu.nix
+    ../../modules/acme.nix
+    ../../modules/nginx.nix
+    ../../modules/immich.nix
     # TODO nix profile
-    #./modules/printer.nix
-    ./modules/noson.nix
-    ./modules/headtracking.nix
-    ./modules/bluetooth.nix
-    ./modules/allow-unfree.nix
-    ./modules/yubikey.nix
+    #../../modules/printer.nix
+    ../../modules/noson.nix
+    ../../modules/headtracking.nix
+    ../../modules/bluetooth.nix
+    ../../modules/allow-unfree.nix
+    ../../modules/yubikey.nix
   ];
 
   networking.hostName = "torgnix";
@@ -103,7 +103,7 @@ in
   #
   # if you don't feel like committing secrets.yaml,
   # check out ./untrack-secrets.sh
-  sops.defaultSopsFile = ./secrets.yaml;
+  sops.defaultSopsFile = ../../secrets.yaml;
   sops.secrets."smb".owner = "torgeir";
 
   # mounts

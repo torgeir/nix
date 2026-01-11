@@ -9,6 +9,9 @@
 
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
 
+    wooz.url = "github:negrel/wooz";
+    wooz.inputs.nixpkgs.follows = "nixpkgs";
+
     musnix.url = "github:musnix/musnix";
     musnix.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -36,6 +39,7 @@
       self,
       deploy-rs,
       home-manager,
+      wooz,
       musnix,
       nix-gaming,
       nixpkgs,
