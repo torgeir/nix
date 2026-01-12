@@ -8,7 +8,7 @@
 {
   virtualisation.oci-containers.containers."hello" = {
     image = "traefik/whoami";
-    extraOptions = ["--network=web"];
+    extraOptions = [ "--network=web" ];
     ports = [ "8080:80" ];
   };
 
