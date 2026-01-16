@@ -14,6 +14,7 @@
     ../common/torgeir.nix
 
     ./configuration.nix
+    ./zfs.nix
     ./secrets.nix
     ./services
   ];
