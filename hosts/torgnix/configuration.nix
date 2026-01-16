@@ -193,6 +193,7 @@ in
     p7zip
     pciutils # e.g. lspci
     usbutils # e.g. lsusb
+    net-tools # arp
     dig
     cmake
     gnumake

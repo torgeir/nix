@@ -13,6 +13,7 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./realtek-interface.nix
   ];
 
   # Use the systemd-boot EFI boot loader.
@@ -20,7 +21,9 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "tank";
-  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
+  networking.interfaces.eno1.useDHCP = lib.mkDefault true;
+  # don't bother waiting, they will come
+  networking.dhcpcd.wait = "background";
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
