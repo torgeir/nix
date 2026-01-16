@@ -58,6 +58,7 @@
 
   # nix search wget
   environment.systemPackages = with pkgs; [
+    unzip
     git
     wget
     neovim
