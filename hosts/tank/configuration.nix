@@ -58,6 +58,8 @@
 
   # nix search wget
   environment.systemPackages = with pkgs; [
+    inetutils # telnet
+
     unzip
     git
     wget

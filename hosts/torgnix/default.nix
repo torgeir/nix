@@ -11,5 +11,6 @@
     ../common/torgeir.nix
 
     ./configuration.nix
+    ./secrets.nix
   ];
 }

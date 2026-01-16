@@ -14,8 +14,9 @@
     ../common/torgeir.nix
 
     ./configuration.nix
-    ./zfs.nix
     ./secrets.nix
+    ./zfs.nix
+    ./samba.nix
     ./services
   ];
 

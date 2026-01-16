@@ -20,6 +20,7 @@
       "audio" # realtime audio for user
       "pipewire" # realtime audio for pw
       "video"
+      "samba"
       "dialout" # arduino, /dev/ttyUSB0
       "plugdev" # mount usb and external drives
     ];

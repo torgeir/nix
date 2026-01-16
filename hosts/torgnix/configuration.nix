@@ -7,8 +7,11 @@
 }:
 
 let
-  # automounts = [ "torgeir" "music" "delt" "cam" ];
-  automounts = [ ];
+  automounts = [
+    "torgeir"
+    "music"
+    "delt"
+  ];
   homeManagerSessionVars = "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh";
 in
 {
@@ -16,6 +19,8 @@ in
   nixpkgs.overlays = [ (import ./overlay.nix { inherit inputs; }) ];
 
   imports = [
+    inputs.agenix.nixosModules.default
+
     #https://github.com/Mic92/sops-nix
     inputs.sops-nix.nixosModules.sops
     # ./modules/openrgb.nix
@@ -115,10 +120,13 @@ in
 
   systemd.mounts = map (mount: {
     description = "Mount ${mount}";
-    what = "//fileserver/${mount}";
+    what = "//tank.wa.gd/${mount}";
     where = "/run/mount/${mount}";
     type = "cifs";
-    options = "_netdev,credentials=${config.sops.secrets."smb".path},uid=1000,gid=100,iocharset=utf8,rw,vers=3.0";
+    options = "_netdev,credentials=${
+      config.age.secrets."smb-torgeir-credentials".path
+    },x-systemd.requires=agenix.service,uid=1000,gid=100,iocharset=utf8,rw,vers=3.0,domain=";
+
   }) automounts;
 
   systemd.automounts = map (mount: {
