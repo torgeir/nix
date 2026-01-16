@@ -31,7 +31,6 @@ in
     ../../modules/qemu.nix
     ../../modules/acme.nix
     ../../modules/nginx.nix
-    ../../modules/immich.nix
     # TODO nix profile
     #../../modules/printer.nix
     ../../modules/noson.nix
