@@ -35,7 +35,7 @@ in
   #     owner = "robbert-vdh";
   #     repo = "yabridge";
   #     rev = "refs/heads/new-wine10-embedding";
-  #     hash = "sha256-FaFFoVNJeh/y/3MGZ+pWZrHI+du44GExhZRNZBuUtio=";
+  #     hash = "sha256-qjyBnwdd/yRIiiAApHyxc/XkkEwB33YP0GpIjG4Upro=";
   #   };
   #   patches = prev.lib.drop 1 old.patches;
   # });
