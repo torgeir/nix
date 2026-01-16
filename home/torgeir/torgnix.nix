@@ -159,8 +159,10 @@ in
         for_window [app_id="1password" floating="auto_off"] move window to workspace number 10
 
         gaps outer 0
-        workspace 1 gaps horizontal 400
-        workspace 2 gaps horizontal 500
+        workspace 1 gaps horizontal 200
+        for_window [app_id="(firefox)"] gaps horizontal 200
+        workspace 2 gaps horizontal 300
+        for_window [app_id="(emacs)"] gaps horizontal 300
         workspace 3 gaps outer 0
         workspace 4 gaps outer 0
         workspace 5 gaps outer 0
@@ -169,8 +171,6 @@ in
         workspace 8 gaps outer 0
         workspace 9 gaps outer 0
         workspace 10 gaps outer 0
-        for_window [app_id="(firefox)"] gaps horizontal 400
-        for_window [app_id="(emacs)"] gaps horizontal 500
         smart_gaps inverse_outer
 
         assign [class="Signal"] 8
