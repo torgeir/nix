@@ -40,6 +40,6 @@
     SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="38:05:25:32:a4:2b", NAME="eno2"
     # keep the atlantic one, thats already eno1 by default
   '';
-  networking.interfaces.eno2.useDHCP = lib.mkDefault true;
+  networking.interfaces.eno2.useDHCP = lib.mkDefault true; # 5G
 
 }

@@ -21,7 +21,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "tank";
-  networking.interfaces.eno1.useDHCP = lib.mkDefault true;
+  networking.interfaces.eno1.useDHCP = lib.mkDefault true; # 10G
   # don't bother waiting, they will come
   networking.dhcpcd.wait = "background";
 
@@ -77,27 +77,20 @@
   #   enableSSHSupport = true;
   # };
 
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
     ports = [ 24 ];
     settings = {
-      KbdInteractiveAuthentication = false;
-      PasswordAuthentication = false;
+      AllowUsers = [ "torgeir" ];
       PermitRootLogin = "no";
-      AllowUsers = [
-        #"root"
-        "torgeir"
-      ];
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
     };
   };
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+
+  networking.firewall.enable = true;
+  networking.firewall.allowedTCPPorts = [ ];
+  networking.firewall.allowedUDPPorts = [ ];
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
