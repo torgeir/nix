@@ -8,9 +8,9 @@
 
 let
   automounts = [
-    #"torgeir"
-    # "music"
-    #"delt"
+    "torgeir"
+    "music"
+    "delt"
   ];
   homeManagerSessionVars = "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh";
 in
@@ -181,6 +181,38 @@ in
     # 11434
   ];
   networking.firewall.allowedUDPPorts = [ 4242 ];
+
+  # prevent boot wait for dhcp
+  networking.dhcpcd.wait = "background";
+  networking.useDHCP = lib.mkDefault false;
+  #motherboard
+  networking.interfaces.enp165s0 = {
+    useDHCP = false;
+    ipv4.addresses = [
+      {
+        address = "192.168.20.10";
+        prefixLength = 24;
+      }
+    ];
+  };
+  #2.5G dongle
+  networking.interfaces.enp9s0u1u2 = {
+    useDHCP = false;
+    ipv4.addresses = [
+      {
+        address = "192.168.50.10";
+        prefixLength = 24;
+      }
+    ];
+  };
+  networking.defaultGateway = "192.168.50.1";
+  networking = {
+    domain = "wa.gd";
+    nameservers = [
+      "192.168.50.1"
+      "192.168.20.1"
+    ];
+  };
 
   environment.systemPackages = with pkgs; [
     zfs
