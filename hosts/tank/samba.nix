@@ -13,7 +13,7 @@ let
       inherit path;
       "browseable" = "yes";
       "read only" = "yes";
-      "guest only" = "yes";
+      "guest ok" = "yes"; # sonos needs not guest only
       "force user" = "nobody";
     };
   };
@@ -39,7 +39,8 @@ let
       "create mask" = "0644";
       "directory mask" = "0755";
       "force user" = user;
-      "force group" = "users"; # gid 100
+      "force group" = user;
+      "valid users" = user;
     };
   };
   shares = {
@@ -62,7 +63,7 @@ in
       "global" = {
         "netbios name" = config.networking.hostName;
         "name resolve order" = "bcast host";
-        "hosts allow" = "192.168.50. 192.168.20. 127.0.0.1 localhost";
+        "hosts allow" = "192.168.50. 192.168.30. 192.168.20. 127.0.0.1 localhost";
         "hosts deny" = "0.0.0.0/0";
         "security" = "user";
         "guest account" = "nobody";
@@ -74,6 +75,9 @@ in
         "bind interfaces only" = true;
         "interfaces" = "eno1 lo";
         "workgroup" = "WORKGROUP";
+        # sonos music library
+        "min protocol" = "NT1"; # enable smb1/cifs
+        "ntlm auth" = "yes"; # required for older smb1 clients
       };
     }
     // (lib.listToAttrs [ (makePublicRoShare shares.music) ])

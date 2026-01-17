@@ -7,14 +7,21 @@
 
 {
 
+  users.groups.torgeir = {
+    gid = 1002;
+    name = "torgeir";
+  };
+
   # set a password with passwd
   users.users.torgeir = {
     # mkpasswd 1234
     initialHashedPassword = "$y$j9T$RuAQHg50ZEFXDQs6v4mV7/$yQggB5i8V.0hjkKr4dRqjVr8fXICSY4GAq2W6mTumO/";
     shell = pkgs.zsh;
     isNormalUser = true;
+    group = "torgeir";
     extraGroups = [
       "torgeir"
+      "shared"
       "wheel" # enable sudo
       "corectrl" # adjust gpu fans
       "audio" # realtime audio for user

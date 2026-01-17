@@ -21,12 +21,37 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "tank";
-  networking.interfaces = {
-    eno1.useDHCP = lib.mkDefault true; # 10G
-    eno2.useDHCP = lib.mkDefault true; # 5G
-  };
+  networking.useDHCP = lib.mkDefault false;
   # don't bother waiting, they will come
   networking.dhcpcd.wait = "background";
+  # 10G
+  networking.interfaces.eno1 = {
+    useDHCP = false;
+    ipv4.addresses = [
+      {
+        address = "192.168.20.20";
+        prefixLength = 24;
+      }
+    ];
+  };
+  # 5G
+  networking.interfaces.eno2 = {
+    useDHCP = false;
+    ipv4.addresses = [
+      {
+        address = "192.168.50.20";
+        prefixLength = 24;
+      }
+    ];
+  };
+  networking.defaultGateway = "192.168.20.1";
+  networking = {
+    domain = "wa.gd";
+    nameservers = [
+      "192.168.50.1"
+      "192.168.20.1"
+    ];
+  };
 
   # Select internationalisation properties.
   console = {

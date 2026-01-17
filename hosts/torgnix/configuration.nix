@@ -8,9 +8,9 @@
 
 let
   automounts = [
-    "torgeir"
-    "music"
-    "delt"
+    #"torgeir"
+    # "music"
+    #"delt"
   ];
   homeManagerSessionVars = "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh";
 in
@@ -122,10 +122,9 @@ in
     what = "//tank.wa.gd/${mount}";
     where = "/run/mount/${mount}";
     type = "cifs";
-    options = "_netdev,credentials=${
+    options = "_netdev,x-systemd.requires=agenix.service,credentials=${
       config.age.secrets."smb-torgeir-credentials".path
-    },x-systemd.requires=agenix.service,uid=1000,gid=100,iocharset=utf8,rw,vers=3.0,domain=";
-
+    },uid=1000,gid=100,iocharset=utf8,rw,vers=2.0,cache=none";
   }) automounts;
 
   systemd.automounts = map (mount: {
