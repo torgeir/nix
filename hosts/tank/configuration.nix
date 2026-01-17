@@ -21,22 +21,18 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "tank";
-  networking.interfaces.eno1.useDHCP = lib.mkDefault true; # 10G
+  networking.interfaces = {
+    eno1.useDHCP = lib.mkDefault true; # 10G
+    eno2.useDHCP = lib.mkDefault true; # 5G
+  };
   # don't bother waiting, they will come
   networking.dhcpcd.wait = "background";
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
   console = {
     font = "Lat2-Terminus16";
     useXkbConfig = true; # use xkb.options in tty.
   };
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
 
   # Enable sound.
   # hardware.pulseaudio.enable = true;
@@ -45,9 +41,6 @@
   #   enable = true;
   #   pulse.enable = true;
   # };
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.libinput.enable = true;
 
   # TODO after more ram
   # zram instead of swap
@@ -58,7 +51,10 @@
 
   # nix search wget
   environment.systemPackages = with pkgs; [
+    net-tools # arp
     inetutils # telnet
+    pciutils # lspci
+    tcpdump
 
     unzip
     git
@@ -91,8 +87,10 @@
   };
 
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ ];
+  networking.firewall.allowedTCPPorts = [ 8080 ];
   networking.firewall.allowedUDPPorts = [ ];
+  # Allow asymmetric routing: traffic arrives on eno1 (VLAN 20), replies via eno2 (VLAN 50)
+  networking.firewall.checkReversePath = "loose"; # or false
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
