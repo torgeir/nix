@@ -326,6 +326,7 @@ in
   systemd.tmpfiles.rules = [
     "d /run/polkit-1/rules.d 0755 root root -"
     "d /usr/local/share/polkit-1/rules.d 0755 root root -"
+    "d /run/polkit-1/actions 0755 root root -"
     "d /etc/polkit-1/actions 0755 root root -"
     "d /usr/local/share/polkit-1/actions 0755 root root -"
   ];
