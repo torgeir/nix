@@ -140,13 +140,12 @@ in
     enable = true;
     user = "torgeir";
     settings.music_directory = "/run/mount/music";
-    # TODO torgeir no longer effect
-    #extraConfig = ''
-    #  audio_output {
-    #    type "pipewire"
-    #    name "My PipeWire Output"
-    #  }
-    #'';
+    settings.audio_output = [
+      {
+        type = "pipewire";
+        name = "PipeWire Sound Server";
+      }
+    ];
   };
   systemd.services.mpd.environment = {
     # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
