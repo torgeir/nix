@@ -135,24 +135,6 @@ in
 
   # https://github.com/jakeisnt/nixcfg/blob/main/modules/security.nix#L4
 
-  # https://nixos.wiki/wiki/MPD
-  services.mpd = {
-    enable = true;
-    user = "torgeir";
-    settings.music_directory = "/run/mount/music";
-    settings.audio_output = [
-      {
-        type = "pipewire";
-        name = "PipeWire Sound Server";
-      }
-    ];
-  };
-  systemd.services.mpd.environment = {
-    # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
-    # MPD will look inside this directory for the PipeWire socket.
-    XDG_RUNTIME_DIR = "/run/user/1000";
-  };
-
   # # TODO # dummy video device
   # boot.kernelModules = [ "v4l2loopback" ];
   # boot.extraModprobeConfig = ''

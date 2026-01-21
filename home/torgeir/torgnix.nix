@@ -20,6 +20,7 @@ in
     ../common/gpg.nix
     ../common/gtk.nix
     ../common/mime-types.nix
+    ../common/mpd.nix
     (inputs.nix-home-manager + "/modules")
     inputs.nix-home-manager.homeManagerModules.emacs
   ];
@@ -238,7 +239,7 @@ in
 
       # apps
       mpv
-      #mpc-cli
+      mpc # used for i3status-rust
       ncmpcpp # mpd music player
 
       signal-desktop
