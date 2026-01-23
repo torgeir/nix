@@ -13,12 +13,12 @@
     ../common
     ../common/torgeir.nix
 
+    ../../modules/acme.nix
+
     ./configuration.nix
     ./secrets.nix
     ./zfs.nix
     ./samba.nix
     ./services
   ];
-
-  extraServices.podman.enable = true;
 }

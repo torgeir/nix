@@ -1,28 +1,41 @@
-{ config, ... }:
+{ config, lib, ... }:
+
+let
+  cfg = config.extraServices.acme-cloudflare;
+in
 {
+  options.extraServices.acme-cloudflare = {
+    enable = lib.mkEnableOption "ACME with Cloudflare DNS";
 
-  sops.secrets."acme_cf".owner = "acme";
-  users.users.nginx.extraGroups = [ "acme" ];
+    environmentFile = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to environment file containing CLOUDFLARE_DNS_API_TOKEN";
+    };
 
-  security.acme.acceptTerms = true;
-  security.acme.defaults.email = "torgeir.thoresen@gmail.com";
-  security.acme.certs."wa.gd" = {
-    domain = "*.wa.gd";
-
-    # TODO does this setup work with dns over 853? might need to turn of that NAT rule in the router
-    dnsProvider = "cloudflare";
-    dnsResolver = "1.1.1.1:53"; # nescessary
-    # TODO is this nescessary?
-    # dnsPropagationCheck = true;
-    dnsPropagationCheck = false;
-
-    # secret needs needs CLOUDFLARE_DNS_API_TOKEN=<token>,
-    # with cloudflare scopes Zone:Zone:read and Zone:DNS:edit
-    # https://go-acme.github.io/lego/dns/cloudflare/
-    environmentFile = config.sops.secrets."acme_cf".path;
-
-    # server = "https://acme-staging-v02.api.letsencrypt.org/directory"; # staging, no ratelimit
-    server = "https://acme-v02.api.letsencrypt.org/directory"; # prod
+    staging = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Use Let's Encrypt staging server for testing";
+    };
   };
 
+  config = lib.mkIf cfg.enable {
+    users.users.nginx.extraGroups = [ "acme" ];
+
+    security.acme.acceptTerms = true;
+    security.acme.defaults.email = "torgeir.thoresen@gmail.com";
+    security.acme.certs."wa.gd" = {
+      domain = "*.wa.gd";
+      # need to turn of that NAT rule in the router if this fails
+      dnsProvider = "cloudflare";
+      dnsResolver = "192.168.20.1:53";
+      dnsPropagationCheck = true;
+      environmentFile = cfg.environmentFile;
+      server =
+        if cfg.staging then
+          "https://acme-staging-v02.api.letsencrypt.org/directory"
+        else
+          "https://acme-v02.api.letsencrypt.org/directory";
+    };
+  };
 }

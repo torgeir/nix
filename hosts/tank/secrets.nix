@@ -14,6 +14,14 @@
         # mode "0440";
         # path = "/home/torgeir/.secret1"
       };
+
+      immich-db-password = {
+        file = ../../secrets/immich-db-password.age;
+      };
+      acme-cloudflare = {
+        file = ../../secrets/acme-cloudflare.age;
+        owner = "acme";
+      };
     };
   };
 }

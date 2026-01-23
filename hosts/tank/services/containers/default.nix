@@ -9,5 +9,6 @@
   imports = [
     ./echo.nix
     ./nginx.nix
+    ./immich.nix
   ];
 }

@@ -29,8 +29,6 @@ in
     ../../modules/_1password.nix
     ../../modules/qmk.nix
     ../../modules/qemu.nix
-    ../../modules/acme.nix
-    ../../modules/nginx.nix
     # TODO nix profile
     #../../modules/printer.nix
     ../../modules/noson.nix

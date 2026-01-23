@@ -1,6 +1,11 @@
 { ... }:
 {
 
+  # TODO ikke testet
+  extraServices.acme-cloudflare.enable = true;
+  extraServices.acme-cloudflare.environmentFile = config.sops.secrets."acme_cf".path;
+  sops.secrets."acme_cf".owner = "acme";
+
   services.nginx = {
     enable = true;
     recommendedProxySettings = true;
