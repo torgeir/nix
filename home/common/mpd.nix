@@ -7,6 +7,15 @@
 
 {
 
+  home.packages = with pkgs; [
+    mpc # used for i3status-rust
+  ];
+
+  # rmpc player
+  programs.rmpc.enable = true;
+  # mpd music player
+  programs.ncmpcpp.enable = true;
+
   # mpd
   services.mako.enable = true;
   services.mpdris2 = {

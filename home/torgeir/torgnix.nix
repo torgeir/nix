@@ -237,10 +237,8 @@ in
       # formats
       flac
 
-      # apps
+      # video
       mpv
-      mpc # used for i3status-rust
-      ncmpcpp # mpd music player
 
       signal-desktop
       spotify
