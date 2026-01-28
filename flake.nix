@@ -34,6 +34,10 @@
     nix-home-manager.url = "github:torgeir/nix-home-manager";
     # nix flake update dotfiles
     dotfiles.url = "github:torgeir/dotfiles";
+
+    m3ta-nixpkgs.url = "git+https://code.m3ta.dev/m3tam3re/nixpkgs";
+    m3ta-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
+
   };
 
   outputs =
@@ -51,6 +55,7 @@
       sops-nix,
       nix-home-manager,
       dotfiles,
+      m3ta-nixpkgs,
     }:
     rec {
 

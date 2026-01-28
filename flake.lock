@@ -189,6 +189,27 @@
         "type": "github"
       }
     },
+    "m3ta-nixpkgs": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "opencode": "opencode"
+      },
+      "locked": {
+        "lastModified": 1769436049,
+        "narHash": "sha256-BXpa8fLOZ4sHw3kH71tSTzdecov7O9a184b9pd/hrzw=",
+        "ref": "refs/heads/master",
+        "rev": "9cff518954b14344734f0119bc0389d589c50914",
+        "revCount": 73,
+        "type": "git",
+        "url": "https://code.m3ta.dev/m3tam3re/nixpkgs"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://code.m3ta.dev/m3tam3re/nixpkgs"
+      }
+    },
     "musnix": {
       "inputs": {
         "nixpkgs": [
@@ -311,6 +332,22 @@
     },
     "nixpkgs_2": {
       "locked": {
+        "lastModified": 1768393167,
+        "narHash": "sha256-n2063BRjHde6DqAz2zavhOOiLUwA3qXt7jQYHyETjX8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "2f594d5af95d4fdac67fba60376ec11e482041cb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
         "lastModified": 1769018530,
         "narHash": "sha256-MJ27Cy2NtBEV5tsK+YraYr2g851f3Fl1LpNHDzDX15c=",
         "owner": "NixOS",
@@ -325,16 +362,36 @@
         "type": "github"
       }
     },
+    "opencode": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1769362166,
+        "narHash": "sha256-ovFGFI2dSZLKSeuanRZg9cNvMCxYnS3UbtaCKls5BYQ=",
+        "owner": "anomalyco",
+        "repo": "opencode",
+        "rev": "056186225b6648cd5244d2cb0b05622b95343dc6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "anomalyco",
+        "ref": "v1.1.36",
+        "repo": "opencode",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
         "deploy-rs": "deploy-rs",
         "dotfiles": "dotfiles",
         "home-manager": "home-manager_2",
+        "m3ta-nixpkgs": "m3ta-nixpkgs",
         "musnix": "musnix",
         "nix-gaming": "nix-gaming",
         "nix-home-manager": "nix-home-manager",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs_3",
         "nixpkgs-locked": "nixpkgs-locked",
         "nixpkgs-stable": "nixpkgs-stable",
         "sops-nix": "sops-nix",

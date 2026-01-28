@@ -5,6 +5,7 @@ let
   inherit (prev) lib callPackage;
 in
 {
+  stt-ptt = inputs.m3ta-nixpkgs.packages.${prev.system}.stt-ptt;
 
   wooz = inputs.wooz.packages.${prev.system}.default;
 

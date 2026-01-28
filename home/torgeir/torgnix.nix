@@ -23,7 +23,23 @@ in
     ../common/mpd.nix
     (inputs.nix-home-manager + "/modules")
     inputs.nix-home-manager.homeManagerModules.emacs
+
+    inputs.m3ta-nixpkgs.homeManagerModules.default
   ];
+
+  cli.stt-ptt = {
+    enable = true;
+    whisperPackage = pkgs.whisper-cpp-vulkan;
+  };
+
+  services.ollama = {
+    enable = true;
+    acceleration = "rocm";
+  };
+
+  programs.opencode = {
+    enable = true;
+  };
 
   programs.t-doomemacs.enable = true;
   programs.t-nvim.enable = true;
@@ -203,6 +219,11 @@ in
         exec $browser
         workspace 2
         exec emacs ~/nixos-config/hosts/torgnix/configuration.nix
+
+        mode "Recording, speak to transcribe.." {
+            bindsym j mode "default", exec stt-ptt stop, exec 'pw-cli ls "pw-record" | grep -E "id [0-9]{1,3}" | cut -d" " -f2 | sed "s/,//" | xargs -I {} pw-cli destroy {}'
+        }
+        bindsym j+Backspace mode "Recording, speak to transcribe..", exec stt-ptt start
       '';
   };
   programs.t-firefox = {
