@@ -11,4 +11,6 @@
     ./nginx.nix
     ./immich.nix
   ];
+
+  extraServices.freshrss.enable = true;
 }

@@ -22,6 +22,9 @@
         file = ../../secrets/acme-cloudflare.age;
         owner = "acme";
       };
+      freshrss = {
+        file = ../../secrets/freshrss.age;
+      };
     };
   };
 }

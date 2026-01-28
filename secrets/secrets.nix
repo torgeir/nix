@@ -28,4 +28,7 @@ in
   # CLOUDFLARE_DNS_API_TOKEN=<token>
   # nix run github:ryantm/agenix -- -e acme-cloudflare.age
   "acme-cloudflare.age".publicKeys = hosts;
+
+  # nix run github:ryantm/agenix -- -e freshrss.age
+  "freshrss.age".publicKeys = hosts;
 }

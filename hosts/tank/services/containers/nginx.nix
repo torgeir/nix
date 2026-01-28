@@ -30,6 +30,15 @@
           return 200 'awyeah!';
         '';
       };
+      "rss.wa.gd" = {
+        useACMEHost = "wa.gd";
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:8090";
+          proxyWebsockets = true;
+        };
+        extraConfig = "";
+      };
       "immich.wa.gd" = {
         useACMEHost = "wa.gd";
         forceSSL = true;

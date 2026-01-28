@@ -8,5 +8,6 @@
 {
   imports = [
     ./podman.nix
+    ./freshrss.nix
   ];
 }
