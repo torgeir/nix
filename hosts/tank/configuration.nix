@@ -100,6 +100,8 @@
   #   enableSSHSupport = true;
   # };
 
+  services.tailscale.enable = true;
+
   services.openssh = {
     enable = true;
     ports = [ 24 ];
