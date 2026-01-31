@@ -436,6 +436,8 @@
     jalv
     lilv # provides tools like lv2ls
 
+    bolliedelayxt-lv2
+
     # piano
     # 2025 funker ikke med siste nix-unstable
     # 20250115 ingen av disse to virker
