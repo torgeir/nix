@@ -53,6 +53,7 @@ in
     statusCommand = "${pkgs.i3status-rust}/bin/i3status-rs";
     extraConfig =
       let
+        mod = "Mod4";
         term = "alacritty";
         status_term_font_size = "10";
       in
@@ -220,10 +221,9 @@ in
         workspace 2
         exec emacs ~/nixos-config/hosts/torgnix/configuration.nix
 
-        mode "Recording, speak to transcribe.." {
-            bindsym j mode "default", exec stt-ptt stop, exec 'pw-cli ls "pw-record" | grep -E "id [0-9]{1,3}" | cut -d" " -f2 | sed "s/,//" | xargs -I {} pw-cli destroy {}'
-        }
-        bindsym j+Backspace mode "Recording, speak to transcribe..", exec stt-ptt start
+        # record when held
+        bindsym --no-repeat ${mod}+Backspace exec stt-ptt start
+        bindsym --release ${mod}+Backspace exec stt-ptt stop
       '';
   };
   programs.t-firefox = {
