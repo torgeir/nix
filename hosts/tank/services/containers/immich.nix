@@ -64,8 +64,8 @@ in
   '';
 
   system.activationScripts.createPodmanImmichNetworkWeb = lib.mkAfter ''
-    if ! /run/current-system/sw/bin/podman network exists immich; then
-      /run/current-system/sw/bin/podman network create immich
+    if ! ${pkgs.podman}/bin/podman network exists immich; then
+      ${pkgs.podman}/bin/podman network create immich
     fi
   '';
 

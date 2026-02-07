@@ -13,8 +13,8 @@
   };
 
   system.activationScripts.createPodmanNetworkWeb = lib.mkAfter ''
-    if ! /run/current-system/sw/bin/podman network exists web; then
-      /run/current-system/sw/bin/podman network create web
+    if ! ${pkgs.podman}/bin/podman network exists web; then
+      ${pkgs.podman}/bin/podman network create web
     fi
   '';
 }

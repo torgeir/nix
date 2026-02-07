@@ -36,8 +36,8 @@ in
     };
 
     system.activationScripts.createPodmanNetworkFreshrss = lib.mkAfter ''
-      if ! /run/current-system/sw/bin/podman network exists freshrss; then
-        /run/current-system/sw/bin/podman network create freshrss
+      if ! ${pkgs.podman}/bin/podman network exists freshrss; then
+        ${pkgs.podman}/bin/podman network create freshrss
       fi
     '';
 

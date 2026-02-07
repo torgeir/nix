@@ -23,8 +23,12 @@ in
             "--filter=label!=important"
           ];
         };
+
         # reach other services by name
         defaultNetwork.settings.dns_enabled = true;
+
+        # avoids pointless probing
+        enableNvidia = false;
       };
     };
 
