@@ -114,8 +114,14 @@
   };
 
   networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [ 8080 ];
-  networking.firewall.allowedUDPPorts = [ ];
+  networking.firewall.allowedTCPPorts = [
+    53 # dns lookup from tailscale, this node is dns server
+    8080
+  ];
+  networking.firewall.allowedUDPPorts = [
+    53 # dns lookup from tailscale
+  ];
+
   # Allow asymmetric routing: traffic arrives on eno1 (VLAN 20), replies via eno2 (VLAN 50)
   networking.firewall.checkReversePath = "loose"; # or false
 
