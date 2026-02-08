@@ -222,9 +222,16 @@ in
         exec emacs ~/nixos-config/hosts/torgnix/configuration.nix
 
         # record when held
+        # bindsym --no-repeat ${mod}+Backspace exec stt-exec start
+        # bindsym --release ${mod}+Backspace exec stt-exec stop, exec notify-send Recording... Done
         bindsym --no-repeat ${mod}+Backspace exec stt-ptt start
-        bindsym --release ${mod}+Backspace exec stt-ptt stop
+        bindsym --release ${mod}+Backspace exec stt-ptt stop, exec notify-send Recording... Done
+        # bindsym --no-repeat --whole-window button2 exec stt-ptt start
+        # bindsym --release --whole-window button2 exec stt-ptt stop, exec notify-send Recording... Done
       '';
+
+    # what button is pressed?
+    # nix-shell -p wev --run wev
   };
   programs.t-firefox = {
     enable = true;
