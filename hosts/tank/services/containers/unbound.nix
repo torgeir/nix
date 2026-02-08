@@ -31,7 +31,10 @@
             "::1/128 allow"
             "100.64.0.0/10 allow"
           ];
-          local-zone = [ "\"wa.gd.\" static" ];
+          local-zone = [
+            "\"wa.gd.\" static"
+            "\".\" refuse"
+          ];
           local-data = map (s: "\"${s}.wa.gd.  A ${ip}\"") services;
         };
       };

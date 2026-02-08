@@ -53,6 +53,15 @@
     ];
   };
 
+  # without this services.unbound (?) setup messes up /etc/resolv.conf
+  services.resolved.enable = false;
+  environment.etc."resolv.conf".text = ''
+    domain wa.gd
+    nameserver 192.168.20.1
+    nameserver ::1
+    options trust-ad edns0
+  '';
+
   # Select internationalisation properties.
   console = {
     font = "Lat2-Terminus16";

@@ -26,20 +26,6 @@ let
 in
 {
 
-  # TODO certs
-  # services.nginx.virtualHosts."${immichHost}" = {
-  #   extraConfig = ''
-  #     ## Per https://immich.app/docs/administration/reverse-proxy...
-  #     client_max_body_size 50000M;
-  #   '';
-  #   forceSSL = true;
-  #   enableACME = true;
-  #   locations."/" = {
-  #     proxyPass = "http://127.0.0.1:2283";
-  #     proxyWebsockets = true;
-  #   };
-  # };
-
   # The primary source for this configuration is the recommended docker-compose installation of immich from
   # https://immich.app/docs/install/docker-compose, which linkes to:
   # - https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
