@@ -28,6 +28,9 @@
       freshrss = {
         file = ../../secrets/freshrss.age;
       };
+      scrobble = {
+        file = ../../secrets/scrobble.age;
+      };
     };
   };
 }

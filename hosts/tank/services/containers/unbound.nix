@@ -17,6 +17,8 @@
           "ha"
           "rss"
           "immich"
+          "music"
+          "tank"
         ];
       in
       {

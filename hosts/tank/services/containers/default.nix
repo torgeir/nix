@@ -12,6 +12,7 @@
     ./immich.nix
     ./unbound.nix
     ./ha.nix
+    ./navidrome.nix
   ];
 
   extraServices.freshrss.enable = true;

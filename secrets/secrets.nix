@@ -34,4 +34,7 @@ in
 
   # nix run github:ryantm/agenix -- -e freshrss.age
   "freshrss.age".publicKeys = hosts;
+
+  # nix run github:ryantm/agenix -- -e scrobble.age
+  "scrobble.age".publicKeys = hosts;
 }

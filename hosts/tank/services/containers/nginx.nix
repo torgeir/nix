@@ -37,7 +37,14 @@
           proxyPass = "http://127.0.0.1:8123";
           proxyWebsockets = true;
         };
-        extraConfig = "";
+      };
+      "music.wa.gd" = {
+        useACMEHost = "wa.gd";
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:4533";
+          proxyWebsockets = true;
+        };
       };
       "rss.wa.gd" = {
         useACMEHost = "wa.gd";
@@ -46,7 +53,6 @@
           proxyPass = "http://127.0.0.1:8090";
           proxyWebsockets = true;
         };
-        extraConfig = "";
       };
       "immich.wa.gd" = {
         useACMEHost = "wa.gd";
