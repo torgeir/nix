@@ -10,7 +10,7 @@ let
   immichRoot = "/fast/shared/apps/immich";
   immichPhotos = "${immichRoot}/upload";
   immichAppdataRoot = "${immichRoot}/appdata";
-  immichVersion = "commit-41c5a0ca2fb9dc6b5652a920afa0a47ecb5f9032"; # 20260123
+  immichVersion = "v2.5.6"; # 2026-02-13
 
   postgresRoot = "${immichAppdataRoot}/pgsql";
   postgresUser = "immich";
