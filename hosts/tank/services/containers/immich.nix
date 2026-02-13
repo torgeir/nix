@@ -146,32 +146,30 @@ in
     image = "redis:6.2-alpine@sha256:80cc8518800438c684a53ed829c621c94afd1087aaeb59b0d4343ed3e7bcf6c5";
   };
 
-  # first time, needed to run
+  # 1. first time, needed to run
   # podman exec -it immich_postgres bash
   # psql -U immich -d immich -c "ALTER SYSTEM SET shared_preload_libraries = 'vectors.so'"
   # it should output "ALTER SYSTEM"
+  #
+  # 2.moving to vectorchord from tensorchord/pgvecto-rs:pg14-v0.2.0 after upgrading to 2.5.6 needed
+  # podman exec -it immich_postgres bash
+  # ALTER SYSTEM RESET shared_preload_libraries;
+  # SELECT pg_reload_conf();
   virtualisation.oci-containers.containers.immich_postgres = {
     networks = [ "immich" ];
-    image = "tensorchord/pgvecto-rs:pg14-v0.2.0";
+    image = "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0";
     environment = {
       POSTGRES_USER = postgresUser;
       POSTGRES_DB = postgresDb;
     };
-    cmd = [
-      "bash"
-      "-c"
-      "source /run/secrets/db-password && export POSTGRES_PASSWORD=\"$DB_PASSWORD\" && exec docker-entrypoint.sh postgres"
-    ];
+    # POSTGRES_PASSWORD, same as DB_PASSWORD
+    environmentFiles = [ config.age.secrets.immich-postgres.path ];
     volumes = [
       "${postgresRoot}:/var/lib/postgresql/data"
-      "${config.age.secrets.immich-db-password.path}:/run/secrets/db-password:ro"
     ];
     extraOptions = [
-      "--health-cmd=pg_isready -U ${postgresUser} -d ${postgresDb}"
-      "--health-interval=10s"
-      "--health-timeout=5s"
-      "--health-retries=5"
       "--network-alias=immich-postgres"
+      "--shm-size=128m"
     ];
   };
 }

@@ -21,9 +21,12 @@ in
   #     password: <password>
   "smb-torgeir-credentials.age".publicKeys = hosts;
 
-  # immich
+  # immich-app/immich-server
   # nix run github:ryantm/agenix -- -e immich-db-password.age
   "immich-db-password.age".publicKeys = hosts;
+  # immich-app/postgres
+  # nix run github:ryantm/agenix -- -e immich-postgres.age
+  "immich-postgres.age".publicKeys = hosts;
 
   # CLOUDFLARE_DNS_API_TOKEN=<token>
   # nix run github:ryantm/agenix -- -e acme-cloudflare.age

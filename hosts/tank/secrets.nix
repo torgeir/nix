@@ -18,6 +18,9 @@
       immich-db-password = {
         file = ../../secrets/immich-db-password.age;
       };
+      immich-postgres = {
+        file = ../../secrets/immich-postgres.age;
+      };
       acme-cloudflare = {
         file = ../../secrets/acme-cloudflare.age;
         owner = "acme";
