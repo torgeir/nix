@@ -21,6 +21,22 @@
         "type": "github"
       }
     },
+    "argononed": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1729566243,
+        "narHash": "sha256-DPNI0Dpk5aym3Baf5UbEe5GENDrSmmXVdriRSWE+rgk=",
+        "owner": "nvmd",
+        "repo": "argononed",
+        "rev": "16dbee54d49b66d5654d228d1061246b440ef7cf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nvmd",
+        "repo": "argononed",
+        "type": "github"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -83,11 +99,11 @@
     },
     "dotfiles": {
       "locked": {
-        "lastModified": 1770831178,
-        "narHash": "sha256-IJkGyZn+V/NLYI60W6v3tv3xnOSlgWsf35pLvZosDaM=",
+        "lastModified": 1772219900,
+        "narHash": "sha256-GHTKUre0NwyWQEcMneNU7g2tDuPwRZf2kXefkNz6SuM=",
         "owner": "torgeir",
         "repo": "dotfiles",
-        "rev": "31defcdcafef1d65067a33fa075691031e0f5718",
+        "rev": "149b51931b584885a42cf15283af16ef1cb6d6d0",
         "type": "github"
       },
       "original": {
@@ -104,6 +120,21 @@
         "owner": "edolstra",
         "repo": "flake-compat",
         "rev": "ff81ac966bb2cae68946d5ed5fc4994f96d0ffec",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "flake-compat_2": {
+      "locked": {
+        "lastModified": 1767039857,
+        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
         "type": "github"
       },
       "original": {
@@ -257,16 +288,66 @@
         "doomemacs": "doomemacs"
       },
       "locked": {
-        "lastModified": 1770829301,
-        "narHash": "sha256-YAKVMij7tsCVaGDu0ol51Q1hnTjUCLJI1Z/5lWTIgBU=",
+        "lastModified": 1772202134,
+        "narHash": "sha256-Cl7v5Vx1f1mWsSczIzYis02E43iHutf2j3kZaU2pG8U=",
         "owner": "torgeir",
         "repo": "nix-home-manager",
-        "rev": "8f63bc398af5fae3b8f42e8cd08e9763d098d1e6",
+        "rev": "b34f355e77dd86197cdac17bc858838141bc868d",
         "type": "github"
       },
       "original": {
         "owner": "torgeir",
         "repo": "nix-home-manager",
+        "type": "github"
+      }
+    },
+    "nixos-images": {
+      "inputs": {
+        "nixos-stable": [
+          "nixos-raspberrypi",
+          "nixpkgs"
+        ],
+        "nixos-unstable": [
+          "nixos-raspberrypi",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1747747741,
+        "narHash": "sha256-LUOH27unNWbGTvZFitHonraNx0JF/55h30r9WxqrznM=",
+        "owner": "nvmd",
+        "repo": "nixos-images",
+        "rev": "cbbd6db325775096680b65e2a32fb6187c09bbb4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nvmd",
+        "ref": "sdimage-installer",
+        "repo": "nixos-images",
+        "type": "github"
+      }
+    },
+    "nixos-raspberrypi": {
+      "inputs": {
+        "argononed": "argononed",
+        "flake-compat": "flake-compat_2",
+        "nixos-images": "nixos-images",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1771952074,
+        "narHash": "sha256-E4YGCua2H3LcWI0kY8dksiQCwwXMO/q4noLwhbQp6Bc=",
+        "owner": "nvmd",
+        "repo": "nixos-raspberrypi",
+        "rev": "05502b5099aba4df458acb46d0e0487d51318400",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nvmd",
+        "ref": "develop",
+        "repo": "nixos-raspberrypi",
         "type": "github"
       }
     },
@@ -391,6 +472,7 @@
         "musnix": "musnix",
         "nix-gaming": "nix-gaming",
         "nix-home-manager": "nix-home-manager",
+        "nixos-raspberrypi": "nixos-raspberrypi",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-locked": "nixpkgs-locked",
         "nixpkgs-stable": "nixpkgs-stable",

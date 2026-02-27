@@ -38,6 +38,8 @@
     m3ta-nixpkgs.url = "git+https://code.m3ta.dev/m3tam3re/nixpkgs";
     m3ta-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
 
+    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/develop";
+    nixos-raspberrypi.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -56,6 +58,7 @@
       nix-home-manager,
       dotfiles,
       m3ta-nixpkgs,
+      nixos-raspberrypi,
     }:
     rec {
 
@@ -89,6 +92,15 @@
         inherit inputs;
         name = "torgpi4";
       };
+
+      #nixosConfigurations.rpi5 = nixos-raspberrypi.lib.nixosSystemFull {
+      #  specialArgs = { inherit inputs nixos-raspberrypi; };
+      #  modules = [
+      #    ./hosts/pi5
+      #  ];
+      #};
+
+      # nix build .#nixosConfigurations.rpi5.config.system.build.sdImage
 
       # build it with
       #   nix build .#images.torgcam1 .#images.torgcam2
