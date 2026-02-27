@@ -21,8 +21,6 @@ in
   imports = [
     inputs.agenix.nixosModules.default
 
-    #https://github.com/Mic92/sops-nix
-    inputs.sops-nix.nixosModules.sops
     # ./modules/openrgb.nix
     ./hardware-configuration.nix
     ./realtime-audio.nix
@@ -32,6 +30,7 @@ in
     # TODO nix profile
     #../../modules/printer.nix
     ../../modules/noson.nix
+    # ../../modules/nginx.nix
     ../../modules/headtracking.nix
     ../../modules/bluetooth.nix
     ../../modules/allow-unfree.nix
@@ -63,50 +62,6 @@ in
     # https://bbs.archlinux.org/viewtopic.php?id=253050
     "pci=assign-busses,hpbussize=0x33,realloc"
   ];
-
-  # https://github.com/Mic92/sops-nix/blob/master/README.md
-  # a good description of how to deploy to a host
-  #   https://sr.ht/~bwolf/dotfiles/
-  #
-  # create private key
-  #   nix-shell -p age --run "age-keygen -o /etc/nix-sops.key"
-  # echo public key
-  #   nix-shell -p age --run "age-keygen -y /etc/nix-sops.key"
-  #
-  # https://github.com/Mic92/sops-nix/issues/149
-  # needs to live where it is available during boot
-  sops.age.keyFile = "/etc/nix-sops.key";
-
-  # put public key in .sops.yml
-  #
-  # cat <<EOF > .sops.yml
-  # keys:
-  #   - &torgeir $(nix-shell -p age --run "age-keygen -y /etc/nix-sops.key")
-  # creation_rules:
-  #   - path_regex: .*
-  #     key_groups:
-  #     - age:
-  #         - *torgeir
-  # EOF
-  #
-  # works around sops issue https://github.com/getsops/sops/pull/1898
-  #   mkdir /tmp/nohome
-  # insert secrets
-  #   HOME=/tmp/nohome SOPS_AGE_KEY_FILE=/etc/nix-sops.key EDITOR=emacsclient nix-shell -p sops --run "sops secrets.yaml"
-  # and put e.g.
-  #   smb: |
-  #     username: <username>
-  #     password: <password>
-  #
-  # to change keys, add new key to .sops.yaml like above (cat <<EOF..)
-  # > HOME=/tmp/nohome SOPS_AGE_KEY_FILE=/etc/nix-sops-smb.key EDITOR=vim nix-shell -p sops --run "sops updatekeys secrets.yaml"
-  # then edit with the other key
-  # > HOME=/tmp/nohome SOPS_AGE_KEY_FILE=/etc/nix-sops.key EDITOR=vim nix-shell -p sops --run "sops updatekeys secrets.yaml"
-  #
-  # if you don't feel like committing secrets.yaml,
-  # check out ./untrack-secrets.sh
-  sops.defaultSopsFile = ../../secrets.yaml;
-  sops.secrets."smb".owner = "torgeir";
 
   # mounts
   # https://discourse.nixos.org/t/systemd-mounts-and-systemd-automounts-options-causing-an-error/13796/5

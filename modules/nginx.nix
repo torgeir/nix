@@ -1,10 +1,10 @@
-{ ... }:
+{ config, ... }:
 {
 
-  # TODO ikke testet
+  imports = [ ./acme.nix ];
+
   extraServices.acme-cloudflare.enable = true;
-  extraServices.acme-cloudflare.environmentFile = config.sops.secrets."acme_cf".path;
-  sops.secrets."acme_cf".owner = "acme";
+  extraServices.acme-cloudflare.environmentFile = config.age.secrets."acme_cf".path;
 
   services.nginx = {
     enable = true;
@@ -20,22 +20,25 @@
           return 200 'awyeah!';
         '';
       };
-      "ai.wa.gd" = {
-        useACMEHost = "wa.gd";
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:8080";
-          proxyWebsockets = true;
-        };
-      };
-      "sd.wa.gd" = {
-        useACMEHost = "wa.gd";
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:7860";
-          proxyWebsockets = true;
-        };
-      };
+
+      # "ai.wa.gd" = {
+      #   useACMEHost = "wa.gd";
+      #   forceSSL = true;
+      #   locations."/" = {
+      #     proxyPass = "http://127.0.0.1:8080";
+      #     proxyWebsockets = true;
+      #   };
+      # };
+
+      # "sd.wa.gd" = {
+      #   useACMEHost = "wa.gd";
+      #   forceSSL = true;
+      #   locations."/" = {
+      #     proxyPass = "http://127.0.0.1:7860";
+      #     proxyWebsockets = true;
+      #   };
+      # };
+
     };
   };
 }

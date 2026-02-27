@@ -332,11 +332,6 @@ in
     ".config/corectrl/corectrl.ini".source = dotfiles + "/config/corectrl/corectrl.ini";
   };
 
-  # sops with home manager is a little different, see configuration.nix
-  #   imports = [ inputs.sops-nix.homeManagerModules.sops ];
-  #   sops.age.keyFile = "/etc/nix-sops-secret.key";
-  #   sops.secrets."smb".owner = "torgeir";
-
   home.stateVersion = "23.11";
 
 }

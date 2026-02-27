@@ -3,5 +3,3 @@
 *.log
 tmp/
 /smb.key
-/secrets.yaml*
-/.sops.yaml*

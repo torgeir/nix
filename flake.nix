@@ -19,9 +19,6 @@
     # nix-gaming.url = "github:fufexan/nix-gaming";
     nix-gaming.inputs.nixpkgs.follows = "nixpkgs-stable";
 
-    sops-nix.url = "github:Mic92/sops-nix";
-    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
-
     agenix.url = "github:ryantm/agenix";
 
     deploy-rs.url = "github:serokell/deploy-rs";
@@ -54,7 +51,6 @@
       nixpkgs,
       nixpkgs-locked,
       nixpkgs-stable,
-      sops-nix,
       nix-home-manager,
       dotfiles,
       m3ta-nixpkgs,

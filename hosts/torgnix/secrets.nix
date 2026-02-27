@@ -9,6 +9,11 @@
         file = ../../secrets/smb-torgeir-credentials.age;
         owner = "torgeir";
       };
+
+      acme_cf = {
+        file = ../../secrets/torgnix-acme-cf.age;
+        owner = "torgeir";
+      };
     };
   };
 }

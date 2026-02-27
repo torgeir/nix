@@ -32,9 +32,13 @@ in
   # nix run github:ryantm/agenix -- -e acme-cloudflare.age
   "acme-cloudflare.age".publicKeys = hosts;
 
+  # nix run github:ryantm/agenix -- -e torgnix-acme-cloudflare.age
+  "torgnix-acme-cf.age".publicKeys = [ torgeir ];
+
   # nix run github:ryantm/agenix -- -e freshrss.age
   "freshrss.age".publicKeys = hosts;
 
   # nix run github:ryantm/agenix -- -e scrobble.age
   "scrobble.age".publicKeys = hosts;
+
 }
