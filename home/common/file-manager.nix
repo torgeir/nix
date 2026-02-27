@@ -21,10 +21,27 @@
       <actions>
       <action>
         <icon>utilities-terminal</icon>
+        <name>Emacs here</name>
+        <submenu></submenu>
+        <unique-id>1698005278620488-1</unique-id>
+        <command>emacsclient %f</command>
+        <description>Emacs here</description>
+        <range></range>
+        <patterns>*</patterns>
+        <startup-notify/>
+        <directories/>
+        <audio-files/>
+        <image-files/>
+        <other-files/>
+        <text-files/>
+        <video-files/>
+      </action>
+      <action>
+        <icon>utilities-terminal</icon>
         <name>Terminal here</name>
         <submenu></submenu>
         <unique-id>1698005278620489-1</unique-id>
-        <command>alacritty --working-directory %f</command>
+        <command>ghostty --working-directory=%f</command>
         <description>Terminal here</description>
         <range></range>
         <patterns>*</patterns>
