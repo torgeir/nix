@@ -17,6 +17,8 @@ in
     ../common/file-manager.nix
     ../common/fonts.nix
     ../common/gaming.nix
+    ../common/sway.nix
+    ../common/ghostty.nix
     ../common/gpg.nix
     ../common/gtk.nix
     ../common/mime-types.nix
@@ -43,18 +45,18 @@ in
 
   programs.t-doomemacs.enable = true;
   programs.t-nvim.enable = true;
-  programs.t-terminal.alacritty.enable = true;
+  # programs.t-terminal.alacritty.enable = true;
   programs.t-zoxide.enable = true;
   programs.t-git.enable = true;
   programs.t-shell-tooling.enable = true;
   programs.t-tmux.enable = true;
-  programs.t-sway = {
+  programs.tt-sway = {
     enable = true;
     statusCommand = "${pkgs.i3status-rust}/bin/i3status-rs";
     extraConfig =
       let
         mod = "Mod4";
-        term = "alacritty";
+        term = "ghostty";
         status_term_font_size = "10";
       in
       ''
@@ -205,11 +207,11 @@ in
         exec "hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK";
 
         workspace 6
-        exec "${term} --title term-journalctl -o font.size=${status_term_font_size} -e journalctl -f "
+        exec "${term} --title=term-journalctl --font-size=${status_term_font_size} -e journalctl -f "
         exec "corectrl"
 
         workspace 7
-        exec "${term} --title term-top -o font.size=${status_term_font_size} -e btop"
+        exec "${term} --title=term-top --font-size=${status_term_font_size} -e btop"
         exec 'resources'
 
         workspace 8
@@ -222,12 +224,8 @@ in
         exec emacs ~/nixos-config/hosts/torgnix/configuration.nix
 
         # record when held
-        # bindsym --no-repeat ${mod}+Backspace exec stt-exec start
-        # bindsym --release ${mod}+Backspace exec stt-exec stop, exec notify-send Recording... Done
         bindsym --no-repeat ${mod}+Backspace exec stt-ptt start
         bindsym --release ${mod}+Backspace exec stt-ptt stop, exec notify-send Recording... Done
-        # bindsym --no-repeat --whole-window button2 exec stt-ptt start
-        # bindsym --release --whole-window button2 exec stt-ptt stop, exec notify-send Recording... Done
       '';
 
     # what button is pressed?
@@ -259,6 +257,7 @@ in
       # images
       imagemagick
       gnuplot
+      exiftool
 
       #https://nixos.wiki/wiki/Samba
 
