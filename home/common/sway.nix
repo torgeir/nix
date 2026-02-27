@@ -266,6 +266,8 @@ in
               "${mod}+Shift+Left" = "workspace prev";
               "${mod}+Shift+Right" = "workspace next";
 
+              "${mod}+o" = "workspace back_and_forth";
+
               # focus home row
               "${meta}+k" = "focus up";
               "${meta}+l" = "focus right";
