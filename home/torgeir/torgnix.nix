@@ -18,7 +18,6 @@ in
     ../common/fonts.nix
     ../common/gaming.nix
     ../common/sway.nix
-    ../common/ghostty.nix
     ../common/gpg.nix
     ../common/gtk.nix
     ../common/mime-types.nix
@@ -46,11 +45,12 @@ in
   programs.t-doomemacs.enable = true;
   programs.t-nvim.enable = true;
   # programs.t-terminal.alacritty.enable = true;
+  programs.t-terminal.ghostty.enable = true;
   programs.t-zoxide.enable = true;
   programs.t-git.enable = true;
   programs.t-shell-tooling.enable = true;
   programs.t-tmux.enable = true;
-  programs.tt-sway = {
+  programs.t-sway = {
     enable = true;
     statusCommand = "${pkgs.i3status-rust}/bin/i3status-rs";
     extraConfig =

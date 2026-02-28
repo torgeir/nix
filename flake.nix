@@ -9,15 +9,15 @@
 
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
 
+    nix-gaming.url = "github:torgeir/nix-gaming";
+    # nix-gaming.url = "github:fufexan/nix-gaming";
+    nix-gaming.inputs.nixpkgs.follows = "nixpkgs-stable";
+
     wooz.url = "github:negrel/wooz";
     wooz.inputs.nixpkgs.follows = "nixpkgs";
 
     musnix.url = "github:musnix/musnix";
     musnix.inputs.nixpkgs.follows = "nixpkgs";
-
-    nix-gaming.url = "github:torgeir/nix-gaming";
-    # nix-gaming.url = "github:fufexan/nix-gaming";
-    nix-gaming.inputs.nixpkgs.follows = "nixpkgs-stable";
 
     agenix.url = "github:ryantm/agenix";
 
@@ -27,9 +27,8 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # nix flake update nix-home-manager
+    # nix flake update dotfiles nix-home-manager
     nix-home-manager.url = "github:torgeir/nix-home-manager";
-    # nix flake update dotfiles
     dotfiles.url = "github:torgeir/dotfiles";
 
     m3ta-nixpkgs.url = "git+https://code.m3ta.dev/m3tam3re/nixpkgs";
