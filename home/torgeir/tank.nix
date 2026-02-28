@@ -17,6 +17,7 @@
   programs.t-nvim.enable = true;
   programs.t-shell-tooling.enable = true;
   programs.t-zoxide.enable = true;
+  programs.t-tmux.enable = true;
 
   home.file.".config/dotfiles".source = dotfiles;
 
