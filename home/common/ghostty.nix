@@ -8,6 +8,8 @@
     enable = true;
     package = if pkgs.stdenv.isDarwin then pkgs.ghostty-bin else pkgs.ghostty;
 
+    systemd.enable = true;
+
     enableBashIntegration = true;
     enableFishIntegration = false;
     enableZshIntegration = true;
@@ -17,7 +19,8 @@
         pad = "20";
       in
       {
-        theme = "dark:Catppuccin Mocha,light:Catppuccin Latte";
+        # theme = "dark:Catppuccin Mocha,light:Catppuccin Latte";
+        theme = "Catppuccin Mocha";
 
         font-family = "IosevkaTerm Nerd Font";
         font-size = "20";

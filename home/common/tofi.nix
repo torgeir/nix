@@ -9,7 +9,7 @@
 
   home.file = {
     ".config/tofi/config".text = ''
-      font=IosevkaTermCurlySlab Nerd Font
+      font=IosevkaTerm Nerd Font
       anchor = top
       width = 100%
       height = 30

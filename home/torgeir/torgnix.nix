@@ -246,9 +246,6 @@ in
     with pkgs;
     [
 
-      nerd-fonts.iosevka
-      nerd-fonts.iosevka-term
-
       resources
 
       # tools

@@ -84,5 +84,5 @@ in
   #unstable = import inputs.nixpkgs-unstable { system = prev.system; };
 
   # pkgs.unstable-locked.<something>
-  unstable-locked = import inputs.nixpkgs-locked { system = prev.system; };
+  # unstable-locked = import inputs.nixpkgs-locked { system = prev.system; };
 }

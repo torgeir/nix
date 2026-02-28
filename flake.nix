@@ -5,7 +5,7 @@
   #   nix flake update nix-gaming
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-locked.url = "github:NixOS/nixpkgs/1042fd8b148a9105f3c0aca3a6177fd1d9360ba5";
+    # nixpkgs-locked.url = "github:NixOS/nixpkgs/1042fd8b148a9105f3c0aca3a6177fd1d9360ba5";
 
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
 
@@ -49,7 +49,7 @@
       musnix,
       nix-gaming,
       nixpkgs,
-      nixpkgs-locked,
+      # nixpkgs-locked,
       nixpkgs-stable,
       nix-home-manager,
       dotfiles,

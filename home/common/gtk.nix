@@ -6,7 +6,17 @@
 }:
 
 let
-  theme-name = "Catppuccin-Macchiato-Compact-Sapphire-Dark";
+  accent = "sapphire";
+  size = "compact";
+  variant = "macchiato";
+  tweak = "rimless";
+  # nix repl --expr import <nixpkgs> {}
+  # :b pkgs.catppuccin-cursors.mochaDark
+  # inspect path, to figure the names out
+  theme-name = "catppuccin-${variant}-${accent}-${size}+${tweak}";
+  cursor-name = "catppuccin-mocha-dark-cursors";
+  # https://github.com/catppuccin/cursors
+  cursor-pkg = pkgs.catppuccin-cursors.mochaDark;
 in
 {
 
@@ -14,18 +24,18 @@ in
     GTK_THEME = theme-name;
   };
 
+  home.packages = [
+    (pkgs.catppuccin-gtk.override {
+      accents = [ accent ];
+      size = size;
+      tweaks = [ tweak ];
+      variant = variant;
+    })
+  ];
+
   gtk = {
     enable = true;
-    theme = {
-      name = theme-name;
-      # https://github.com/NixOS/nixpkgs/blob/7ce8e7c4cf90492a631e96bcfe70724104914381/pkgs/data/themes/catppuccin-gtk/default.nix#L16
-      package = pkgs.unstable-locked.catppuccin-gtk.override {
-        accents = [ "sapphire" ];
-        size = "compact";
-        tweaks = [ "rimless" ];
-        variant = "macchiato";
-      };
-    };
+    theme.name = theme-name;
 
     iconTheme = {
       name = "paper";
@@ -34,10 +44,16 @@ in
     };
 
     cursorTheme = {
-      name = "catppuccin";
-      package = pkgs.catppuccin-cursors;
+      name = cursor-name;
+      package = cursor-pkg;
     };
 
   };
 
+  home.pointerCursor = {
+    name = cursor-name;
+    package = cursor-pkg;
+    size = 26;
+    gtk.enable = true;
+  };
 }
