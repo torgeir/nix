@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.programs.tt-sway;
+  cfg = config.programs.t-sway;
 in
 {
 
@@ -15,11 +15,11 @@ in
   #   hardware.opengl.enable = true;
   #   security.polkit.enable = true;
 
-  options.programs.tt-sway.enable = lib.mkEnableOption "Enable sway configuration.";
+  options.programs.t-sway.enable = lib.mkEnableOption "Enable sway configuration.";
 
-  options.programs.tt-sway.titlebar = lib.mkEnableOption "Enable sway titlebar.";
+  options.programs.t-sway.titlebar = lib.mkEnableOption "Enable sway titlebar.";
 
-  options.programs.tt-sway.extraConfig = lib.mkOption {
+  options.programs.t-sway.extraConfig = lib.mkOption {
     type = lib.types.str;
     default = "";
     example = ''
@@ -29,13 +29,13 @@ in
     '';
   };
 
-  options.programs.tt-sway.statusCommand = lib.mkOption {
+  options.programs.t-sway.statusCommand = lib.mkOption {
     type = lib.types.nullOr lib.types.str;
     example = "${pkgs.i3status-rust}/bin/i3status-rs ~/.config/i3status-rust/config.toml";
     default = "${pkgs.i3status}/bin/i3status";
   };
 
-  options.programs.tt-sway.command = lib.mkOption {
+  options.programs.t-sway.command = lib.mkOption {
     type = lib.types.nullOr lib.types.str;
     example = "${pkgs.sway}/bin/swaybar";
     default = "${pkgs.sway}/bin/swaybar";
