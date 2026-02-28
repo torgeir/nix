@@ -240,7 +240,7 @@ in
               # quick run
               "${mod}+shift+Return" = "exec ${browser}";
               "${mod}+n" = "exec ${filemanager}";
-              "${mod}+Ctrl+Return" = "exec ${terminal}";
+              "${mod}+Ctrl+Return" = "exec ${terminal} +new-window";
               "${mod}+Return" = ''
                 exec emacsclient --eval '\
                   (if (frame-focus-state)\

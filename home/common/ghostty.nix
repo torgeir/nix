@@ -17,6 +17,7 @@
     settings =
       let
         pad = "20";
+        resize-inc = "50";
       in
       {
         # theme = "dark:Catppuccin Mocha,light:Catppuccin Latte";
@@ -35,6 +36,10 @@
         window-padding-y = "${pad},${pad}";
         keybind = [
           #"global:ctrl+space=toggle_quick_terminal"
+          "super+ctrl+shift+arrow_down=resize_split:down,${resize-inc}"
+          "super+ctrl+shift+arrow_left=resize_split:left,${resize-inc}"
+          "super+ctrl+shift+arrow_right=resize_split:right,${resize-inc}"
+          "super+ctrl+shift+arrow_up=resize_split:up,${resize-inc}"
 
           "cmd+d=new_split:right"
           "cmd+shift+d=new_split:down"
