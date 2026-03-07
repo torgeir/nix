@@ -288,11 +288,11 @@
         "doomemacs": "doomemacs"
       },
       "locked": {
-        "lastModified": 1772277037,
-        "narHash": "sha256-UJ4rQlHfVf05N0LNSGGBMbMjICC3+FxxY+ZIeiDR8NU=",
+        "lastModified": 1772295433,
+        "narHash": "sha256-1P42t+cY4bV/4Mbdv6xPags3yRorsRLMCoAjtLbwnpE=",
         "owner": "torgeir",
         "repo": "nix-home-manager",
-        "rev": "470fd262e72818526a7d2631997d65fbf3da81ea",
+        "rev": "0dd1f8de0d597de1e631618ccfbe4e22e78249de",
         "type": "github"
       },
       "original": {
