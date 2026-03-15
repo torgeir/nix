@@ -46,6 +46,7 @@ in
   programs.t-gpg.enable = true;
   # programs.t-terminal.alacritty.enable = true;
   programs.t-terminal.ghostty.enable = true;
+  programs.t-terminal.ghostty.package = pkgs.ghostty;
   programs.t-zoxide.enable = true;
   programs.t-git.enable = true;
   programs.t-shell-tooling.enable = true;
