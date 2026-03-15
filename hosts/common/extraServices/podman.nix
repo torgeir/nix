@@ -26,6 +26,7 @@ in
 
         # reach other services by name
         defaultNetwork.settings.dns_enabled = true;
+        defaultNetwork.settings.dns_servers = [ "192.168.20.1" ];
 
         # avoids pointless probing
         enableNvidia = false;

@@ -10,6 +10,7 @@
 
   services.unbound = {
     enable = true;
+
     settings =
       let
         ip = "100.103.93.10";
@@ -26,19 +27,26 @@
           interface = [
             "127.0.0.1"
             "::1"
-            "${ip}"
+            ip
           ];
+
           access-control = [
             "127.0.0.0/8 allow"
             "::1/128 allow"
             "100.64.0.0/10 allow"
           ];
-          local-zone = [
-            "\"wa.gd.\" static"
-            "\".\" refuse"
-          ];
-          local-data = map (s: "\"${s}.wa.gd.  A ${ip}\"") services;
+
+          # authoritative
+          local-zone = [ "\"wa.gd.\" static" ];
+          local-data = map (s: "\"${s}.wa.gd. A ${ip}\"") services;
         };
+        # forward unknown other domains
+        "forward-zone" = [
+          {
+            name = ".";
+            "forward-addr" = [ "192.168.20.1" ];
+          }
+        ];
       };
   };
 }
