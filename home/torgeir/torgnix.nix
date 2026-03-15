@@ -18,7 +18,6 @@ in
     ../common/fonts.nix
     ../common/gaming.nix
     ../common/sway.nix
-    ../common/gpg.nix
     ../common/gtk.nix
     ../common/mime-types.nix
     ../common/mpd.nix
@@ -44,6 +43,7 @@ in
 
   programs.t-doomemacs.enable = true;
   programs.t-nvim.enable = true;
+  programs.t-gpg.enable = true;
   # programs.t-terminal.alacritty.enable = true;
   programs.t-terminal.ghostty.enable = true;
   programs.t-zoxide.enable = true;
