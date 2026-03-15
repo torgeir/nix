@@ -3,3 +3,4 @@
 *.log
 tmp/
 /smb.key
+/.agent-shell/
