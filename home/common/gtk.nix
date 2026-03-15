@@ -53,7 +53,7 @@ in
   home.pointerCursor = {
     name = cursor-name;
     package = cursor-pkg;
-    size = 26;
+    size = 32;
     gtk.enable = true;
   };
 }
