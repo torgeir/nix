@@ -41,7 +41,7 @@ in
     enable = true;
   };
 
-  programs.t-doomemacs.enable = true;
+  programs.t-emacs.enable = true;
   programs.t-nvim.enable = true;
   programs.t-gpg.enable = true;
   # programs.t-terminal.alacritty.enable = true;
