@@ -242,13 +242,13 @@ in
               "${mod}+n" = "exec ${filemanager}";
               "${mod}+Ctrl+Return" = "exec ${terminal} +new-window";
               "${mod}+Return" = ''
-                exec emacsclient --eval '\
+                exec emacsclient --socket-name $HOME/.emacs.d/server/server --eval '\
                   (if (frame-focus-state)\
                   (with-current-buffer (buffer-name (window-buffer (frame-selected-window)))\
-                  (t/vterm-here))\
+                  (t/vterm-project))\
                   (with-selected-frame (make-frame)\
-                  (let ((default-directory (t/read-file (t/user-file ".cur"))))\
-                  (+vterm/here t))))'
+                  (when-let ((default-directory (with-temp-buffer (insert-file-contents (expand-file-name "~/.cur")) (buffer-string))))\
+                  (t/vterm-project))))'
               '';
 
               # focus apps
