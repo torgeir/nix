@@ -27,6 +27,62 @@ in
     inputs.m3ta-nixpkgs.homeManagerModules.default
   ];
 
+  programs.zellij = {
+    enable = true;
+    enableBashIntegration = true;
+    enableZshIntegration = true;
+    themes.catppuccin.themes = {
+      catppuccin-mocha = {
+        bg = "#585b70";
+        fg = "#cdd6f4";
+        red = "#f38ba8";
+        green = "#a6e3a1";
+        blue = "#89b4fa";
+        yellow = "#f9e2af";
+        magenta = "#f5c2e7";
+        orange = "#fab387";
+        cyan = "#89dceb";
+        black = "#111111";
+        white = "#cdd6f4";
+      };
+    };
+    settings = {
+      theme = "catppuccin-mocha";
+      default_shell = "${config.programs.zsh.package}/bin/zsh";
+      default_layout = "compact";
+      show_startup_tips = false;
+      show_release_notes = false;
+      default_mode = "locked";
+    };
+    extraConfig = ''
+      keybinds {
+        locked {
+          unbind "Ctrl g"
+          bind "Ctrl b" { SwitchToMode "normal"; }
+          bind "Ctrl Left" { GoToPreviousTab; }
+          bind "Ctrl Right" { GoToNextTab; }
+        }
+        normal {
+          unbind "Ctrl g"
+          bind "Ctrl c" { SwitchToMode "locked"; }
+          bind "d" { Detach; }
+          bind "c" { NewTab;            SwitchToMode "locked"; }
+          bind "e" { EditScrollback;    SwitchToMode "locked"; }
+          bind "s" { NewPane "Down";    SwitchToMode "locked"; }
+          bind "v" { NewPane "Right";   SwitchToMode "locked"; }
+          bind "h" { MoveFocus "Left";  SwitchToMode "locked"; }
+          bind "l" { MoveFocus "Right"; SwitchToMode "locked"; }
+          bind "j" { MoveFocus "Down";  SwitchToMode "locked"; }
+          bind "k" { MoveFocus "Up";    SwitchToMode "locked"; }
+        }
+        shared_except "locked" {
+          bind "Esc" { SwitchToMode "locked"; }
+        }
+      }
+      scrollback_editor "et"
+    '';
+  };
+
   cli.stt-ptt = {
     enable = true;
     whisperPackage = pkgs.whisper-cpp-vulkan;
