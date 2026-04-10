@@ -28,6 +28,12 @@
       freshrss = {
         file = ../../secrets/freshrss.age;
       };
+      wallabag-env = {
+        file = ../../secrets/wallabag-env.age;
+      };
+      wallabag-postgres = {
+        file = ../../secrets/wallabag-postgres.age;
+      };
       scrobble = {
         file = ../../secrets/scrobble.age;
       };

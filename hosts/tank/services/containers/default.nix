@@ -13,6 +13,7 @@
     ./unbound.nix
     ./ha.nix
     ./navidrome.nix
+    ./wallabag.nix
   ];
 
   extraServices.freshrss.enable = true;

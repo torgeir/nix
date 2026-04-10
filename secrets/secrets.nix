@@ -38,6 +38,13 @@ in
   # nix run github:ryantm/agenix -- -e freshrss.age
   "freshrss.age".publicKeys = hosts;
 
+  # wallabag app env (SYMFONY__ENV__DATABASE_PASSWORD, SYMFONY__ENV__SECRET)
+  # nix run github:ryantm/agenix -- -e wallabag-env.age
+  "wallabag-env.age".publicKeys = hosts;
+  # wallabag postgres
+  # nix run github:ryantm/agenix -- -e wallabag-postgres.age
+  "wallabag-postgres.age".publicKeys = hosts;
+
   # nix run github:ryantm/agenix -- -e scrobble.age
   "scrobble.age".publicKeys = hosts;
 

@@ -54,6 +54,14 @@
           proxyWebsockets = true;
         };
       };
+      "wallabag.wa.gd" = {
+        useACMEHost = "wa.gd";
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:8091";
+          proxyWebsockets = true;
+        };
+      };
       "immich.wa.gd" = {
         useACMEHost = "wa.gd";
         forceSSL = true;

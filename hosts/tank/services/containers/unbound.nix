@@ -19,6 +19,7 @@
           "rss"
           "immich"
           "music"
+          "wallabag"
           "tank"
         ];
       in
