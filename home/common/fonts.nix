@@ -24,6 +24,10 @@ in
     font-awesome
     nerd-fonts.iosevka
     nerd-fonts.iosevka-term
+    nerd-fonts.iosevka-term-slab
+
+    # gui viewer
+    # gnome-font-viewer
 
   ];
 
