@@ -4,3 +4,4 @@
 tmp/
 /smb.key
 /.agent-shell/
+/.claude/
