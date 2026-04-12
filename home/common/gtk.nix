@@ -36,6 +36,7 @@ in
   gtk = {
     enable = true;
     theme.name = theme-name;
+    gtk4.theme = config.gtk.theme;
 
     iconTheme = {
       name = "paper";
