@@ -23,6 +23,8 @@
       "1password-gui"
       "1password-gui-beta"
 
+      "claude-code"
+
       "dropbox"
 
       "reaper"

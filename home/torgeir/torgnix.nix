@@ -350,6 +350,8 @@ in
       reaper
       winetricks
       dxvk_2
+
+      claude-code
     ]
     ++ [
       # helix native needs wine with fsync patches
