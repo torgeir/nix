@@ -105,11 +105,11 @@
     },
     "dotfiles": {
       "locked": {
-        "lastModified": 1775851085,
-        "narHash": "sha256-RmyIVubhwgIk6OVJ0Iriskn6mWlcDqKnHKFfOjsBDM8=",
+        "lastModified": 1775978220,
+        "narHash": "sha256-+LWusmKExatdarMrUwVDcS0jkXblxpSa0KQuCsf6d6E=",
         "owner": "torgeir",
         "repo": "dotfiles",
-        "rev": "e894b67889861d07981dc766af47d3ec9e1d97ef",
+        "rev": "e3476a3cbe3a512cad42777c3fde2ce042f7a5ca",
         "type": "github"
       },
       "original": {
