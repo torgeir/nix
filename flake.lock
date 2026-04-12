@@ -149,24 +149,6 @@
         "type": "github"
       }
     },
-    "flake-parts": {
-      "inputs": {
-        "nixpkgs-lib": "nixpkgs-lib"
-      },
-      "locked": {
-        "lastModified": 1736143030,
-        "narHash": "sha256-+hu54pAoLDEZT9pjHlqL9DNzWz0NbUn8NEAHP7PQPzU=",
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "rev": "b905f6fc23a9051a6e1b741e1438dbfc0634c6de",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "type": "github"
-      }
-    },
     "flake-utils": {
       "inputs": {
         "systems": "systems_3"
@@ -270,35 +252,13 @@
         "type": "github"
       }
     },
-    "nix-gaming": {
-      "inputs": {
-        "flake-parts": "flake-parts",
-        "nixpkgs": [
-          "nixpkgs-stable"
-        ],
-        "umu": "umu"
-      },
-      "locked": {
-        "lastModified": 1765744292,
-        "narHash": "sha256-QYUHhamSx5htWUe7D5ZRRueWtBcjB6NxYTo2G6MjdNA=",
-        "owner": "torgeir",
-        "repo": "nix-gaming",
-        "rev": "8594f93946b5994eb0071e9a806b5e4fca7b8f12",
-        "type": "github"
-      },
-      "original": {
-        "owner": "torgeir",
-        "repo": "nix-gaming",
-        "type": "github"
-      }
-    },
     "nix-home-manager": {
       "locked": {
-        "lastModified": 1775931314,
-        "narHash": "sha256-QvERQKn8e36A5F27olkoG0JFakxokcxbCPFM3w5zRzE=",
+        "lastModified": 1775976851,
+        "narHash": "sha256-8uP0lXlEg+IXzDwpB2H6kw++d/PAMGTG5qF2KpWa2DE=",
         "owner": "torgeir",
         "repo": "nix-home-manager",
-        "rev": "54786837ca20853044592a0df8592cb71ccde7f3",
+        "rev": "ec5e0b0abbbbdcccfa579edf5ece4d0bedb9ca58",
         "type": "github"
       },
       "original": {
@@ -371,18 +331,6 @@
         "ref": "nixos-25.05",
         "repo": "nixpkgs",
         "type": "github"
-      }
-    },
-    "nixpkgs-lib": {
-      "locked": {
-        "lastModified": 1735774519,
-        "narHash": "sha256-CewEm1o2eVAnoqb6Ml+Qi9Gg/EfNAxbRx1lANGVyoLI=",
-        "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/e9b51731911566bbf7e4895475a87fe06961de0b.tar.gz"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/e9b51731911566bbf7e4895475a87fe06961de0b.tar.gz"
       }
     },
     "nixpkgs-master": {
@@ -484,7 +432,6 @@
         "home-manager": "home-manager_2",
         "m3ta-nixpkgs": "m3ta-nixpkgs",
         "musnix": "musnix",
-        "nix-gaming": "nix-gaming",
         "nix-home-manager": "nix-home-manager",
         "nixos-raspberrypi": "nixos-raspberrypi",
         "nixpkgs": "nixpkgs_2",
@@ -535,31 +482,6 @@
         "owner": "nix-systems",
         "repo": "default",
         "type": "github"
-      }
-    },
-    "umu": {
-      "inputs": {
-        "nixpkgs": [
-          "nix-gaming",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "dir": "packaging/nix",
-        "lastModified": 1737161836,
-        "narHash": "sha256-v20q0DeglyrsIAbqwqOSxdzZ4JhEWtU9muWPlPz3Few=",
-        "ref": "refs/heads/main",
-        "rev": "3fd4ef90e8427cfc74d94914654a288912edb2cf",
-        "revCount": 901,
-        "submodules": true,
-        "type": "git",
-        "url": "https://github.com/Open-Wine-Components/umu-launcher/?dir=packaging/nix"
-      },
-      "original": {
-        "dir": "packaging/nix",
-        "submodules": true,
-        "type": "git",
-        "url": "https://github.com/Open-Wine-Components/umu-launcher/?dir=packaging/nix"
       }
     },
     "utils": {

@@ -351,18 +351,12 @@ in
       winetricks
       dxvk_2
     ]
-    ++ (
-      let
-        # helix native needs wine with fsync patches
-        # w = wineWowPackages.staging;
-        w = inputs.nix-gaming.packages.${pkgs.system}.wine-tkg;
-      in
-      [
-        w
-        (pkgs.yabridge.override { wine = w; })
-        (pkgs.yabridgectl.override { wine = w; })
-      ]
-    );
+    ++ [
+      # helix native needs wine with fsync patches
+      # inputs.nix-gaming.packages.${pkgs.system}.wine-tkg
+      pkgs.yabridge
+      pkgs.yabridgectl
+    ];
 
   # this puts files in the needed locations, but does however not make them
   # editable allows interop with torgeir/dotfiles.git without moving all this

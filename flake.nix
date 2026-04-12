@@ -9,9 +9,9 @@
 
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
 
-    nix-gaming.url = "github:torgeir/nix-gaming";
+    # nix-gaming.url = "github:torgeir/nix-gaming";
     # nix-gaming.url = "github:fufexan/nix-gaming";
-    nix-gaming.inputs.nixpkgs.follows = "nixpkgs-stable";
+    # nix-gaming.inputs.nixpkgs.follows = "nixpkgs-stable";
 
     wooz.url = "github:negrel/wooz";
     wooz.inputs.nixpkgs.follows = "nixpkgs";
@@ -46,7 +46,7 @@
       home-manager,
       wooz,
       musnix,
-      nix-gaming,
+      # nix-gaming,
       nixpkgs,
       # nixpkgs-locked,
       nixpkgs-stable,
