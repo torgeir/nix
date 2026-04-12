@@ -67,7 +67,11 @@ in
           unbind "Ctrl g"
           unbind "Ctrl b"
           bind "Ctrl c" { SwitchToMode "locked"; }
-          bind "r" { RenameSession; }
+          bind "," { SwitchToMode "renametab"; }
+          bind "Space" { NextSwapLayout; }
+          bind "z" { ToggleFocusFullscreen; SwitchToMode "normal"; }
+          bind "p" { GoToPreviousTab; SwitchToMode "normal"; }
+          bind "n" { GoToNextTab; SwitchToMode "normal"; }
           bind "d" { Detach; }
           bind "c" { NewTab;            SwitchToMode "locked"; }
           bind "e" { EditScrollback;    SwitchToMode "locked"; }
