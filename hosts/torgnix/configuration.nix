@@ -192,9 +192,6 @@ in
     slirp4netns
 
     wooz
-
-    # kotlin-lsp from overlay.nix
-    kotlin-lsp-official
   ];
 
   services.tailscale.enable = true;
