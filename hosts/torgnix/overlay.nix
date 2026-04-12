@@ -5,9 +5,9 @@ let
   inherit (prev) lib callPackage;
 in
 {
-  stt-ptt = inputs.m3ta-nixpkgs.packages.${prev.system}.stt-ptt;
+  stt-ptt = inputs.m3ta-nixpkgs.packages.${prev.stdenv.hostPlatform.system}.stt-ptt;
 
-  wooz = inputs.wooz.packages.${prev.system}.default;
+  wooz = inputs.wooz.packages.${prev.stdenv.hostPlatform.system}.default;
 
   kotlin-lsp-official = prev.callPackage (inputs.nix-home-manager + "/pkgs/kotlin-lsp.nix") { };
 
@@ -75,7 +75,7 @@ in
 
   # pkgs.stable.<something>
   stable = import inputs.nixpkgs-stable {
-    system = prev.system;
+    system = prev.stdenv.hostPlatform.system;
     config.allowUnfree = true; # "linuxsampler"
   };
 
