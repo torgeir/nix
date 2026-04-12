@@ -65,7 +65,9 @@ in
         }
         normal {
           unbind "Ctrl g"
+          unbind "Ctrl b"
           bind "Ctrl c" { SwitchToMode "locked"; }
+          bind "r" { RenameSession; }
           bind "d" { Detach; }
           bind "c" { NewTab;            SwitchToMode "locked"; }
           bind "e" { EditScrollback;    SwitchToMode "locked"; }
