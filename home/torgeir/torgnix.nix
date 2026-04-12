@@ -18,6 +18,7 @@ in
     ../common/fonts.nix
     ../common/gaming.nix
     ../common/sway.nix
+    ../common/mail.nix
     ../common/gtk.nix
     ../common/mime-types.nix
     ../common/mpd.nix
