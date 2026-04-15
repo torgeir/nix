@@ -29,10 +29,10 @@ in
   "immich-postgres.age".publicKeys = hosts;
 
   # CLOUDFLARE_DNS_API_TOKEN=<token>
-  # nix run github:ryantm/agenix -- -e acme-cloudflare.age
-  "acme-cloudflare.age".publicKeys = hosts;
+  # nix run github:ryantm/agenix -- -e tank-acme-cf.age
+  "tank-acme-cf.age".publicKeys = hosts;
 
-  # nix run github:ryantm/agenix -- -e torgnix-acme-cloudflare.age
+  # nix run github:ryantm/agenix -- -e torgnix-acme-cf.age
   "torgnix-acme-cf.age".publicKeys = [ torgeir ];
 
   # nix run github:ryantm/agenix -- -e freshrss.age

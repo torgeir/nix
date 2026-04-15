@@ -22,7 +22,7 @@
         file = ../../secrets/immich-postgres.age;
       };
       acme-cloudflare = {
-        file = ../../secrets/acme-cloudflare.age;
+        file = ../../secrets/tank-acme-cf.age;
         owner = "acme";
       };
       freshrss = {

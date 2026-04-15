@@ -26,9 +26,9 @@ in
     security.acme.defaults.email = "torgeir.thoresen@gmail.com";
     security.acme.certs."wa.gd" = {
       domain = "*.wa.gd";
-      # need to turn of that NAT rule in the router if this fails
+      # turn off that Firewall: NAT: Port Forward on the router when this fails, and the floating block rule
       dnsProvider = "cloudflare";
-      dnsResolver = "192.168.20.1:53";
+      dnsResolver = "1.1.1.1:53";
       dnsPropagationCheck = true;
       environmentFile = cfg.environmentFile;
       server =
