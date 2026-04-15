@@ -57,7 +57,7 @@ in
   # Daemon
   services.samba = {
     enable = true;
-    package = pkgs.sambaFull;
+    package = pkgs.samba;
     openFirewall = true;
     settings = {
       "global" = {
