@@ -35,6 +35,8 @@ in
 
     environment.systemPackages = with pkgs; [
       podman-compose
+      # required for rootless container networking (user-namespace NAT)
+      slirp4netns
     ];
   };
 }

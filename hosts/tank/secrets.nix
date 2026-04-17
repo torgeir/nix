@@ -30,9 +30,13 @@
       };
       wallabag-env = {
         file = ../../secrets/wallabag-env.age;
+        owner = "wallabag";
+        mode = "0400";
       };
       wallabag-postgres = {
         file = ../../secrets/wallabag-postgres.age;
+        owner = "wallabag";
+        mode = "0400";
       };
       scrobble = {
         file = ../../secrets/scrobble.age;
