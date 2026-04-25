@@ -62,6 +62,18 @@
           proxyWebsockets = true;
         };
       };
+      "dav.wa.gd" = {
+        useACMEHost = "wa.gd";
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:8092";
+          proxyWebsockets = true;
+          extraConfig = ''
+            proxy_pass_header Authorization;
+            proxy_set_header Authorization $http_authorization;
+          '';
+        };
+      };
       "immich.wa.gd" = {
         useACMEHost = "wa.gd";
         forceSSL = true;

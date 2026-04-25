@@ -37,6 +37,10 @@
       scrobble = {
         file = ../../secrets/scrobble.age;
       };
+      webdav = {
+        file = ../../secrets/webdav-htpasswd.age;
+        owner = "wwwrun"; # apache user
+      };
     };
   };
 }

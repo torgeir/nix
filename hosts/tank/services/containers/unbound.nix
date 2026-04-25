@@ -20,6 +20,7 @@
           "immich"
           "music"
           "wallabag"
+          "dav"
           "tank"
         ];
       in

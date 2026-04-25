@@ -19,6 +19,7 @@
     ./secrets.nix
     ./zfs.nix
     ./samba.nix
+    ./webdav.nix
     ./services
   ];
 }

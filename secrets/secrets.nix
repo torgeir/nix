@@ -48,4 +48,10 @@ in
   # nix run github:ryantm/agenix -- -e scrobble.age
   "scrobble.age".publicKeys = hosts;
 
+  # nix-shell -p apacheHttpd --run 'htpasswd -c webdav-htpasswd <user>'
+  # cat webdav-htpasswd | wl-copy; rm webdav-htpasswd;
+  # paste it here:
+  # nix run github:ryantm/agenix -- -e webdav-htpasswd.age
+  "webdav-htpasswd.age".publicKeys = hosts;
+
 }
