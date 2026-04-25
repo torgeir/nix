@@ -71,6 +71,14 @@
           extraConfig = ''
             proxy_pass_header Authorization;
             proxy_set_header Authorization $http_authorization;
+            # Rewrite Destination header for WebDAV MOVE: Apache receives the
+            # external https URL and tries to reach it directly, causing 502.
+            # Rewrite it to http://127.0.0.1:8092 so Apache resolves it locally.
+            set $fixed_destination $http_destination;
+            if ($fixed_destination ~* ^https://dav\.wa\.gd(.*)$) {
+              set $fixed_destination http://127.0.0.1:8092$1;
+            }
+            proxy_set_header Destination $fixed_destination;
           '';
         };
       };
