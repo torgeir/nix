@@ -27,8 +27,6 @@ in
     ../../modules/_1password.nix
     ../../modules/qmk.nix
     ../../modules/qemu.nix
-    # TODO nix profile
-    #../../modules/printer.nix
     ../../modules/noson.nix
     # ../../modules/nginx.nix
     ../../modules/headtracking.nix
@@ -36,6 +34,14 @@ in
     ../../modules/allow-unfree.nix
     ../../modules/yubikey.nix
   ];
+
+  # switch: sudo /run/current-system/specialisation/printer/bin/switch-to-configuration switch
+  # back:   sudo /run/current-system/bin/switch-to-configuration switch
+  specialisation = {
+    printer.configuration = {
+      imports = [ ../../modules/printer.nix ];
+    };
+  };
 
   networking.hostName = "torgnix";
   networking.hostId = "61433039";
