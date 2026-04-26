@@ -14,6 +14,11 @@ in
     mkdir -p ${data}
     chown wwwrun:wwwrun ${data}
     chmod 755 ${data}
+    for folder in Supernote Books; do
+      mkdir -p ${data}/$folder
+      chown wwwrun:wwwrun ${data}/$folder
+      chmod 755 ${data}/Books
+    done
     mkdir -p /var/lock/httpd
     chown wwwrun:wwwrun /var/lock/httpd
   '';
@@ -23,7 +28,10 @@ in
   services.httpd = {
     enable = true;
     adminAddr = "torgeir.thoresen@gmail.com";
-    extraModules = [ "dav" "dav_fs" ];
+    extraModules = [
+      "dav"
+      "dav_fs"
+    ];
     virtualHosts."webdav-internal" = {
       listen = [
         {
