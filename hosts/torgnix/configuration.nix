@@ -164,6 +164,9 @@ in
     nixd
     nixfmt
 
+    cadaver # webdav, emacs
+    glib # provide gio which emacs use for /davs:
+
     git
     kdePackages.ark
     wget
