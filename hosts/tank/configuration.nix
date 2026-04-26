@@ -125,7 +125,8 @@
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [
     53 # dns lookup from tailscale, this node is dns server
-    8080
+    # 8080
+    # 11434
   ];
   networking.firewall.allowedUDPPorts = [
     53 # dns lookup from tailscale
