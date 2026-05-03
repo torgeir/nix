@@ -239,6 +239,7 @@ in
     package = pkgs.firefox-bin;
     #package = pkgs.firefox-devedition-bin;
     legacyExtensions = false;
+    configPath = "${config.xdg.configHome}/mozilla/firefox";
   };
 
   # find package paths with nix-env -qaP <pkg>
@@ -286,19 +287,14 @@ in
       # Actually, this works again. Yes it uses sudo - life is too short
       # nix-shell -p rpi-imager --run "sudo -EH rpi-imager"
 
-      # wallpapers
-      # https://github.com/natpen/awesome-wayland#wallpaper
-
+      claude-code
+    ]
+    ++ [
       # vst/audio-production
       reaper
       winetricks
       dxvk_2
-
-      claude-code
-    ]
-    ++ [
-      # helix native needs wine with fsync patches
-      # inputs.nix-gaming.packages.${pkgs.system}.wine-tkg
+      wineWow64Packages.stable
       pkgs.yabridge
       pkgs.yabridgectl
     ];

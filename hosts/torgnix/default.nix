@@ -14,7 +14,4 @@
     ./secrets.nix
   ];
 
-  environment.systemPackages = with pkgs; [
-    codex-acp
-  ];
 }

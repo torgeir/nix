@@ -6,6 +6,11 @@
 }:
 
 {
+
+  ##################################
+  # SETUP REQUIRES winetricks dxvk #
+  ##################################
+
   # the following allows logging in from the Cradle Hub.exe app on wine
   xdg.enable = true;
   xdg.mimeApps.enable = true;

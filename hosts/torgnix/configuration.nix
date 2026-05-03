@@ -46,6 +46,9 @@ in
   networking.hostName = "torgnix";
   networking.hostId = "61433039";
 
+  # new default from 26.11
+  boot.zfs.forceImportRoot = false;
+
   boot.loader.systemd-boot = {
     enable = true;
     # number of generations to keep
