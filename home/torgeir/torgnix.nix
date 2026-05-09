@@ -292,11 +292,12 @@ in
     ++ [
       # vst/audio-production
       reaper
-      winetricks
       dxvk_2
-      wineWow64Packages.stable
-      pkgs.yabridge
-      pkgs.yabridgectl
+      # see overlay.nix
+      wine
+      winetricks
+      yabridge
+      yabridgectl
     ];
 
   # this puts files in the needed locations, but does however not make them
