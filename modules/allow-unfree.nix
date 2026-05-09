@@ -16,6 +16,8 @@
       "firefox-bin"
       "firefox-bin-unwrapped"
 
+      "zoom"
+
       "cnijfilter2" # canon pixma ink printer drivers
 
       "1password"

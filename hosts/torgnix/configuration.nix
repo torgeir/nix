@@ -170,6 +170,8 @@ in
     cadaver # webdav, emacs
     glib # provide gio which emacs use for /davs:
 
+    zoom-us
+
     git
     kdePackages.ark
     wget
