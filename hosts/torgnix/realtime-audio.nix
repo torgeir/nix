@@ -62,7 +62,7 @@
   ];
 
   # minimize latency
-  # also prioritize the pid and interrupts of the sound card
+  # set SCHED_FIFO and pin all xhci IRQ threads to isolated CPUs 24-27
   boot.postBootCommands = ''
     #!/usr/bin/env bash
 
@@ -70,19 +70,17 @@
     export PATH=/run/current-system/sw/bin/:$PATH
 
     priority=94
-    irq=$(cat /proc/interrupts | grep "xhci_hcd" | awk '{sum=0; for(i=2;i<=NF-3;i++) sum+=$i; print sum, $1}' | sort -nr | head -1 | awk '{gsub(/:/, "", $2); print $2}')
-    pid=$(pgrep irq/$irq-)
-    thread=$(ps -eo comm | grep irq/$irq-)
-
-    logger -p user.info "[realtime audio]: setting priority to $priority for soundcard irqs pid $pid, thread $thread."
-    chrt -f -p $priority $pid
-
-    # Spread across CPUs 24-31 (last CCD on 5950X)
     cpus="24-27"
-    logger -p user.info "[realtime audio]: spreading soundcard irqs $pid on thread $thread to cpus $cpus."
 
-    echo $cpus > /proc/irq/$irq/smp_affinity_list
-    logger -p user.info "[realtime audio] smp_affinity_list for irq $irq is now $(cat /proc/irq/$irq/smp_affinity_list)"
+    for irq in $(cat /proc/interrupts | grep "xhci_hcd" | awk '{gsub(/:/, "", $1); print $1}'); do
+      pid=$(pgrep "irq/$irq-")
+      [ -z "$pid" ] && continue
+      thread=$(ps -p $pid -o comm= 2>/dev/null)
+      logger -p user.info "[realtime audio]: setting SCHED_FIFO priority $priority for $thread (pid $pid, irq $irq)"
+      chrt -f -p $priority $pid
+      echo $cpus > /proc/irq/$irq/smp_affinity_list
+      logger -p user.info "[realtime audio]: irq $irq ($thread) now on cpus $(cat /proc/irq/$irq/smp_affinity_list)"
+    done
   '';
 
   # check what is set with
@@ -91,7 +89,7 @@
     # make threads out of irqs, for preemt_dynamic kernels
     "threadirqs"
     # not needed for rt kernels
-    "preemt=full"
+    "preempt=full"
 
     "isolcpus=24-27" # Isolate 4 CPUs for audio IRQs
     "nohz_full=24-27"
@@ -212,7 +210,7 @@
       "context.modules" = [
         {
           name = "libpipewire-module-raop-discover";
-          args = {};
+          args = { };
         }
       ];
     };
@@ -324,8 +322,8 @@
             if ${pkgs.util-linux}/bin/chrt -f -p 92 $p 2>/dev/null; then
               echo "Set REAPER PID $p to priority 92"
             fi
-            if ${pkgs.util-linux}/bin/taskset -cp 26 $p 2>/dev/null; then
-              echo "Pinned REAPER PID $p to CPU 26"
+            if ${pkgs.util-linux}/bin/taskset -cp 24-27 $p 2>/dev/null; then
+              echo "Pinned REAPER PID $p to CPUs 24-27"
             fi
           done
 
@@ -400,7 +398,7 @@
 
     (writeScriptBin "reaper-pw" "pw-metadata -n settings 0 clock.force-quantum $1")
     (writeScriptBin "reaper-pw-48" "pw-metadata -n settings 0 clock.force-quantum 48")
-    (writeScriptBin "reaper-pw-64" "pw-metadata -n settings 0 clock.force-quantum 68")
+    (writeScriptBin "reaper-pw-64" "pw-metadata -n settings 0 clock.force-quantum 64")
     (writeScriptBin "reaper-pw-96" "pw-metadata -n settings 0 clock.force-quantum 96")
     (writeScriptBin "reaper-pw-144" "pw-metadata -n settings 0 clock.force-quantum 144")
     (writeScriptBin "reaper-pw-256" "pw-metadata -n settings 0 clock.force-quantum 256")
