@@ -16,9 +16,6 @@
     wooz.url = "github:negrel/wooz";
     wooz.inputs.nixpkgs.follows = "nixpkgs";
 
-    musnix.url = "github:musnix/musnix";
-    musnix.inputs.nixpkgs.follows = "nixpkgs";
-
     agenix.url = "github:ryantm/agenix";
 
     deploy-rs.url = "github:serokell/deploy-rs";
@@ -45,7 +42,6 @@
       deploy-rs,
       home-manager,
       wooz,
-      musnix,
       # nix-gaming,
       nixpkgs,
       # nixpkgs-locked,

@@ -1,14 +1,10 @@
 {
   config,
   lib,
-  inputs,
   pkgs,
-  nixpkgs,
   ...
 }:
 {
-
-  imports = [ inputs.musnix.nixosModules.musnix ];
 
   # realtime kernel
   #musnix.kernel.realtime = true;
@@ -357,6 +353,10 @@
   };
 
   # allow realtime for pipewire and user audio group
+  #   memlock:  lock audio buffers in RAM, prevents swap-induced xruns
+  #   rtprio:   request SCHED_FIFO threads (rtkit caps this at 94)
+  #   nice:     lower nice value for audio processes
+  #   nofile:   prevent "too many open files" with heavy plugin loads
   security.pam.loginLimits = [
     {
       domain = "@audio";
@@ -375,6 +375,18 @@
       item = "nice";
       type = "-";
       value = "-11";
+    }
+    {
+      domain = "@audio";
+      item = "nofile";
+      type = "soft";
+      value = "99999";
+    }
+    {
+      domain = "@audio";
+      item = "nofile";
+      type = "hard";
+      value = "99999";
     }
   ];
 
