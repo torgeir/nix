@@ -330,22 +330,24 @@ in
   # save ssds
   services.fstrim.enable = true;
 
-  # containers
-  #   systemctl --user start docker
-  virtualisation.docker = {
-    storageDriver = "btrfs";
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
-      daemon.settings = {
-        data-root = "/home/torgeir/data";
-        # dette rotet til ollama docker-compose.yml
-        # dns = ["192.168.2.1" "1.1.1.1"];
-      };
-    };
+  # containerization
+  extraServices.podman.enable = true;
+  users.users.torgeir.subUidRanges = [
+    {
+      startUid = 100000;
+      count = 65536;
+    }
+  ];
+  users.users.torgeir.subGidRanges = [
+    {
+      startGid = 100000;
+      count = 65536;
+    }
+  ];
+  # cgroupfs avoids systemd D-Bus dependency; podman defaults to systemd which isn't available rootless on NixOS
+  virtualisation.containers.containersConf.settings = {
+    engine.cgroup_manager = "cgroupfs";
   };
-
-  # TODO auto start docker compose for torgeir
 
   # zram instead of swap
   zramSwap = {
