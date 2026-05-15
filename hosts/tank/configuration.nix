@@ -20,6 +20,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # No onboard HDA codec present; avoid noisy probe errors on boot.
+  boot.blacklistedKernelModules = [ "snd_hda_intel" ];
+
   # Override generated /boot (vfat) permissions so loader random-seed is not world-readable.
   fileSystems."/boot".options = lib.mkForce [ "umask=0077" ];
 
