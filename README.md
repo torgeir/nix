@@ -10,6 +10,14 @@ clear; pushd ~/nixos-config; sudo nixos-rebuild --flake .#torgnix switch && noti
 
 # build and push another system
 nixos-rebuild switch --flake .#tank --target-host tank --sudo --ask-sudo-password
+# build and test until reboot on another system
+nixos-rebuild test --flake .#tank --target-host tank --sudo --ask-sudo-password
+# build and switch to on reboot of another system
+nixos-rebuild boot --flake .#tank --target-host tank --sudo --ask-sudo-password \
+  && reboot
+
+# gc old unreferenced store paths
+sudo nix-collect-garbage --delete-older-than 7d
 ```
 
 ## notes
