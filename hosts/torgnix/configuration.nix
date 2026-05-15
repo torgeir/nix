@@ -56,6 +56,9 @@ in
   };
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Restrict vfat /boot permissions so bootctl random-seed is not world-readable.
+  fileSystems."/boot".options = lib.mkForce [ "umask=0077" ];
+
   boot.kernelParams = [
     # resolution during boot
     "video=DP-1:1920x1080@60Hz"
