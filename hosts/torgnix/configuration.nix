@@ -213,6 +213,12 @@ in
 
   services.tailscale.enable = true;
 
+  # avoid tailscaled derp flap log spam
+  systemd.services.tailscaled.serviceConfig = {
+    LogRateLimitIntervalSec = "30s";
+    LogRateLimitBurst = 5;
+  };
+
   programs.thunar.enable = true;
   programs.thunar.plugins = with pkgs; [
     thunar-archive-plugin
