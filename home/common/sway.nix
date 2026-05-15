@@ -71,7 +71,16 @@ in
     ];
 
     home.file.".config/bg.jpg".source = dotfiles + "/bg.jpg";
-    home.file.".config/mako".source = dotfiles + "/config/mako";
+    #after: makoctl reload
+    home.file.".config/mako/config".text = ''
+      default-timeout=5000
+      font=IosevkaTerm Nerd Font Mono 13
+      icons=1
+      icon-path=/etc/profiles/per-user/torgeir/share/icons/Paper-Mono-Dark/
+
+      [urgency=high]
+      text-color=#CD3F45
+    '';
     home.file.".config/dunst".source = dotfiles + "/config/dunst";
     home.file.".config/thunar".source = dotfiles + "/config/thunar";
     home.file.".config/i3status-rust".source = dotfiles + "/config/i3status-rust";
@@ -252,10 +261,6 @@ in
               '';
 
               # focus apps
-              "${meta}+i" = "exec ${swayfocus} ${browser}";
-              "${meta}+e" = "exec ${swayfocus} emacs";
-              "${meta}+s" = "exec ${swayfocus} Slack";
-
               "${hyper}+i" = "exec ${swayfocus} ${browser}";
               "${hyper}+e" = "exec ${swayfocus} emacs";
               "${hyper}+s" = "exec ${swayfocus} Slack";

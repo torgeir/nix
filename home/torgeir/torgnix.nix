@@ -114,6 +114,8 @@ in
         assign [app_id="org.rncbc.qpwgraph"] 4
 
         assign [class="REAPER"] 3
+
+        for_window [class="REAPER" title="Mixer"] floating disable; move window to workspace number 3
         for_window [class="REAPER"] floating disable
         for_window [class="REAPER" window_type="dialog"] floating enable
         for_window [class="REAPER" title="REAPER Query"] floating enable
@@ -133,7 +135,6 @@ in
         for_window [class="REAPER" title="^VST.*"] floating enable
         for_window [class="REAPER" title="^VST.*Kontakt.*"] floating disable; move window to workspace number 9
         for_window [class="REAPER" title="^VST: Helix.*"] floating disable; move window to workspace number 9
-        for_window [class="REAPER" title="Mixer"] floating disable; move window to workspace number 9
         for_window [class="REAPER" title="Helix Native"] floating enable
 
         assign [title="term-journalctl"] 6
@@ -184,8 +185,8 @@ in
         gaps outer 0
         workspace 1 gaps horizontal 200
         for_window [app_id="(firefox)"] gaps horizontal 200
-        workspace 2 gaps horizontal 300
-        for_window [app_id="(emacs)"] gaps horizontal 300
+        workspace 2 gaps horizontal 0
+        for_window [app_id="(emacs)"] gaps horizontal 0
         workspace 3 gaps outer 0
         workspace 4 gaps outer 0
         workspace 5 gaps outer 0
