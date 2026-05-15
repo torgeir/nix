@@ -20,6 +20,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Override generated /boot (vfat) permissions so loader random-seed is not world-readable.
+  fileSystems."/boot".options = lib.mkForce [ "umask=0077" ];
+
   networking.hostName = "tank";
   networking.useDHCP = lib.mkDefault false;
   # don't bother waiting, they will come
@@ -65,6 +68,8 @@
 
   # Select internationalisation properties.
   console = {
+    # Provide Terminus fonts explicitly so setfont can find Lat2-Terminus16.
+    packages = [ pkgs.terminus_font ];
     font = "Lat2-Terminus16";
     useXkbConfig = true; # use xkb.options in tty.
   };
