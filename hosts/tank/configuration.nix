@@ -97,6 +97,7 @@
 
     # temps
     lm_sensors
+    smartmontools
 
     fastfetch
   ];
