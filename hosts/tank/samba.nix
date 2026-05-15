@@ -63,7 +63,7 @@ in
       "global" = {
         "netbios name" = config.networking.hostName;
         "name resolve order" = "bcast host";
-        "hosts allow" = "192.168.50. 192.168.30. 192.168.20. 127.0.0.1 localhost";
+        "hosts allow" = "192.168.50. 192.168.30. 192.168.20. 100.64.0.0/10 127.0.0.1 localhost";
         "hosts deny" = "0.0.0.0/0";
         "security" = "user";
         "guest account" = "nobody";
@@ -71,9 +71,9 @@ in
         "load printers" = false;
         "printcap name" = "/dev/null";
         "printing" = "bsd";
-        # avoid ipv6 bind errors
-        "bind interfaces only" = true;
-        "interfaces" = "eno1 lo";
+        # allow listen on all interfaces (incl. tailscale0)
+        # access still restricted by "hosts allow"
+        "bind interfaces only" = false;
         "workgroup" = "WORKGROUP";
         # sonos music library
         "min protocol" = "NT1"; # enable smb1/cifs
@@ -84,6 +84,13 @@ in
     // (lib.listToAttrs [ (makePublicShare shares.delt) ])
     // (lib.listToAttrs [ ((makePrivateShare "maja") shares.maja) ])
     // (lib.listToAttrs [ ((makePrivateShare "torgeir") shares.torgeir) ]);
+  };
+
+  # Ensure NetBIOS daemon starts after network and tailscaled are up.
+  # NOTE: the NixOS Samba unit is `samba-nmbd` (not plain `nmbd`).
+  systemd.services.samba-nmbd = {
+    after = [ "network-online.target" "tailscaled.service" ];
+    wants = [ "network-online.target" "tailscaled.service" ];
   };
 
   # User for /fast/shared/maja
