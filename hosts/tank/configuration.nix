@@ -113,6 +113,9 @@
 
   services.tailscale.enable = true;
 
+  # Use dbus-broker (migrate via `nixos-rebuild boot` + reboot, not live switch).
+  services.dbus.implementation = "broker";
+
   services.openssh = {
     enable = true;
     ports = [ 24 ];
