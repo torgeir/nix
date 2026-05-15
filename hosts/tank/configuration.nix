@@ -55,6 +55,7 @@
 
   # without this services.unbound (?) setup messes up /etc/resolv.conf
   services.resolved.enable = false;
+  networking.resolvconf.enable = false;
   environment.etc."resolv.conf".text = ''
     domain wa.gd
     nameserver 192.168.20.1
