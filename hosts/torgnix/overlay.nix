@@ -35,16 +35,19 @@ in
 
   inherit wine;
 
-  # new-wine10-embedding fixes plugin UI rendering; drop first patch (libyabridge-drop-32-bit-support)
-  yabridge = (prev.yabridge.overrideAttrs (old: {
-    src = prev.fetchFromGitHub {
-      owner = "robbert-vdh";
-      repo = "yabridge";
-      rev = "refs/heads/new-wine10-embedding";
-      hash = "sha256-0ju/mfmhutuuPezq1GhiAEiQV/gnfEbrhjX4ydxLX+A=";
-    };
-    patches = prev.lib.drop 1 old.patches;
-  })).override { wineWow64Packages = wineWow64PackagesStaging; };
+  # new-wine10-embedding has been merged to main,
+  # fixes plugin UI rendering; drop first patch (libyabridge-drop-32-bit-support)
+  yabridge =
+    (prev.yabridge.overrideAttrs (old: {
+      src = prev.fetchFromGitHub {
+        owner = "robbert-vdh";
+        repo = "yabridge";
+        rev = "48ea9749b682c48875366134a42073d6b3d0a8c4";
+        hash = "sha256-J3qyTNMyMqDpc2pijJn4E9Q1ZYUOQ5JIEeq4ueMmrII=";
+      };
+      patches = prev.lib.drop 1 old.patches;
+    })).override
+      { wineWow64Packages = wineWow64PackagesStaging; };
   yabridgectl = prev.yabridgectl.override { wineWow64Packages = wineWow64PackagesStaging; };
 
   # opentrack with neural-net tracker support
