@@ -46,6 +46,7 @@ in
   programs.t-emacs.enable = true;
   programs.t-nvim.enable = true;
   programs.t-gpg.enable = true;
+  programs.t-terminal.alacritty.enable = true;
   programs.t-terminal.ghostty.enable = true;
   programs.t-terminal.ghostty.package = pkgs.ghostty;
   programs.t-zoxide.enable = true;
@@ -59,8 +60,8 @@ in
     extraConfig =
       let
         mod = "Mod4";
-        term = "ghostty";
-        status_term_font_size = "10";
+        term = "alacritty";
+        status_term_font_size = "'font.size=10'";
       in
       ''
 
@@ -211,11 +212,11 @@ in
         exec "hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK";
 
         workspace 6
-        exec "${term} --title=term-journalctl --font-size=${status_term_font_size} -e journalctl -f "
+        exec "${term} --title=term-journalctl --option=${status_term_font_size} -e journalctl -f"
         exec "corectrl"
 
         workspace 7
-        exec "${term} --title=term-top --font-size=${status_term_font_size} -e btop"
+        exec "${term} --title=term-top --option=${status_term_font_size} -e btop"
         exec 'resources'
 
         workspace 8

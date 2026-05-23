@@ -127,7 +127,7 @@ in
     wayland.windowManager.sway =
       let
         browser = "firefox";
-        terminal = "ghostty";
+        terminal = "alacritty";
         filemanager = "thunar";
         opacity = "0.97";
       in
@@ -249,7 +249,7 @@ in
               # quick run
               "${mod}+shift+Return" = "exec ${browser}";
               "${mod}+n" = "exec ${filemanager}";
-              "${mod}+Ctrl+Return" = "exec ${terminal} +new-window";
+              "${mod}+Ctrl+Return" = "exec ${terminal}";
               "${mod}+Return" = ''
                 exec emacsclient --socket-name $HOME/.emacs.d/server/server --eval '\
                   (if (frame-focus-state)\
