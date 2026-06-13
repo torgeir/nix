@@ -5,11 +5,16 @@
 {
   config,
   lib,
+  inputs,
   pkgs,
   ...
 }:
 
+
 {
+
+  nixpkgs.overlays = [ (import ./overlay.nix { inherit pkgs inputs; }) ];
+
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -22,6 +27,15 @@
 
   # No onboard HDA codec present; avoid noisy probe errors on boot.
   boot.blacklistedKernelModules = [ "snd_hda_intel" ];
+
+  # Strix Halo (gfx1151) unified memory: without amd_iommu=off, ROCm is capped at ~2 GB.
+  # gttsize=131072 sets a 128 GB ceiling so the GPU can map all 64 GB system RAM.
+  # ttm.pages_limit prevents allocation failures when loading large models.
+  boot.kernelParams = [
+    "amd_iommu=off"
+    "amdgpu.gttsize=131072"
+    "ttm.pages_limit=31457280"
+  ];
 
   # Override generated /boot (vfat) permissions so loader random-seed is not world-readable.
   fileSystems."/boot".options = lib.mkForce [ "umask=0077" ];
@@ -109,6 +123,12 @@
     smartmontools
 
     fastfetch
+
+    lemonade-server
+    # Ryzen AI 9 HX PRO 370 (Strix Halo, gfx1151, XDNA2 NPU, 30GB iGPU VRAM) model suggestions:
+    # - LMX-Omni-52B-Halo        -- built for Strix Halo, uses NPU+iGPU together
+    # - Qwen3.5-9B-vLLM          -- vLLM backend, specifically targets gfx1151
+    # - Qwen3-14B-GGUF           -- ROCm, fits in 30GB GPU pool, good reasoning/coding
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -121,6 +141,76 @@
 
   services.tailscale.enable = true;
 
+  systemd.tmpfiles.rules = [
+    "d /fast/shared/apps/lemonade 0755 torgeir users -"
+    # Fake /opt/rocm so lemond detects AMD ROCm (it hardcodes this Ubuntu path)
+    "d /opt/rocm 0755 root root -"
+    "d /opt/rocm/lib 0755 root root -"
+    "d /opt/rocm/.info 0755 root root -"
+    "f /opt/rocm/.info/2024-01-01 0644 root root -"
+    "L /opt/rocm/lib/libhsa-runtime64.so - - - - ${pkgs.rocmPackages.rocm-runtime}/lib/libhsa-runtime64.so"
+    "L /opt/rocm/lib/libhsa-runtime64.so.1 - - - - ${pkgs.rocmPackages.rocm-runtime}/lib/libhsa-runtime64.so.1"
+    "L /opt/rocm/lib/libamdhip64.so - - - - ${pkgs.rocmPackages.clr}/lib/libamdhip64.so"
+    "L /opt/rocm/lib/libamdhip64.so.6 - - - - ${pkgs.rocmPackages.clr}/lib/libamdhip64.so.6"
+  ];
+
+  systemd.services.lemond = {
+    description = "Lemonade LLM server";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" "local-fs.target" ];
+    path = with pkgs; [ bash gnutar gzip curl git unzip ];
+    environment = {
+      HF_HOME = "/fast/shared/apps/lemonade/huggingface";
+      XDG_RUNTIME_DIR = "/run/user/1000";
+      HIP_PATH = "/opt/rocm";
+      ROCM_PATH = "/opt/rocm";
+      HSA_OVERRIDE_GFX_VERSION = "11.5.0";
+    };
+    serviceConfig = {
+      ExecStart = "${pkgs.lemonade-server}/bin/lemond --host 0.0.0.0 --port 13305 /fast/shared/apps/lemonade";
+      User = "torgeir";
+      Group = "users";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+  };
+
+  # services.open-webui = {
+  #   enable = true;
+  #   host = "0.0.0.0";
+  #   port = 8080;
+  #   openFirewall = true;
+  #   environment = {
+  #     SCARF_NO_ANALYTICS = "True";
+  #     DO_NOT_TRACK = "True";
+  #     ANONYMIZED_TELEMETRY = "False";
+  #     ENABLE_OLLAMA_API = "False";
+  #     OPENAI_API_BASE_URL = "http://127.0.0.1:13305";
+  #     OPENAI_API_KEY = "lemonade";
+  #   };
+  # };
+
+  # Allow lemonade's downloaded pre-built llama-server (ROCm binary) to run on NixOS
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib
+      zlib
+      vulkan-loader
+      openssl
+      rocmPackages.clr
+      rocmPackages.rocm-runtime
+    ];
+  };
+
+  # Expose ROCm libs in /run/opengl-driver/lib/ so NixOS-built binaries (lemond) can detect AMD GPU.
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      rocmPackages.clr
+      rocmPackages.rocm-runtime
+    ];
+  };
   # Use dbus-broker (migrate via `nixos-rebuild boot` + reboot, not live switch).
   services.dbus.implementation = "broker";
 

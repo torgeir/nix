@@ -22,6 +22,7 @@ in
     ../common/gtk.nix
     ../common/mime-types.nix
     ../common/mpd.nix
+    ../common/ollama.nix
     (inputs.nix-home-manager + "/modules")
     inputs.nix-home-manager.homeManagerModules.emacs
 
@@ -32,11 +33,6 @@ in
     enable = true;
     whisperPackage = pkgs.whisper-cpp-vulkan;
     model = "ggml-large-v3-turbo";
-  };
-
-  services.ollama = {
-    enable = true;
-    acceleration = "rocm";
   };
 
   programs.opencode = {
@@ -231,6 +227,10 @@ in
         # record when held
         bindsym --no-repeat ${mod}+Backspace exec stt-ptt start
         bindsym --release ${mod}+Backspace exec stt-ptt stop, exec notify-send Recording... Done
+
+        # workspaces with mouse
+        bindsym --whole-window Shift+button4 workspace prev
+        bindsym --whole-window Shift+button5 workspace next
       '';
 
     # what button is pressed?
@@ -323,7 +323,15 @@ in
 
     "bg.jpg".source = dotfiles + "/bg.jpg";
 
-    ".config/corectrl/profiles".source = dotfiles + "/config/corectrl/profiles";
+    ".local/bin/yazi".source = pkgs.writeShellScript "yazi" ''
+      dir=$(mktemp -d)
+      cp ${dotfiles}/config/yazi/yazi.toml "$dir/"
+      cp ${dotfiles}/config/yazi/keymap.toml "$dir/"
+      cp ${dotfiles}/config/yazi/theme-dark.toml "$dir/theme.toml"
+      YAZI_CONFIG_HOME="$dir" ${pkgs.yazi}/bin/yazi "$@"
+      rm -rf "$dir"
+    '';
+
     ".config/corectrl/corectrl.ini".source = dotfiles + "/config/corectrl/corectrl.ini";
   };
 

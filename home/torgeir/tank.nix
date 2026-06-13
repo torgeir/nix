@@ -11,6 +11,7 @@
 
   imports = [
     (inputs.nix-home-manager + "/modules")
+    ../common/ollama.nix
   ];
 
   programs.t-git.enable = true;
