@@ -5,6 +5,10 @@
   ...
 }:
 
+let
+  wyomingForward = ./wyoming-forward.py;
+  wyomingPython = pkgs.python3.withPackages (ps: with ps; [ aiohttp wyoming ]);
+in
 {
   # Strix Halo (gfx1151) unified memory: without amd_iommu=off, ROCm is capped at ~2 GB.
   # gttsize=131072 sets a 128 GB ceiling so the GPU can map all 64 GB system RAM.
@@ -39,8 +43,18 @@
   systemd.services.lemond = {
     description = "Lemonade LLM server";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" "local-fs.target" ];
-    path = with pkgs; [ bash gnutar gzip curl git unzip ];
+    after = [
+      "network.target"
+      "local-fs.target"
+    ];
+    path = with pkgs; [
+      bash
+      gnutar
+      gzip
+      curl
+      git
+      unzip
+    ];
     environment = {
       HF_HOME = "/fast/shared/apps/lemonade/huggingface";
       XDG_RUNTIME_DIR = "/run/user/1000";
@@ -82,5 +96,29 @@
     ];
   };
 
-  networking.firewall.allowedTCPPorts = [ 13305 ];
+  systemd.services.wyoming-forward = {
+    description = "Wyoming → Lemonade Whisper bridge";
+    wantedBy = [ "multi-user.target" ];
+    after = [
+      "lemond.service"
+      "network.target"
+    ];
+    environment = {
+      OPENAI_BASE_URL = "http://localhost:13305/v1";
+      OPENAI_API_KEY = "lemonade";
+    };
+    serviceConfig = {
+      ExecStart = "${wyomingPython}/bin/python ${wyomingForward} --wyoming-uri tcp://0.0.0.0:3001 --model Whisper-Large-v3-Turbo";
+      User = "torgeir";
+      Group = "users";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+  };
+
+  networking.firewall.allowedTCPPorts = [
+    13305
+    3001
+  ];
+
 }

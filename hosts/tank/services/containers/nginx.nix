@@ -82,6 +82,21 @@
           '';
         };
       };
+      "ai.wa.gd" = {
+        useACMEHost = "wa.gd";
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:13305";
+          proxyWebsockets = true;
+          extraConfig = ''
+            proxy_buffering off;
+            proxy_cache off;
+            proxy_read_timeout 300s;
+            proxy_send_timeout 300s;
+            client_max_body_size 100M;
+          '';
+        };
+      };
       "immich.wa.gd" = {
         useACMEHost = "wa.gd";
         forceSSL = true;
