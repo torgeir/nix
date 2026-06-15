@@ -32,7 +32,7 @@
       "plugdev" # mount usb and external drives
     ];
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIITJ5UIW0lXbeFfyOrdCXAfBtZsq/NycSzIADDZDi3TL"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/yYpuSnWCBRKX/3bY1csXcNMgwVqyS5UArfBvXUkhk"
     ];
   };
 
