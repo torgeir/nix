@@ -1,3 +1,10 @@
+# Rekey (re-encrypt all secrets to the publicKeys below):
+#   1. op read "op://<vault>/<admin-key>/private key" > /tmp/k && chmod 600 /tmp/k
+#   2. edit recipients below as needed
+#   3. cd secrets && nix run github:ryantm/agenix -- --rekey -i /tmp/k
+#   4. shred -u /tmp/k
+# Note: decrypt with a key already a recipient (admin key); use a real file, not <(...).
+# Every secret must list `admins` or you lock yourself out.
 let
   tank = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICIEQt9BNUV7U13ekLERFnHvf2FIKWx8zVKq8TP28a/H root@tank";
   torgeir = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/yYpuSnWCBRKX/3bY1csXcNMgwVqyS5UArfBvXUkhk torgeir@torgnix";
