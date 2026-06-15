@@ -1,6 +1,6 @@
 let
   tank = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICIEQt9BNUV7U13ekLERFnHvf2FIKWx8zVKq8TP28a/H root@tank";
-  torgeir = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIITJ5UIW0lXbeFfyOrdCXAfBtZsq/NycSzIADDZDi3TL";
+  torgeir = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/yYpuSnWCBRKX/3bY1csXcNMgwVqyS5UArfBvXUkhk torgeir@torgnix";
   hosts = [
     tank
     torgeir
