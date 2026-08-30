@@ -17,23 +17,24 @@ in
 
   neural-amp-modeler-lv2 = callPackage ../../pkgs/neural-amp-modeler-lv2 { };
 
-  # latest version known to work with DCS
+  # latest version known to work with DCS:
   # https://github.com/ValveSoftware/Proton/issues/1722#issuecomment-3563401892
   proton-ge-bin =
     let
-      v = "GE-Proton10-26";
+      v = "GE-Proton11-6";
     in
     prev.lib.overrideDerivation prev.proton-ge-bin (old: {
       name = "proton-ge-bin";
       version = v;
+      steamDisplayName = v;
       src = final.fetchzip {
-        url = "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/${v}/${v}.tar.gz";
-        hash = "sha256-Q5bKTDn3sTgp4mbsevOdN3kcdRsyKylghXqM2I2cYq8=";
+        url = "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/${v}/${v}-x86_64.tar.gz";
+        hash = "sha256-rX27DUrrrHtR1cgyr/424m9JPjrdASIisVGv2vWzMAs=";
       };
-      # fix reference to finalAttrs.version in preFix in proton-ge-bin derivation
+      # upstream's compatibilitytool.vdf now bakes in the -x86_64 suffix
       preFixup = ''
         substituteInPlace "$steamcompattool/compatibilitytool.vdf" \
-        --replace-fail "${v}" "${v}"
+          --replace-fail "${v}-x86_64" "${v}"
       '';
     });
 
