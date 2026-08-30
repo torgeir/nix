@@ -52,6 +52,7 @@ in
   };
 
   home.pointerCursor = {
+    enable = true;
     name = cursor-name;
     package = cursor-pkg;
     size = 32;
