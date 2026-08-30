@@ -218,12 +218,17 @@ in
 
         workspace 8
         exec dropbox
-        exec spotify
 
         exec qpwgraph -stylesheet ~/.config/dotfiles/config/qpwgraph/style.qss ~/graph-setup.qpwgraph
         exec $browser
+
         workspace 2
         exec emacs ~/nixos-config/hosts/torgnix/configuration.nix
+
+        workspace 8
+        exec spotify
+
+        workspace 2
 
         # record when held
         bindsym --no-repeat ${mod}+Backspace exec stt-ptt start
