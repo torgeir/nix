@@ -15,6 +15,7 @@ in
     ../common/audio-production.nix
     ../common/cradle-hub.nix
     ../common/file-manager.nix
+    ../common/firefox-max-volume.nix
     ../common/fonts.nix
     ../common/gaming.nix
     ../common/sway.nix

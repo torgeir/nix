@@ -7,7 +7,9 @@
 # Every secret must list `admins` or you lock yourself out.
 #
 # Peek
-# EDITOR=cat nix run github:ryantm/agenix -- -e file.age -i <(op read "op://<vault>/<entry>/<field>")
+# EDITOR=cat nix run github:ryantm/agenix -- \
+#  -e file.age \
+#  -i <(op read "op://<vault>/<entry>/<field>")
 
 let
   tank = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICIEQt9BNUV7U13ekLERFnHvf2FIKWx8zVKq8TP28a/H root@tank";

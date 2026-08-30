@@ -13,7 +13,6 @@ in
 
   # sway also needs
   #   hardware.opengl.enable = true;
-  #   security.polkit.enable = true;
 
   options.programs.t-sway.enable = lib.mkEnableOption "Enable sway configuration.";
 

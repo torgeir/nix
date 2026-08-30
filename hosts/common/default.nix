@@ -10,6 +10,7 @@
   imports = [
     inputs.home-manager.nixosModules.home-manager
     ./extraServices
+    ./iperf.nix
   ];
 
   # globally installed packages should be user available
