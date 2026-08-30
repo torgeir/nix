@@ -131,8 +131,9 @@ in
   # prevent boot wait for dhcp
   networking.dhcpcd.wait = "background";
   networking.useDHCP = lib.mkDefault false;
-  #motherboard
+  # motherboard, 2.5G dongle
   networking.interfaces.enp165s0 = {
+    # networking.interfaces.enp173s0f3u3 = {
     useDHCP = false;
     ipv4.addresses = [
       {
@@ -141,7 +142,10 @@ in
       }
     ];
   };
-  #2.5G dongle
+  # dock, 2.5G dongle
+  # if all else fails and its the wrong name
+  # sudo ip link set enp9s0u1u1 up
+  # sudo ifconfig enp9s0u1u1 192.168.50.10 netmask 255.255.255.0
   networking.interfaces.enp9s0u1u2 = {
     useDHCP = false;
     ipv4.addresses = [
@@ -211,7 +215,7 @@ in
     wooz
   ];
 
-  services.tailscale.enable = true;
+  services.tailscale.enable = false;
 
   # avoid tailscaled derp flap log spam
   systemd.services.tailscaled.serviceConfig = {
