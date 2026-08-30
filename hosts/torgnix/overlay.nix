@@ -4,7 +4,9 @@ final: prev:
 let
   inherit (prev) lib callPackage;
   wine = prev.wineWow64Packages.staging;
-  wineWow64PackagesStaging = prev.wineWow64Packages // { yabridge = wine; };
+  wineWow64PackagesStaging = prev.wineWow64Packages // {
+    yabridge = wine;
+  };
 in
 {
   stt-ptt = inputs.m3ta-nixpkgs.packages.${prev.stdenv.hostPlatform.system}.stt-ptt;
@@ -12,6 +14,8 @@ in
   wooz = inputs.wooz.packages.${prev.stdenv.hostPlatform.system}.default;
 
   kotlin-lsp-official = prev.callPackage (inputs.nix-home-manager + "/pkgs/kotlin-lsp.nix") { };
+
+  neural-amp-modeler-lv2 = callPackage ../../pkgs/neural-amp-modeler-lv2 { };
 
   # latest version known to work with DCS
   # https://github.com/ValveSoftware/Proton/issues/1722#issuecomment-3563401892

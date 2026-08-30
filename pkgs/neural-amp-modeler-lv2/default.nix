@@ -9,12 +9,13 @@
 
 stdenv.mkDerivation rec {
   name = "neural_amp_modeler.lv2";
-  version = "0.1.3";
+  version = "0.2.2";
 
   src = fetchgit {
     url = "https://github.com/mikeoliphant/neural-amp-modeler-lv2";
-    rev = "43fb036706795332ba2b9ec5fb7099e21c9051df";
-    sha256 = "sha256-ls1i30ggZwFoBLxsLYaXSSyKXYYLGU7HtwNXPpSsgUE=";
+    rev = "9981fd400509803936d5e40e5b632a111c01dba6";
+    # sha256 = lib.fakeHash;
+    sha256 = "sha256-Lk/6DV/0zTlnQUFtSWYr7NIxI33b0VyH6DT35aSRo14=";
     fetchSubmodules = true;
   };
 

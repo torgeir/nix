@@ -26,6 +26,7 @@ in
     security.acme.defaults.email = "torgeir.thoresen@gmail.com";
     security.acme.certs."wa.gd" = {
       domain = "*.wa.gd";
+      #extraDomainNames = [ "*.wa.gd" ];
       # turn off that Firewall: NAT: Port Forward on the router when this fails, and the floating block rule
       dnsProvider = "cloudflare";
       dnsResolver = "1.1.1.1:53";
