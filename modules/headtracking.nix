@@ -49,5 +49,42 @@
         done; } &
       wait
     '')
+
+    # Listens (read-only, never grabs) on the VKBSim Gunfighter for one
+    # specific button and relays it as a "Z" keypress - matches the key
+    # bound in opentrack to reset/center its view. Doesn't touch the real
+    # joystick device, so it keeps working normally for MSFS/DCS bindings.
+    (writeScriptBin "gunfighter-z-relay" ''
+      #!/usr/bin/env nix-shell
+      #!nix-shell -i python3 -p "python3.withPackages (ps: [ ps.evdev ])"
+      import time
+      import evdev
+      from evdev import UInput, ecodes as e
+
+      DEVICE_PATH = "/dev/input/by-id/usb-VKB-Sim__C__Alex_Oz_2023_VKBSim_Gunfighter_MCG_Ultimate-event-joystick"
+      TRIGGER_CODE = 294  # BTN_BASE
+
+      def send_z(ui):
+          ui.write(e.EV_KEY, e.KEY_Z, 1)
+          ui.syn()
+          ui.write(e.EV_KEY, e.KEY_Z, 0)
+          ui.syn()
+
+      def run():
+          ui = UInput({e.EV_KEY: [e.KEY_Z]}, name="gunfighter-z-relay")
+          while True:
+              try:
+                  dev = evdev.InputDevice(DEVICE_PATH)
+                  print(f"Listening on {dev.name}")
+                  for event in dev.read_loop():
+                      if event.type == e.EV_KEY and event.code == TRIGGER_CODE and event.value == 1:
+                          send_z(ui)
+              except OSError as ex:
+                  print(f"Device unavailable ({ex}), retrying in 5s...")
+                  time.sleep(5)
+
+      if __name__ == "__main__":
+          run()
+    '')
   ];
 }
