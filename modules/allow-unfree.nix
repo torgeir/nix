@@ -18,6 +18,8 @@
 
       "zoom"
 
+      "docker-sbx"
+
       "cnijfilter2" # canon pixma ink printer drivers
 
       "1password"
