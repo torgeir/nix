@@ -30,6 +30,7 @@ in
     ../../modules/noson.nix
     # ../../modules/nginx.nix
     ../../modules/headtracking.nix
+    ../../modules/docker-sbx.nix
     ../../modules/bluetooth.nix
     ../../modules/allow-unfree.nix
     ../../modules/yubikey.nix
