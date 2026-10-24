@@ -15,7 +15,7 @@ let
     "facebook"
     "youtube"
   ];
-  maxVolumePercent = 70;
+  maxVolumePercent = 80;
 
   sitesJson = builtins.toJSON sites;
   # wpctl wants a 0..1 fraction.
