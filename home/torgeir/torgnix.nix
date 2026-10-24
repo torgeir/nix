@@ -129,10 +129,13 @@ in
         for_window [class="REAPER" title="FX"] floating enable
         for_window [class="REAPER" title="^LV2.*"] floating enable
         for_window [class="REAPER" title=".*JS.*"] floating enable
-        for_window [class="REAPER" title="^VST.*"] floating enable
-        for_window [class="REAPER" title="^VST.*"] floating enable
-        for_window [class="REAPER" title="^VST.*Kontakt.*"] floating disable; move window to workspace number 9
-        for_window [class="REAPER" title="^VST: Helix.*"] floating disable; move window to workspace number 9
+        for_window [class="REAPER" title="^.*VST.*"] floating enable
+        for_window [class="REAPER" title="^.*VST.*Matt.*"] floating disable; move window to workspace number 9
+        for_window [class="REAPER" title="^.*VST: Helix.*"] floating disable; move window to workspace number 9
+        for_window [class="REAPER" title="^.*.*Qsampler.*"] floating disable; move window to workspace number 9
+        for_window [class="REAPER" title="^.*VST.*Kontakt.*"] floating disable; move window to workspace number 9
+        for_window [class="REAPER" title="^.*VST.*Surge XT.*"] floating disable; move window to workspace number 9
+        for_window [class="REAPER" title="^.*VST.*Loki Bass.*"] floating disable; move window to workspace number 9
         for_window [class="REAPER" title="Helix Native"] floating enable
 
         assign [title="term-journalctl"] 6
