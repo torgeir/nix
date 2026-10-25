@@ -51,7 +51,6 @@ in
       wl-clipboard
 
       # notifications
-      mako
       libnotify
 
       # launcher
