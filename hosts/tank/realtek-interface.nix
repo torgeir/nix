@@ -7,7 +7,16 @@
 
 {
   # Enable the r8125 driver
-  boot.extraModulePackages = [ config.boot.kernelPackages.r8125 ];
+  # nixpkgs now expects a kmodigest .ko.cer next to every external module,
+  # but r8125 copies its .ko by hand instead of running modules_install.
+  boot.extraModulePackages = [
+    (config.boot.kernelPackages.r8125.overrideAttrs (old: {
+      postFixup = (old.postFixup or "") + ''
+        ${lib.getExe pkgs.buildPackages.kmodigest} \
+          $out/lib/modules/${config.boot.kernelPackages.kernel.modDirVersion}/kernel/drivers/net/ethernet/realtek/r8125.ko
+      '';
+    }))
+  ];
 
   # Ensure the module loads at boot
   boot.kernelModules = [ "r8125" ];
