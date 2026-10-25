@@ -154,7 +154,11 @@
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
     };
+    # only allow ssh from mgmt (vlan 50) and tailscale, not the lan
+    openFirewall = false;
   };
+  networking.firewall.interfaces.eno2.allowedTCPPorts = [ 24 ];
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 24 ];
 
   networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [
